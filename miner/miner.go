@@ -60,7 +60,7 @@ type Miner struct {
 	mux      *event.TypeMux
 	worker   *worker
 	coinbase common.Address
-	eth      Backend
+	g        Backend
 	engine   consensus.Engine
 	exitCh   chan struct{}
 	startCh  chan common.Address
@@ -69,15 +69,15 @@ type Miner struct {
 	wg sync.WaitGroup
 }
 
-func New(eth Backend, config *Config, chainConfig *params.ChainConfig, mux *event.TypeMux, engine consensus.Engine, isLocalBlock func(header *types.Header) bool) *Miner {
+func New(g Backend, config *Config, chainConfig *params.ChainConfig, mux *event.TypeMux, engine consensus.Engine, isLocalBlock func(header *types.Header) bool) *Miner {
 	miner := &Miner{
-		eth:     eth,
+		g:       g,
 		mux:     mux,
 		engine:  engine,
 		exitCh:  make(chan struct{}),
 		startCh: make(chan common.Address),
 		stopCh:  make(chan struct{}),
-		worker:  newWorker(config, chainConfig, engine, eth, mux, isLocalBlock, true),
+		worker:  newWorker(config, chainConfig, engine, g, mux, isLocalBlock, true),
 	}
 	miner.wg.Add(1)
 	go miner.update()

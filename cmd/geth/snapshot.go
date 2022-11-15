@@ -174,7 +174,7 @@ func pruneState(ctx *cli.Context) error {
 
 	prunerconfig := pruner.Config{
 		Datadir:   stack.ResolvePath(""),
-		Cachedir:  stack.ResolvePath(config.Eth.TrieCleanCacheJournal),
+		Cachedir:  stack.ResolvePath(config.G.TrieCleanCacheJournal),
 		BloomSize: ctx.Uint64(utils.BloomFilterSizeFlag.Name),
 	}
 	pruner, err := pruner.NewPruner(chaindb, prunerconfig)

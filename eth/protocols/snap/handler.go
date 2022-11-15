@@ -65,7 +65,7 @@ type Backend interface {
 	// Chain retrieves the blockchain object to serve data.
 	Chain() *core.BlockChain
 
-	// RunPeer is invoked when a peer joins on the `eth` protocol. The handler
+	// RunPeer is invoked when a peer joins on the `g` protocol. The handler
 	// should do any peer maintenance work, handshakes and validations. If all
 	// is passed, control should be given back to the `handler` to process the
 	// inbound messages going forward.

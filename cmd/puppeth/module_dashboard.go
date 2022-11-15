@@ -279,7 +279,7 @@ try! node?.start();
 										<p>C++ Ethereum is the third most popular of the Ethereum clients, focusing on code portability to a broad range of operating systems and hardware. The client is currently a full node with transaction processing based synchronization.</p>
 										<br/>
 										<p>To run a cpp-ethereum node, download <a href="/{{.CppGenesis}}"><code>{{.CppGenesis}}</code></a> and start the node with:
-											<pre>eth --config {{.CppGenesis}} --datadir $HOME/.{{.Network}} --peerset "{{.CppBootnodes}}"</pre>
+											<pre>g --config {{.CppGenesis}} --datadir $HOME/.{{.Network}} --peerset "{{.CppBootnodes}}"</pre>
 										</p>
 										<br/>
 										<p>You can find cpp-ethereum at <a href="https://github.com/ethereum/cpp-ethereum/" target="about:blank">https://github.com/ethereum/cpp-ethereum/</a>.</p>
@@ -343,7 +343,7 @@ try! node?.start();
 										<br/>
 										<p>To run a pyethapp node, download <a href="/{{.PythonGenesis}}"><code>{{.PythonGenesis}}</code></a> and start the node with:
 											<pre>mkdir -p $HOME/.config/pyethapp/{{.Network}}</pre>
-											<pre>pyethapp -c eth.genesis="$(cat {{.PythonGenesis}})" -c eth.network_id={{.NetworkID}} -c data_dir=$HOME/.config/pyethapp/{{.Network}} -c discovery.bootstrap_nodes="[{{.PythonBootnodes}}]" -c eth.block.HOMESTEAD_FORK_BLKNUM={{.Homestead}} -c eth.block.ANTI_DOS_FORK_BLKNUM={{.Tangerine}} -c eth.block.SPURIOUS_DRAGON_FORK_BLKNUM={{.Spurious}} -c eth.block.METROPOLIS_FORK_BLKNUM={{.Byzantium}} -c eth.block.DAO_FORK_BLKNUM=18446744073709551615 run --console</pre>
+											<pre>pyethapp -c g.genesis="$(cat {{.PythonGenesis}})" -c g.network_id={{.NetworkID}} -c data_dir=$HOME/.config/pyethapp/{{.Network}} -c discovery.bootstrap_nodes="[{{.PythonBootnodes}}]" -c g.block.HOMESTEAD_FORK_BLKNUM={{.Homestead}} -c g.block.ANTI_DOS_FORK_BLKNUM={{.Tangerine}} -c g.block.SPURIOUS_DRAGON_FORK_BLKNUM={{.Spurious}} -c g.block.METROPOLIS_FORK_BLKNUM={{.Byzantium}} -c g.block.DAO_FORK_BLKNUM=18446744073709551615 run --console</pre>
 										</p>
 										<br/>
 										<p>You can find pyethapp at <a href="https://github.com/ethereum/pyethapp/" target="about:blank">https://github.com/ethereum/pyethapp/</a>.</p>

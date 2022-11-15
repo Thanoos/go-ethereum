@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package eth
+package g
 
 import (
 	"errors"
@@ -26,7 +26,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/protocols/eth"
+	g "github.com/ethereum/go-ethereum/eth/protocols/eth"
 	"github.com/ethereum/go-ethereum/log"
 )
 
@@ -36,7 +36,7 @@ const (
 )
 
 // syncTransactions starts sending all currently pending transactions to the given peer.
-func (h *handler) syncTransactions(p *eth.Peer) {
+func (h *handler) syncTransactions(p *g.Peer) {
 	// Assemble the set of transaction to broadcast or announce to the remote
 	// peer. Fun fact, this is quite an expensive operation as it needs to sort
 	// the transactions if the sorting is not cached yet. However, with a random
@@ -51,7 +51,7 @@ func (h *handler) syncTransactions(p *eth.Peer) {
 	if len(txs) == 0 {
 		return
 	}
-	// The eth/65 protocol introduces proper transaction announcements, so instead
+	// The g/65 protocol introduces proper transaction announcements, so instead
 	// of dripping transactions across multiple peers, just send the entire list as
 	// an announcement and let the remote side decide what they need (likely nothing).
 	hashes := make([]common.Hash, len(txs))
@@ -74,7 +74,7 @@ type chainSyncer struct {
 // chainSyncOp is a scheduled sync operation.
 type chainSyncOp struct {
 	mode downloader.SyncMode
-	peer *eth.Peer
+	peer *g.Peer
 	td   *big.Int
 	head common.Hash
 }
@@ -90,7 +90,7 @@ func newChainSyncer(handler *handler) *chainSyncer {
 // handlePeerEvent notifies the syncer about a change in the peer set.
 // This is called for new peers and every time a peer announces a new
 // chain head.
-func (cs *chainSyncer) handlePeerEvent(peer *eth.Peer) bool {
+func (cs *chainSyncer) handlePeerEvent(peer *g.Peer) bool {
 	select {
 	case cs.peerEventCh <- struct{}{}:
 		return true
@@ -198,7 +198,7 @@ func (cs *chainSyncer) nextSyncOp() *chainSyncOp {
 	return op
 }
 
-func peerToSyncOp(mode downloader.SyncMode, p *eth.Peer) *chainSyncOp {
+func peerToSyncOp(mode downloader.SyncMode, p *g.Peer) *chainSyncOp {
 	peerHead, peerTD := p.Head()
 	return &chainSyncOp{mode: mode, peer: p, td: peerTD, head: peerHead}
 }

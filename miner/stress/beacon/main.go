@@ -34,7 +34,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/beacon"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth"
+	g "github.com/ethereum/go-ethereum/eth"
 	ethcatalyst "github.com/ethereum/go-ethereum/eth/catalyst"
 	"github.com/ethereum/go-ethereum/eth/downloader"
 	"github.com/ethereum/go-ethereum/eth/ethconfig"
@@ -92,7 +92,7 @@ type ethNode struct {
 	stack      *node.Node
 	enode      *enode.Node
 	api        *ethcatalyst.ConsensusAPI
-	ethBackend *eth.Ethereum
+	ethBackend *g.Ethereum
 	lapi       *lescatalyst.ConsensusAPI
 	lesBackend *les.LightEthereum
 }
@@ -103,7 +103,7 @@ func newNode(typ nodetype, genesis *core.Genesis, enodes []*enode.Node) *ethNode
 		api        *ethcatalyst.ConsensusAPI
 		lapi       *lescatalyst.ConsensusAPI
 		stack      *node.Node
-		ethBackend *eth.Ethereum
+		ethBackend *g.Ethereum
 		lesBackend *les.LightEthereum
 	)
 	// Start the node and wait until it's up
@@ -458,7 +458,7 @@ func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	return genesis
 }
 
-func makeFullNode(genesis *core.Genesis) (*node.Node, *eth.Ethereum, *ethcatalyst.ConsensusAPI, error) {
+func makeFullNode(genesis *core.Genesis) (*node.Node, *g.Ethereum, *ethcatalyst.ConsensusAPI, error) {
 	// Define the basic configurations for the Ethereum node
 	datadir, _ := os.MkdirTemp("", "")
 
@@ -497,7 +497,7 @@ func makeFullNode(genesis *core.Genesis) (*node.Node, *eth.Ethereum, *ethcatalys
 		LightPeers:       10,
 		LightNoSyncServe: true,
 	}
-	ethBackend, err := eth.New(stack, econfig)
+	ethBackend, err := g.New(stack, econfig)
 	if err != nil {
 		return nil, nil, nil, err
 	}

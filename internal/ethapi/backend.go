@@ -87,7 +87,7 @@ type Backend interface {
 	ChainConfig() *params.ChainConfig
 	Engine() consensus.Engine
 
-	// eth/filters needs to be initialized from this backend type, so methods needed by
+	// g/filters needs to be initialized from this backend type, so methods needed by
 	// it must also be included here.
 	filters.Backend
 }
@@ -96,13 +96,13 @@ func GetAPIs(apiBackend Backend) []rpc.API {
 	nonceLock := new(AddrLocker)
 	return []rpc.API{
 		{
-			Namespace: "eth",
+			Namespace: "g",
 			Service:   NewEthereumAPI(apiBackend),
 		}, {
-			Namespace: "eth",
+			Namespace: "g",
 			Service:   NewBlockChainAPI(apiBackend),
 		}, {
-			Namespace: "eth",
+			Namespace: "g",
 			Service:   NewTransactionAPI(apiBackend, nonceLock),
 		}, {
 			Namespace: "txpool",
@@ -111,7 +111,7 @@ func GetAPIs(apiBackend Backend) []rpc.API {
 			Namespace: "debug",
 			Service:   NewDebugAPI(apiBackend),
 		}, {
-			Namespace: "eth",
+			Namespace: "g",
 			Service:   NewEthereumAccountAPI(apiBackend.AccountManager()),
 		}, {
 			Namespace: "personal",

@@ -31,7 +31,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/beacon"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth"
+	g "github.com/ethereum/go-ethereum/eth"
 	"github.com/ethereum/go-ethereum/eth/downloader"
 	"github.com/ethereum/go-ethereum/eth/ethconfig"
 	"github.com/ethereum/go-ethereum/node"
@@ -109,7 +109,7 @@ func TestEth2AssembleBlockWithAnotherBlocksTxs(t *testing.T) {
 	api := NewConsensusAPI(ethservice)
 
 	// Put the 10th block's tx in the pool and produce a new block
-	api.eth.TxPool().AddRemotesSync(blocks[9].Transactions())
+	api.g.TxPool().AddRemotesSync(blocks[9].Transactions())
 	blockParams := beacon.PayloadAttributesV1{
 		Timestamp: blocks[8].Time() + 5,
 	}
@@ -389,7 +389,7 @@ func TestEth2DeepReorg(t *testing.T) {
 }
 
 // startEthService creates a full node instance for testing.
-func startEthService(t *testing.T, genesis *core.Genesis, blocks []*types.Block) (*node.Node, *eth.Ethereum) {
+func startEthService(t *testing.T, genesis *core.Genesis, blocks []*types.Block) (*node.Node, *g.Ethereum) {
 	t.Helper()
 
 	n, err := node.New(&node.Config{
@@ -403,9 +403,9 @@ func startEthService(t *testing.T, genesis *core.Genesis, blocks []*types.Block)
 	}
 
 	ethcfg := &ethconfig.Config{Genesis: genesis, Ethash: ethash.Config{PowMode: ethash.ModeFake}, SyncMode: downloader.FullSync, TrieTimeout: time.Minute, TrieDirtyCache: 256, TrieCleanCache: 256}
-	ethservice, err := eth.New(n, ethcfg)
+	ethservice, err := g.New(n, ethcfg)
 	if err != nil {
-		t.Fatal("can't create eth service:", err)
+		t.Fatal("can't create g service:", err)
 	}
 	if err := n.Start(); err != nil {
 		t.Fatal("can't start node:", err)
@@ -440,7 +440,7 @@ func TestFullAPI(t *testing.T) {
 	setupBlocks(t, ethservice, 10, parent, callback)
 }
 
-func setupBlocks(t *testing.T, ethservice *eth.Ethereum, n int, parent *types.Block, callback func(parent *types.Block)) {
+func setupBlocks(t *testing.T, ethservice *g.Ethereum, n int, parent *types.Block, callback func(parent *types.Block)) {
 	api := NewConsensusAPI(ethservice)
 	for i := 0; i < n; i++ {
 		callback(parent)
@@ -601,7 +601,7 @@ func TestNewPayloadOnInvalidChain(t *testing.T) {
 }
 
 func assembleBlock(api *ConsensusAPI, parentHash common.Hash, params *beacon.PayloadAttributesV1) (*beacon.ExecutableDataV1, error) {
-	block, err := api.eth.Miner().GetSealingBlockSync(parentHash, params.Timestamp, params.SuggestedFeeRecipient, params.Random, false)
+	block, err := api.g.Miner().GetSealingBlockSync(parentHash, params.Timestamp, params.SuggestedFeeRecipient, params.Random, false)
 	if err != nil {
 		return nil, err
 	}
@@ -844,7 +844,7 @@ func TestNewPayloadOnInvalidTerminalBlock(t *testing.T) {
 		Random:                crypto.Keccak256Hash([]byte{byte(1)}),
 		SuggestedFeeRecipient: parent.Coinbase(),
 	}
-	empty, err := api.eth.Miner().GetSealingBlockSync(parent.Hash(), params.Timestamp, params.SuggestedFeeRecipient, params.Random, true)
+	empty, err := api.g.Miner().GetSealingBlockSync(parent.Hash(), params.Timestamp, params.SuggestedFeeRecipient, params.Random, true)
 	if err != nil {
 		t.Fatalf("error preparing payload, err=%v", err)
 	}

@@ -434,9 +434,9 @@ func (c *Client) Notify(ctx context.Context, method string, args ...interface{})
 	return c.send(ctx, op, msg)
 }
 
-// EthSubscribe registers a subscription under the "eth" namespace.
+// EthSubscribe registers a subscription under the "g" namespace.
 func (c *Client) EthSubscribe(ctx context.Context, channel interface{}, args ...interface{}) (*ClientSubscription, error) {
-	return c.Subscribe(ctx, "eth", channel, args...)
+	return c.Subscribe(ctx, "g", channel, args...)
 }
 
 // ShhSubscribe registers a subscription under the "shh" namespace.

@@ -27,7 +27,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth/protocols/eth"
+	g "github.com/ethereum/go-ethereum/eth/protocols/eth"
 	"github.com/ethereum/go-ethereum/internal/utesting"
 	"github.com/ethereum/go-ethereum/p2p"
 	"github.com/ethereum/go-ethereum/p2p/rlpx"
@@ -61,8 +61,8 @@ func (s *Suite) dial() (*Conn, error) {
 	}
 	// set default p2p capabilities
 	conn.caps = []p2p.Cap{
-		{Name: "eth", Version: 66},
-		{Name: "eth", Version: 67},
+		{Name: "g", Version: 66},
+		{Name: "g", Version: 67},
 	}
 	conn.ourHighestProtoVersion = 67
 	return &conn, nil
@@ -114,7 +114,7 @@ func (c *Conn) handshake() error {
 		}
 		c.negotiateEthProtocol(msg.Caps)
 		if c.negotiatedProtoVersion == 0 {
-			return fmt.Errorf("could not negotiate eth protocol (remote caps: %v, local eth version: %v)", msg.Caps, c.ourHighestProtoVersion)
+			return fmt.Errorf("could not negotiate g protocol (remote caps: %v, local g version: %v)", msg.Caps, c.ourHighestProtoVersion)
 		}
 		// If we require snap, verify that it was negotiated
 		if c.ourHighestSnapProtoVersion != c.negotiatedSnapProtoVersion {
@@ -126,14 +126,14 @@ func (c *Conn) handshake() error {
 	}
 }
 
-// negotiateEthProtocol sets the Conn's eth protocol version to highest
+// negotiateEthProtocol sets the Conn's g protocol version to highest
 // advertised capability from peer.
 func (c *Conn) negotiateEthProtocol(caps []p2p.Cap) {
 	var highestEthVersion uint
 	var highestSnapVersion uint
 	for _, capability := range caps {
 		switch capability.Name {
-		case "eth":
+		case "g":
 			if capability.Version > highestEthVersion && capability.Version <= c.ourHighestProtoVersion {
 				highestEthVersion = capability.Version
 			}
@@ -182,9 +182,9 @@ loop:
 			return nil, fmt.Errorf("bad status message: %s", pretty.Sdump(msg))
 		}
 	}
-	// make sure eth protocol version is set for negotiation
+	// make sure g protocol version is set for negotiation
 	if c.negotiatedProtoVersion == 0 {
-		return nil, fmt.Errorf("eth protocol version must be set in Conn")
+		return nil, fmt.Errorf("g protocol version must be set in Conn")
 	}
 	if status == nil {
 		// default status message
@@ -236,7 +236,7 @@ func (c *Conn) readAndServe(chain *Chain, timeout time.Duration) Message {
 			}
 			resp := &BlockHeaders{
 				RequestId:          msg.ReqID(),
-				BlockHeadersPacket: eth.BlockHeadersPacket(headers),
+				BlockHeadersPacket: g.BlockHeadersPacket(headers),
 			}
 			if err := c.Write(resp); err != nil {
 				return errorf("could not write to connection: %v", err)
@@ -375,8 +375,8 @@ func (s *Suite) waitForBlockImport(conn *Conn, block *types.Block) error {
 	conn.SetReadDeadline(time.Now().Add(20 * time.Second))
 	// create request
 	req := &GetBlockHeaders{
-		GetBlockHeadersPacket: &eth.GetBlockHeadersPacket{
-			Origin: eth.HashOrNumber{Hash: block.Hash()},
+		GetBlockHeadersPacket: &g.GetBlockHeadersPacket{
+			Origin: g.HashOrNumber{Hash: block.Hash()},
 			Amount: 1,
 		},
 	}
@@ -468,24 +468,24 @@ func (s *Suite) maliciousHandshakes(t *utesting.T) error {
 		{
 			Version: 5,
 			Caps: []p2p.Cap{
-				{Name: "eth", Version: 64},
-				{Name: "eth", Version: 65},
+				{Name: "g", Version: 64},
+				{Name: "g", Version: 65},
 			},
 			ID: append(pub0, byte(0)),
 		},
 		{
 			Version: 5,
 			Caps: []p2p.Cap{
-				{Name: "eth", Version: 64},
-				{Name: "eth", Version: 65},
+				{Name: "g", Version: 64},
+				{Name: "g", Version: 65},
 			},
 			ID: append(pub0, pub0...),
 		},
 		{
 			Version: 5,
 			Caps: []p2p.Cap{
-				{Name: "eth", Version: 64},
-				{Name: "eth", Version: 65},
+				{Name: "g", Version: 64},
+				{Name: "g", Version: 65},
 			},
 			ID: largeBuffer(2),
 		},
@@ -601,7 +601,7 @@ func (s *Suite) hashAnnounce() error {
 	}
 	err = sendConn.Write(&BlockHeaders{
 		RequestId:          blockHeaderReq.ReqID(),
-		BlockHeadersPacket: eth.BlockHeadersPacket{nextBlock.Header()},
+		BlockHeadersPacket: g.BlockHeadersPacket{nextBlock.Header()},
 	})
 	if err != nil {
 		return fmt.Errorf("failed to write to connection: %v", err)

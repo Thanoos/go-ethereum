@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package eth
+package g
 
 import (
 	"math"
@@ -46,7 +46,7 @@ var (
 
 // testBackend is a mock implementation of the live Ethereum message handler. Its
 // purpose is to allow testing the request/reply workflows and wire serialization
-// in the `eth` protocol without actually doing any data processing.
+// in the `g` protocol without actually doing any data processing.
 type testBackend struct {
 	db     ethdb.Database
 	chain  *core.BlockChain
