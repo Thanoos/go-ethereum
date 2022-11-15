@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package eth
+package g
 
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/eth/protocols/eth"
+	g "github.com/ethereum/go-ethereum/eth/protocols/eth"
 	"github.com/ethereum/go-ethereum/eth/protocols/snap"
 )
 
-// ethPeerInfo represents a short summary of the `eth` sub-protocol metadata known
+// ethPeerInfo represents a short summary of the `g` sub-protocol metadata known
 // about a connected peer.
 type ethPeerInfo struct {
 	Version    uint     `json:"version"`    // Ethereum protocol version negotiated
@@ -31,13 +31,13 @@ type ethPeerInfo struct {
 	Head       string   `json:"head"`       // Hex hash of the peer's best owned block
 }
 
-// ethPeer is a wrapper around eth.Peer to maintain a few extra metadata.
+// ethPeer is a wrapper around g.Peer to maintain a few extra metadata.
 type ethPeer struct {
-	*eth.Peer
+	*g.Peer
 	snapExt *snapPeer // Satellite `snap` connection
 }
 
-// info gathers and returns some `eth` protocol metadata known about a peer.
+// info gathers and returns some `g` protocol metadata known about a peer.
 func (p *ethPeer) info() *ethPeerInfo {
 	hash, td := p.Head()
 

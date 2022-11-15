@@ -72,7 +72,7 @@ type TxPool struct {
 }
 
 // TxRelayBackend provides an interface to the mechanism that forwards transactions to the
-// ETH network. The implementations of the functions should be non-blocking.
+// G network. The implementations of the functions should be non-blocking.
 //
 // Send instructs backend to forward new transactions NewHead notifies backend about a new
 // head after processed by the tx pool, including mined and rolled back transactions since

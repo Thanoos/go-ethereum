@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package eth
+package g
 
 import (
 	"encoding/json"
@@ -28,7 +28,7 @@ import (
 	"github.com/ethereum/go-ethereum/trie"
 )
 
-// handleGetBlockHeaders66 is the eth/66 version of handleGetBlockHeaders
+// handleGetBlockHeaders66 is the g/66 version of handleGetBlockHeaders
 func handleGetBlockHeaders66(backend Backend, msg Decoder, peer *Peer) error {
 	// Decode the complex header query
 	var query GetBlockHeadersPacket66

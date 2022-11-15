@@ -87,7 +87,7 @@ type ethstatsConfig struct {
 }
 
 type gethConfig struct {
-	Eth      ethconfig.Config
+	G        ethconfig.Config
 	Node     node.Config
 	Ethstats ethstatsConfig
 	Metrics  metrics.Config
@@ -113,8 +113,8 @@ func defaultNodeConfig() node.Config {
 	cfg := node.DefaultConfig
 	cfg.Name = clientIdentifier
 	cfg.Version = params.VersionWithCommit(git.Commit, git.Date)
-	cfg.HTTPModules = append(cfg.HTTPModules, "eth")
-	cfg.WSModules = append(cfg.WSModules, "eth")
+	cfg.HTTPModules = append(cfg.HTTPModules, "g")
+	cfg.WSModules = append(cfg.WSModules, "g")
 	cfg.IPCPath = "geth.ipc"
 	return cfg
 }
@@ -123,7 +123,7 @@ func defaultNodeConfig() node.Config {
 func makeConfigNode(ctx *cli.Context) (*node.Node, gethConfig) {
 	// Load defaults.
 	cfg := gethConfig{
-		Eth:     ethconfig.Defaults,
+		G:       ethconfig.Defaults,
 		Node:    defaultNodeConfig(),
 		Metrics: metrics.DefaultConfig,
 	}
@@ -146,7 +146,7 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, gethConfig) {
 		utils.Fatalf("Failed to set account manager backends: %v", err)
 	}
 
-	utils.SetEthConfig(ctx, stack, &cfg.Eth)
+	utils.SetEthConfig(ctx, stack, &cfg.G)
 	if ctx.IsSet(utils.EthStatsURLFlag.Name) {
 		cfg.Ethstats.URL = ctx.String(utils.EthStatsURLFlag.Name)
 	}
@@ -159,25 +159,25 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, gethConfig) {
 func makeFullNode(ctx *cli.Context) (*node.Node, ethapi.Backend) {
 	stack, cfg := makeConfigNode(ctx)
 	if ctx.IsSet(utils.OverrideTerminalTotalDifficulty.Name) {
-		cfg.Eth.OverrideTerminalTotalDifficulty = flags.GlobalBig(ctx, utils.OverrideTerminalTotalDifficulty.Name)
+		cfg.G.OverrideTerminalTotalDifficulty = flags.GlobalBig(ctx, utils.OverrideTerminalTotalDifficulty.Name)
 	}
 	if ctx.IsSet(utils.OverrideTerminalTotalDifficultyPassed.Name) {
 		override := ctx.Bool(utils.OverrideTerminalTotalDifficultyPassed.Name)
-		cfg.Eth.OverrideTerminalTotalDifficultyPassed = &override
+		cfg.G.OverrideTerminalTotalDifficultyPassed = &override
 	}
 
-	backend, eth := utils.RegisterEthService(stack, &cfg.Eth)
+	backend, g := utils.RegisterEthService(stack, &cfg.G)
 
 	// Warn users to migrate if they have a legacy freezer format.
-	if eth != nil && !ctx.IsSet(utils.IgnoreLegacyReceiptsFlag.Name) {
+	if g != nil && !ctx.IsSet(utils.IgnoreLegacyReceiptsFlag.Name) {
 		firstIdx := uint64(0)
 		// Hack to speed up check for mainnet because we know
 		// the first non-empty block.
-		ghash := rawdb.ReadCanonicalHash(eth.ChainDb(), 0)
-		if cfg.Eth.NetworkId == 1 && ghash == params.MainnetGenesisHash {
+		ghash := rawdb.ReadCanonicalHash(g.ChainDb(), 0)
+		if cfg.G.NetworkId == 1 && ghash == params.MainnetGenesisHash {
 			firstIdx = 46147
 		}
-		isLegacy, firstLegacy, err := dbHasLegacyReceipts(eth.ChainDb(), firstIdx)
+		isLegacy, firstLegacy, err := dbHasLegacyReceipts(g.ChainDb(), firstIdx)
 		if err != nil {
 			log.Error("Failed to check db for legacy receipts", "err", err)
 		} else if isLegacy {
@@ -188,7 +188,7 @@ func makeFullNode(ctx *cli.Context) (*node.Node, ethapi.Backend) {
 	}
 
 	// Configure log filter RPC API.
-	filterSystem := utils.RegisterFilterAPI(stack, backend, &cfg.Eth)
+	filterSystem := utils.RegisterFilterAPI(stack, backend, &cfg.G)
 
 	// Configure GraphQL if requested.
 	if ctx.IsSet(utils.GraphQLEnabledFlag.Name) {
@@ -207,8 +207,8 @@ func dumpConfig(ctx *cli.Context) error {
 	_, cfg := makeConfigNode(ctx)
 	comment := ""
 
-	if cfg.Eth.Genesis != nil {
-		cfg.Eth.Genesis = nil
+	if cfg.G.Genesis != nil {
+		cfg.G.Genesis = nil
 		comment += "# Note: this config doesn't contain the genesis block.\n\n"
 	}
 

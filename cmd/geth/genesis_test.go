@@ -41,7 +41,7 @@ var customGenesisTests = []struct {
 			"timestamp"  : "0x00",
 			"config"     : {}
 		}`,
-		query:  "eth.getBlock(0).nonce",
+		query:  "g.getBlock(0).nonce",
 		result: "0x0000000000001338",
 	},
 	// Genesis file with specific chain configurations
@@ -62,7 +62,7 @@ var customGenesisTests = []struct {
 				"daoForkSupport" : true
 			}
 		}`,
-		query:  "eth.getBlock(0).nonce",
+		query:  "g.getBlock(0).nonce",
 		result: "0x0000000000001339",
 	},
 }

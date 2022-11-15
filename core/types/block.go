@@ -176,13 +176,13 @@ type Block struct {
 	hash atomic.Value
 	size atomic.Value
 
-	// These fields are used by package eth to track
+	// These fields are used by package g to track
 	// inter-peer block relay.
 	ReceivedAt   time.Time
 	ReceivedFrom interface{}
 }
 
-// "external" block encoding. used for eth protocol, etc.
+// "external" block encoding. used for g protocol, etc.
 type extblock struct {
 	Header *Header
 	Txs    []*Transaction

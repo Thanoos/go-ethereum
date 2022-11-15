@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-// This is a temporary package whilst working on the eth/66 blocking refactors.
+// This is a temporary package whilst working on the g/66 blocking refactors.
 // After that work is done, les needs to be refactored to use the new package,
 // or alternatively use a stripped down version of it. Either way, we need to
 // keep the changes scoped so duplicating temporarily seems the sanest.
@@ -49,23 +49,23 @@ const (
 )
 
 var (
-	blockAnnounceInMeter   = metrics.NewRegisteredMeter("eth/fetcher/block/announces/in", nil)
-	blockAnnounceOutTimer  = metrics.NewRegisteredTimer("eth/fetcher/block/announces/out", nil)
-	blockAnnounceDropMeter = metrics.NewRegisteredMeter("eth/fetcher/block/announces/drop", nil)
-	blockAnnounceDOSMeter  = metrics.NewRegisteredMeter("eth/fetcher/block/announces/dos", nil)
+	blockAnnounceInMeter   = metrics.NewRegisteredMeter("g/fetcher/block/announces/in", nil)
+	blockAnnounceOutTimer  = metrics.NewRegisteredTimer("g/fetcher/block/announces/out", nil)
+	blockAnnounceDropMeter = metrics.NewRegisteredMeter("g/fetcher/block/announces/drop", nil)
+	blockAnnounceDOSMeter  = metrics.NewRegisteredMeter("g/fetcher/block/announces/dos", nil)
 
-	blockBroadcastInMeter   = metrics.NewRegisteredMeter("eth/fetcher/block/broadcasts/in", nil)
-	blockBroadcastOutTimer  = metrics.NewRegisteredTimer("eth/fetcher/block/broadcasts/out", nil)
-	blockBroadcastDropMeter = metrics.NewRegisteredMeter("eth/fetcher/block/broadcasts/drop", nil)
-	blockBroadcastDOSMeter  = metrics.NewRegisteredMeter("eth/fetcher/block/broadcasts/dos", nil)
+	blockBroadcastInMeter   = metrics.NewRegisteredMeter("g/fetcher/block/broadcasts/in", nil)
+	blockBroadcastOutTimer  = metrics.NewRegisteredTimer("g/fetcher/block/broadcasts/out", nil)
+	blockBroadcastDropMeter = metrics.NewRegisteredMeter("g/fetcher/block/broadcasts/drop", nil)
+	blockBroadcastDOSMeter  = metrics.NewRegisteredMeter("g/fetcher/block/broadcasts/dos", nil)
 
-	headerFetchMeter = metrics.NewRegisteredMeter("eth/fetcher/block/headers", nil)
-	bodyFetchMeter   = metrics.NewRegisteredMeter("eth/fetcher/block/bodies", nil)
+	headerFetchMeter = metrics.NewRegisteredMeter("g/fetcher/block/headers", nil)
+	bodyFetchMeter   = metrics.NewRegisteredMeter("g/fetcher/block/bodies", nil)
 
-	headerFilterInMeter  = metrics.NewRegisteredMeter("eth/fetcher/block/filter/headers/in", nil)
-	headerFilterOutMeter = metrics.NewRegisteredMeter("eth/fetcher/block/filter/headers/out", nil)
-	bodyFilterInMeter    = metrics.NewRegisteredMeter("eth/fetcher/block/filter/bodies/in", nil)
-	bodyFilterOutMeter   = metrics.NewRegisteredMeter("eth/fetcher/block/filter/bodies/out", nil)
+	headerFilterInMeter  = metrics.NewRegisteredMeter("g/fetcher/block/filter/headers/in", nil)
+	headerFilterOutMeter = metrics.NewRegisteredMeter("g/fetcher/block/filter/headers/out", nil)
+	bodyFilterInMeter    = metrics.NewRegisteredMeter("g/fetcher/block/filter/bodies/in", nil)
+	bodyFilterOutMeter   = metrics.NewRegisteredMeter("g/fetcher/block/filter/bodies/out", nil)
 )
 
 var errTerminated = errors.New("terminated")
@@ -194,9 +194,9 @@ type BlockFetcher struct {
 	// Testing hooks
 	announceChangeHook func(common.Hash, bool)           // Method to call upon adding or deleting a hash from the blockAnnounce list
 	queueChangeHook    func(common.Hash, bool)           // Method to call upon adding or deleting a block from the import queue
-	fetchingHook       func([]common.Hash)               // Method to call upon starting a block (eth/61) or header (eth/62) fetch
-	completingHook     func([]common.Hash)               // Method to call upon starting a block body fetch (eth/62)
-	importedHook       func(*types.Header, *types.Block) // Method to call upon successful header or block import (both eth/61 and eth/62)
+	fetchingHook       func([]common.Hash)               // Method to call upon starting a block (g/61) or header (g/62) fetch
+	completingHook     func([]common.Hash)               // Method to call upon starting a block body fetch (g/62)
+	importedHook       func(*types.Header, *types.Block) // Method to call upon successful header or block import (both g/61 and g/62)
 }
 
 // NewBlockFetcher creates a block fetcher to retrieve blocks based on hash announcements.

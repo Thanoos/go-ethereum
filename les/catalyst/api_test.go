@@ -219,7 +219,7 @@ func startLesService(t *testing.T, genesis *core.Genesis, headers []*types.Heade
 	}
 	lesService, err := les.New(n, ethcfg)
 	if err != nil {
-		t.Fatal("can't create eth service:", err)
+		t.Fatal("can't create g service:", err)
 	}
 	if err := n.Start(); err != nil {
 		t.Fatal("can't start node:", err)

@@ -43,7 +43,7 @@ var (
 	MaxSkeletonSize = 128 // Number of header fetches to need for a skeleton assembly
 	MaxReceiptFetch = 256 // Amount of transaction receipts to allow fetching per request
 
-	maxQueuedHeaders            = 32 * 1024                         // [eth/62] Maximum number of headers to queue for import (DOS protection)
+	maxQueuedHeaders            = 32 * 1024                         // [g/62] Maximum number of headers to queue for import (DOS protection)
 	maxHeadersProcess           = 2048                              // Number of header download results to import at once into the chain
 	maxResultsProcess           = 2048                              // Number of content download results to import at once into the chain
 	fullMaxForkAncestry  uint64 = params.FullImmutabilityThreshold  // Maximum chain reorganisation (locally redeclared so tests can reduce it)
@@ -459,7 +459,7 @@ func (d *Downloader) syncWithPeer(p *peerConnection, hash common.Hash, td, ttd *
 	mode := d.getMode()
 
 	if !beaconMode {
-		log.Debug("Synchronising with the network", "peer", p.id, "eth", p.version, "head", hash, "td", td, "mode", mode)
+		log.Debug("Synchronising with the network", "peer", p.id, "g", p.version, "head", hash, "td", td, "mode", mode)
 	} else {
 		log.Debug("Backfilling with the network", "mode", mode)
 	}

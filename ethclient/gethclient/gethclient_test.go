@@ -29,7 +29,7 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth"
+	g "github.com/ethereum/go-ethereum/eth"
 	"github.com/ethereum/go-ethereum/eth/ethconfig"
 	"github.com/ethereum/go-ethereum/eth/filters"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -57,13 +57,13 @@ func newTestBackend(t *testing.T) (*node.Node, []*types.Block) {
 	// Create Ethereum Service
 	config := &ethconfig.Config{Genesis: genesis}
 	config.Ethash.PowMode = ethash.ModeFake
-	ethservice, err := eth.New(n, config)
+	ethservice, err := g.New(n, config)
 	if err != nil {
 		t.Fatalf("can't create new ethereum service: %v", err)
 	}
 	filterSystem := filters.NewFilterSystem(ethservice.APIBackend, filters.Config{})
 	n.RegisterAPIs([]rpc.API{{
-		Namespace: "eth",
+		Namespace: "g",
 		Service:   filters.NewFilterAPI(filterSystem, false),
 	}})
 

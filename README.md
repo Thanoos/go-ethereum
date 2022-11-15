@@ -203,15 +203,15 @@ HTTP based JSON-RPC API options:
   * `--http` Enable the HTTP-RPC server
   * `--http.addr` HTTP-RPC server listening interface (default: `localhost`)
   * `--http.port` HTTP-RPC server listening port (default: `8545`)
-  * `--http.api` API's offered over the HTTP-RPC interface (default: `eth,net,web3`)
+  * `--http.api` API's offered over the HTTP-RPC interface (default: `g,net,web3`)
   * `--http.corsdomain` Comma separated list of domains from which to accept cross origin requests (browser enforced)
   * `--ws` Enable the WS-RPC server
   * `--ws.addr` WS-RPC server listening interface (default: `localhost`)
   * `--ws.port` WS-RPC server listening port (default: `8546`)
-  * `--ws.api` API's offered over the WS-RPC interface (default: `eth,net,web3`)
+  * `--ws.api` API's offered over the WS-RPC interface (default: `g,net,web3`)
   * `--ws.origins` Origins from which to accept WebSocket requests
   * `--ipcdisable` Disable the IPC-RPC server
-  * `--ipcapi` API's offered over the IPC-RPC interface (default: `admin,debug,eth,miner,net,personal,txpool,web3`)
+  * `--ipcapi` API's offered over the IPC-RPC interface (default: `admin,debug,g,miner,net,personal,txpool,web3`)
   * `--ipcpath` Filename for IPC socket/pipe within the datadir (explicit paths escape it)
 
 You'll need to use your own programming environments' capabilities (libraries, tools, etc) to
@@ -362,7 +362,7 @@ Please make sure your contributions adhere to our coding guidelines:
    guidelines.
  * Pull requests need to be based on and opened against the `master` branch.
  * Commit messages should be prefixed with the package(s) they modify.
-   * E.g. "eth, rpc: make trace configs optional"
+   * E.g. "g, rpc: make trace configs optional"
 
 Please see the [Developers' Guide](https://geth.ethereum.org/docs/developers/devguide)
 for more details on configuring your environment, managing project dependencies, and

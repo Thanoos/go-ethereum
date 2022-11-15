@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-// This is a temporary package whilst working on the eth/66 blocking refactors.
+// This is a temporary package whilst working on the g/66 blocking refactors.
 // After that work is done, les needs to be refactored to use the new package,
 // or alternatively use a stripped down version of it. Either way, we need to
 // keep the changes scoped so duplicating temporarily seems the sanest.
@@ -33,7 +33,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/state/snapshot"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth/protocols/eth"
+	g "github.com/ethereum/go-ethereum/eth/protocols/eth"
 	"github.com/ethereum/go-ethereum/eth/protocols/snap"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/event"
@@ -49,7 +49,7 @@ var (
 	MaxReceiptFetch = 256 // Amount of transaction receipts to allow fetching per request
 	MaxStateFetch   = 384 // Amount of node state values to allow fetching per request
 
-	maxQueuedHeaders            = 32 * 1024                         // [eth/62] Maximum number of headers to queue for import (DOS protection)
+	maxQueuedHeaders            = 32 * 1024                         // [g/62] Maximum number of headers to queue for import (DOS protection)
 	maxHeadersProcess           = 2048                              // Number of header download results to import at once into the chain
 	maxResultsProcess           = 2048                              // Number of content download results to import at once into the chain
 	fullMaxForkAncestry  uint64 = params.FullImmutabilityThreshold  // Maximum chain reorganisation (locally redeclared so tests can reduce it)
@@ -442,12 +442,12 @@ func (d *Downloader) syncWithPeer(p *peerConnection, hash common.Hash, td *big.I
 			d.mux.Post(DoneEvent{latest})
 		}
 	}()
-	if p.version < eth.ETH66 {
-		return fmt.Errorf("%w: advertized %d < required %d", errTooOld, p.version, eth.ETH66)
+	if p.version < g.ETH66 {
+		return fmt.Errorf("%w: advertized %d < required %d", errTooOld, p.version, g.ETH66)
 	}
 	mode := d.getMode()
 
-	log.Debug("Synchronising with the network", "peer", p.id, "eth", p.version, "head", hash, "td", td, "mode", mode)
+	log.Debug("Synchronising with the network", "peer", p.id, "g", p.version, "head", hash, "td", td, "mode", mode)
 	defer func(start time.Time) {
 		log.Debug("Synchronisation terminated", "elapsed", common.PrettyDuration(time.Since(start)))
 	}(time.Now())

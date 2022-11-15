@@ -41,7 +41,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth"
+	g "github.com/ethereum/go-ethereum/eth"
 	ethcatalyst "github.com/ethereum/go-ethereum/eth/catalyst"
 	"github.com/ethereum/go-ethereum/eth/downloader"
 	"github.com/ethereum/go-ethereum/eth/ethconfig"
@@ -251,13 +251,13 @@ var (
 		Category: flags.AccountCategory,
 	}
 	EthRequiredBlocksFlag = &cli.StringFlag{
-		Name:     "eth.requiredblocks",
+		Name:     "g.requiredblocks",
 		Usage:    "Comma separated block number-to-hash mappings to require for peering (<number>=<hash>)",
 		Category: flags.EthCategory,
 	}
 	LegacyWhitelistFlag = &cli.StringFlag{
 		Name:     "whitelist",
-		Usage:    "Comma separated block number-to-hash mappings to enforce (<number>=<hash>) (deprecated in favor of --eth.requiredblocks)",
+		Usage:    "Comma separated block number-to-hash mappings to enforce (<number>=<hash>) (deprecated in favor of --g.requiredblocks)",
 		Category: flags.DeprecatedCategory,
 	}
 	BloomFilterSizeFlag = &cli.Uint64Flag{
@@ -1423,7 +1423,7 @@ func SetP2PConfig(ctx *cli.Context, cfg *p2p.Config) {
 	if lightClient {
 		ethPeers = 0
 	}
-	log.Info("Maximum peer count", "ETH", ethPeers, "LES", lightPeers, "total", cfg.MaxPeers)
+	log.Info("Maximum peer count", "G", ethPeers, "LES", lightPeers, "total", cfg.MaxPeers)
 
 	if ctx.IsSet(MaxPendingPeersFlag.Name) {
 		cfg.MaxPendingPeers = ctx.Int(MaxPendingPeersFlag.Name)
@@ -1664,7 +1664,7 @@ func setRequiredBlocks(ctx *cli.Context, cfg *ethconfig.Config) {
 	requiredBlocks := ctx.String(EthRequiredBlocksFlag.Name)
 	if requiredBlocks == "" {
 		if ctx.IsSet(LegacyWhitelistFlag.Name) {
-			log.Warn("The flag --whitelist is deprecated and will be removed, please use --eth.requiredblocks")
+			log.Warn("The flag --whitelist is deprecated and will be removed, please use --g.requiredblocks")
 			requiredBlocks = ctx.String(LegacyWhitelistFlag.Name)
 		} else {
 			return
@@ -1729,7 +1729,7 @@ func CheckExclusive(ctx *cli.Context, args ...interface{}) {
 	}
 }
 
-// SetEthConfig applies eth-related command line flags to the config.
+// SetEthConfig applies g-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	// Avoid conflicting network flags
 	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag)
@@ -1992,7 +1992,7 @@ func SetDNSDiscoveryDefaults(cfg *ethconfig.Config, genesis common.Hash) {
 // RegisterEthService adds an Ethereum client to the stack.
 // The second return value is the full node instance, which may be nil if the
 // node is running as a light client.
-func RegisterEthService(stack *node.Node, cfg *ethconfig.Config) (ethapi.Backend, *eth.Ethereum) {
+func RegisterEthService(stack *node.Node, cfg *ethconfig.Config) (ethapi.Backend, *g.Ethereum) {
 	if cfg.SyncMode == downloader.LightSync {
 		backend, err := les.New(stack, cfg)
 		if err != nil {
@@ -2004,7 +2004,7 @@ func RegisterEthService(stack *node.Node, cfg *ethconfig.Config) (ethapi.Backend
 		}
 		return backend.ApiBackend, nil
 	}
-	backend, err := eth.New(stack, cfg)
+	backend, err := g.New(stack, cfg)
 	if err != nil {
 		Fatalf("Failed to register the Ethereum service: %v", err)
 	}
@@ -2036,14 +2036,14 @@ func RegisterGraphQLService(stack *node.Node, backend ethapi.Backend, filterSyst
 	}
 }
 
-// RegisterFilterAPI adds the eth log filtering RPC API to the node.
+// RegisterFilterAPI adds the g log filtering RPC API to the node.
 func RegisterFilterAPI(stack *node.Node, backend ethapi.Backend, ethcfg *ethconfig.Config) *filters.FilterSystem {
 	isLightClient := ethcfg.SyncMode == downloader.LightSync
 	filterSystem := filters.NewFilterSystem(backend, filters.Config{
 		LogCacheSize: ethcfg.FilterLogCacheSize,
 	})
 	stack.RegisterAPIs([]rpc.API{{
-		Namespace: "eth",
+		Namespace: "g",
 		Service:   filters.NewFilterAPI(filterSystem, isLightClient),
 	}})
 	return filterSystem

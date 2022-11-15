@@ -30,7 +30,7 @@ import (
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/console/prompt"
-	"github.com/ethereum/go-ethereum/eth"
+	g "github.com/ethereum/go-ethereum/eth"
 	"github.com/ethereum/go-ethereum/eth/downloader"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/internal/debug"
@@ -298,7 +298,7 @@ func prepare(ctx *cli.Context) {
      your computer or losing power will wipe your entire block data and chain state for
      your dev environment.
   3. A random, pre-allocated developer account will be available and unlocked as
-     eth.coinbase, which can be used for testing. The random dev account is temporary,
+     g.coinbase, which can be used for testing. The random dev account is temporary,
      stored on a ramdisk, and will be lost if your machine is restarted.
   4. Mining is enabled by default. However, the client will only seal blocks if transactions
      are pending in the mempool. The miner's minimum accepted gas price is 1.
@@ -439,7 +439,7 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 		if ctx.String(utils.SyncModeFlag.Name) == "light" {
 			utils.Fatalf("Light clients do not support mining")
 		}
-		ethBackend, ok := backend.(*eth.EthAPIBackend)
+		ethBackend, ok := backend.(*g.EthAPIBackend)
 		if !ok {
 			utils.Fatalf("Ethereum service not running")
 		}
