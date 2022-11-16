@@ -437,6 +437,7 @@ func (pool *TxPool) GasPrice() *big.Int {
 	defer pool.mu.RUnlock()
 
 	return new(big.Int).Set(pool.gasPrice)
+
 }
 
 // SetGasPrice updates the minimum price required by the transaction pool for a

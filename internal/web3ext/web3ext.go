@@ -604,7 +604,7 @@ web3._extend({
 	properties: [
 		new web3._extend.Property({
 			name: 'pendingTransactions',
-			getter: 'eth_pendingTransactions',
+			getter: 'g_pendingTransactions',
 			outputFormatter: function(txs) {
 				var formatted = [];
 				for (var i = 0; i < txs.length; i++) {
@@ -616,7 +616,7 @@ web3._extend({
 		}),
 		new web3._extend.Property({
 			name: 'maxPriorityFeePerGas',
-			getter: 'eth_maxPriorityFeePerGas',
+			getter: 'g_maxPriorityFeePerGas',
 			outputFormatter: web3._extend.utils.toBigNumber
 		}),
 	]

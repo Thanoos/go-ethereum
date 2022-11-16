@@ -146,6 +146,8 @@ func (op *requestOp) wait(ctx context.Context, c *Client) (*jsonrpcMessage, erro
 		}
 		return nil, ctx.Err()
 	case resp := <-op.resp:
+		//bs, _ := json.Marshal(resp)
+		//fmt.Println(string(bs))
 		return resp, op.err
 	}
 }
@@ -258,6 +260,7 @@ func initClient(conn ServerCodec, idgen func() ID, services *serviceRegistry) *C
 // subscription an error is returned. Otherwise a new service is created and added to the
 // service collection this client provides to the server.
 func (c *Client) RegisterName(name string, receiver interface{}) error {
+	//fmt.Println(name, receiver)
 	return c.services.registerName(name, receiver)
 }
 
@@ -321,6 +324,8 @@ func (c *Client) CallContext(ctx context.Context, result interface{}, method str
 		return fmt.Errorf("call result parameter must be pointer or nil interface: %v", result)
 	}
 	msg, err := c.newMessage(method, args...)
+	//fmt.Println(msg) //{"jsonrpc":"2.0","id":9,"method":"g_gasPrice","params":[]}
+
 	if err != nil {
 		return err
 	}
@@ -328,14 +333,18 @@ func (c *Client) CallContext(ctx context.Context, result interface{}, method str
 
 	if c.isHTTP {
 		err = c.sendHTTP(ctx, op, msg)
+		//fmt.Print(1)
 	} else {
+		//fmt.Print(2)
 		err = c.send(ctx, op, msg)
 	}
 	if err != nil {
+		//fmt.Print(3)
 		return err
 	}
 
 	// dispatch has accepted the request and will close the channel when it quits.
+	//fmt.Println(op)
 	switch resp, err := op.wait(ctx, c); {
 	case err != nil:
 		return err
@@ -344,6 +353,7 @@ func (c *Client) CallContext(ctx context.Context, result interface{}, method str
 	case len(resp.Result) == 0:
 		return ErrNoResult
 	default:
+
 		return json.Unmarshal(resp.Result, &result)
 	}
 }

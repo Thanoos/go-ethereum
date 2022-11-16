@@ -424,6 +424,7 @@ func (b *bridge) Send(call jsre.Call) (goja.Value, error) {
 					return nil, fmt.Errorf("JSON.parse is not a function")
 				}
 				resultVal, err := parse(goja.Null(), call.VM.ToValue(string(result)))
+				//	fmt.Println(resultVal)
 				if err != nil {
 					setError(resp, -32603, err.Error(), nil)
 				} else {
