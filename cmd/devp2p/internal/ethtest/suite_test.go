@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
-	g "github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
+	"github.com/ethereum/go-ethereum/g"
+	"github.com/ethereum/go-ethereum/g/ethconfig"
 	"github.com/ethereum/go-ethereum/internal/utesting"
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/ethereum/go-ethereum/p2p"
