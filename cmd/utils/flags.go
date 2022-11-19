@@ -36,7 +36,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/fdlimit"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/consensus/gash"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/vm"
@@ -329,49 +329,49 @@ var (
 		Category: flags.LightCategory,
 	}
 
-	// Ethash settings
+	// Gash settings
 	EthashCacheDirFlag = &flags.DirectoryFlag{
-		Name:     "ethash.cachedir",
+		Name:     "gash.cachedir",
 		Usage:    "Directory to store the ethash verification caches (default = inside the datadir)",
 		Category: flags.EthashCategory,
 	}
 	EthashCachesInMemoryFlag = &cli.IntFlag{
-		Name:     "ethash.cachesinmem",
+		Name:     "gash.cachesinmem",
 		Usage:    "Number of recent ethash caches to keep in memory (16MB each)",
 		Value:    gconfig.Defaults.Ethash.CachesInMem,
 		Category: flags.EthashCategory,
 	}
 	EthashCachesOnDiskFlag = &cli.IntFlag{
-		Name:     "ethash.cachesondisk",
+		Name:     "gash.cachesondisk",
 		Usage:    "Number of recent ethash caches to keep on disk (16MB each)",
 		Value:    gconfig.Defaults.Ethash.CachesOnDisk,
 		Category: flags.EthashCategory,
 	}
 	EthashCachesLockMmapFlag = &cli.BoolFlag{
-		Name:     "ethash.cacheslockmmap",
+		Name:     "gash.cacheslockmmap",
 		Usage:    "Lock memory maps of recent ethash caches",
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetDirFlag = &flags.DirectoryFlag{
-		Name:     "ethash.dagdir",
+		Name:     "gash.dagdir",
 		Usage:    "Directory to store the ethash mining DAGs",
 		Value:    flags.DirectoryString(gconfig.Defaults.Ethash.DatasetDir),
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetsInMemoryFlag = &cli.IntFlag{
-		Name:     "ethash.dagsinmem",
+		Name:     "gash.dagsinmem",
 		Usage:    "Number of recent ethash mining DAGs to keep in memory (1+GB each)",
 		Value:    gconfig.Defaults.Ethash.DatasetsInMem,
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetsOnDiskFlag = &cli.IntFlag{
-		Name:     "ethash.dagsondisk",
+		Name:     "gash.dagsondisk",
 		Usage:    "Number of recent ethash mining DAGs to keep on disk (1+GB each)",
 		Value:    gconfig.Defaults.Ethash.DatasetsOnDisk,
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetsLockMmapFlag = &cli.BoolFlag{
-		Name:     "ethash.dagslockmmap",
+		Name:     "gash.dagslockmmap",
 		Usage:    "Lock memory maps for recent ethash mining DAGs",
 		Category: flags.EthashCategory,
 	}
@@ -2220,7 +2220,7 @@ func MakeChain(ctx *cli.Context, stack *node.Node) (*core.BlockChain, ethdb.Data
 	}
 	ethashConfig := gconfig.Defaults.Ethash
 	if ctx.Bool(FakePoWFlag.Name) {
-		ethashConfig.PowMode = ethash.ModeFake
+		ethashConfig.PowMode = gash.ModeFake
 	}
 	engine := gconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, nil, false, chainDb)
 	if gcmode := ctx.String(GCModeFlag.Name); gcmode != "full" && gcmode != "archive" {
