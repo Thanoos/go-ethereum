@@ -42,7 +42,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/g"
-	ethcatalyst "github.com/ethereum/go-ethereum/g/catalyst"
+	gcatalyst "github.com/ethereum/go-ethereum/g/catalyst"
 	"github.com/ethereum/go-ethereum/g/downloader"
 	"github.com/ethereum/go-ethereum/g/filters"
 	"github.com/ethereum/go-ethereum/g/gasprice"
@@ -2014,7 +2014,7 @@ func RegisterEthService(stack *node.Node, cfg *gconfig.Config) (gapi.Backend, *g
 			Fatalf("Failed to create the LES server: %v", err)
 		}
 	}
-	if err := ethcatalyst.Register(stack, backend); err != nil {
+	if err := gcatalyst.Register(stack, backend); err != nil {
 		Fatalf("Failed to register the Engine API service: %v", err)
 	}
 	stack.RegisterAPIs(tracers.APIs(backend.APIBackend))
