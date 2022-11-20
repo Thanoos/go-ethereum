@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"time"
 
-	g "github.com/ethereum/go-ethereum/g/protocols/eth"
+	"github.com/ethereum/go-ethereum/g/protocols/g"
 	"github.com/ethereum/go-ethereum/p2p"
 	"github.com/ethereum/go-ethereum/p2p/rlpx"
 	"github.com/ethereum/go-ethereum/rlp"

@@ -30,7 +30,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	g "github.com/ethereum/go-ethereum/g/protocols/eth"
+	"github.com/ethereum/go-ethereum/g/protocols/g"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/trie"
 )

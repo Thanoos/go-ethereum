@@ -34,7 +34,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/event"
 	"github.com/ethereum/go-ethereum/g/downloader"
-	g "github.com/ethereum/go-ethereum/g/protocols/eth"
+	"github.com/ethereum/go-ethereum/g/protocols/g"
 	"github.com/ethereum/go-ethereum/p2p"
 	"github.com/ethereum/go-ethereum/p2p/enode"
 	"github.com/ethereum/go-ethereum/params"

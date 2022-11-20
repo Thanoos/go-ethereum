@@ -27,7 +27,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/event"
-	g "github.com/ethereum/go-ethereum/g/protocols/eth"
+	"github.com/ethereum/go-ethereum/g/protocols/g"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/p2p/msgrate"
 )

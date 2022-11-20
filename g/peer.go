@@ -19,7 +19,7 @@ package g
 import (
 	"math/big"
 
-	g "github.com/ethereum/go-ethereum/g/protocols/eth"
+	"github.com/ethereum/go-ethereum/g/protocols/g"
 	"github.com/ethereum/go-ethereum/g/protocols/snap"
 )
 

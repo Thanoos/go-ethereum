@@ -33,7 +33,7 @@ import (
 	"github.com/ethereum/go-ethereum/event"
 	"github.com/ethereum/go-ethereum/g/downloader"
 	"github.com/ethereum/go-ethereum/g/fetcher"
-	g "github.com/ethereum/go-ethereum/g/protocols/eth"
+	"github.com/ethereum/go-ethereum/g/protocols/g"
 	"github.com/ethereum/go-ethereum/g/protocols/snap"
 	"github.com/ethereum/go-ethereum/gdb"
 	"github.com/ethereum/go-ethereum/log"
