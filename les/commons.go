@@ -25,8 +25,8 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/g/gconfig"
+	"github.com/ethereum/go-ethereum/gclient"
 	"github.com/ethereum/go-ethereum/gdb"
 	"github.com/ethereum/go-ethereum/les/checkpointoracle"
 	"github.com/ethereum/go-ethereum/light"
@@ -154,7 +154,7 @@ func (c *lesCommons) setupOracle(node *node.Node, genesis common.Hash, ethconfig
 	}
 	oracle := checkpointoracle.New(config, c.localCheckpoint)
 	rpcClient, _ := node.Attach()
-	client := ethclient.NewClient(rpcClient)
+	client := gclient.NewClient(rpcClient)
 	oracle.Start(client)
 	log.Info("Configured checkpoint oracle", "address", config.Address, "signers", len(config.Signers), "threshold", config.Threshold)
 	return oracle
