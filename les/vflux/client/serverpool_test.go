@@ -25,7 +25,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common/mclock"
-	ethdb "github.com/ethereum/go-ethereum/gdb"
+	"github.com/ethereum/go-ethereum/gdb"
 	"github.com/ethereum/go-ethereum/gdb/memorydb"
 	"github.com/ethereum/go-ethereum/p2p/enode"
 	"github.com/ethereum/go-ethereum/p2p/enr"
@@ -51,7 +51,7 @@ func testNodeIndex(id enode.ID) int {
 }
 
 type ServerPoolTest struct {
-	db                   ethdb.KeyValueStore
+	db                   gdb.KeyValueStore
 	clock                *mclock.Simulated
 	quit                 chan chan struct{}
 	preNeg, preNegFail   bool
