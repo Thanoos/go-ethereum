@@ -63,7 +63,7 @@ var LightClientGPO = gasprice.Config{
 // Defaults contains default settings for use on the Ethereum main net.
 var Defaults = Config{
 	SyncMode: downloader.SnapSync,
-	Ethash: gash.Config{
+	Gash: gash.Config{
 		CacheDir:         "ethash",
 		CachesInMem:      2,
 		CachesOnDisk:     3,
@@ -104,16 +104,16 @@ func init() {
 		}
 	}
 	if runtime.GOOS == "darwin" {
-		Defaults.Ethash.DatasetDir = filepath.Join(home, "Library", "Ethash")
+		Defaults.Gash.DatasetDir = filepath.Join(home, "Library", "Ethash")
 	} else if runtime.GOOS == "windows" {
 		localappdata := os.Getenv("LOCALAPPDATA")
 		if localappdata != "" {
-			Defaults.Ethash.DatasetDir = filepath.Join(localappdata, "Ethash")
+			Defaults.Gash.DatasetDir = filepath.Join(localappdata, "Ethash")
 		} else {
-			Defaults.Ethash.DatasetDir = filepath.Join(home, "AppData", "Local", "Ethash")
+			Defaults.Gash.DatasetDir = filepath.Join(home, "AppData", "Local", "Ethash")
 		}
 	} else {
-		Defaults.Ethash.DatasetDir = filepath.Join(home, ".ethash")
+		Defaults.Gash.DatasetDir = filepath.Join(home, ".ethash")
 	}
 }
 
@@ -179,7 +179,7 @@ type Config struct {
 	Miner miner.Config
 
 	// Gash options
-	Ethash gash.Config
+	Gash gash.Config
 
 	// Transaction pool options
 	TxPool core.TxPoolConfig

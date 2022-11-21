@@ -128,7 +128,7 @@ func New(stack *node.Node, config *gconfig.Config) (*LightEthereum, error) {
 		reqDist:         newRequestDistributor(peers, &mclock.System{}),
 		accountManager:  stack.AccountManager(),
 		merger:          merger,
-		engine:          gconfig.CreateConsensusEngine(stack, &config.Ethash, chainConfig.Clique, nil, false, chainDb),
+		engine:          gconfig.CreateConsensusEngine(stack, &config.Gash, chainConfig.Clique, nil, false, chainDb),
 		bloomRequests:   make(chan chan *bloombits.Retrieval),
 		bloomIndexer:    core.NewBloomIndexer(chainDb, params.BloomBitsBlocksClient, params.HelperTrieConfirmations),
 		p2pServer:       stack.Server(),

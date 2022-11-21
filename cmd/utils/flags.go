@@ -338,13 +338,13 @@ var (
 	EthashCachesInMemoryFlag = &cli.IntFlag{
 		Name:     "gash.cachesinmem",
 		Usage:    "Number of recent ethash caches to keep in memory (16MB each)",
-		Value:    gconfig.Defaults.Ethash.CachesInMem,
+		Value:    gconfig.Defaults.Gash.CachesInMem,
 		Category: flags.EthashCategory,
 	}
 	EthashCachesOnDiskFlag = &cli.IntFlag{
 		Name:     "gash.cachesondisk",
 		Usage:    "Number of recent ethash caches to keep on disk (16MB each)",
-		Value:    gconfig.Defaults.Ethash.CachesOnDisk,
+		Value:    gconfig.Defaults.Gash.CachesOnDisk,
 		Category: flags.EthashCategory,
 	}
 	EthashCachesLockMmapFlag = &cli.BoolFlag{
@@ -355,19 +355,19 @@ var (
 	EthashDatasetDirFlag = &flags.DirectoryFlag{
 		Name:     "gash.dagdir",
 		Usage:    "Directory to store the ethash mining DAGs",
-		Value:    flags.DirectoryString(gconfig.Defaults.Ethash.DatasetDir),
+		Value:    flags.DirectoryString(gconfig.Defaults.Gash.DatasetDir),
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetsInMemoryFlag = &cli.IntFlag{
 		Name:     "gash.dagsinmem",
 		Usage:    "Number of recent ethash mining DAGs to keep in memory (1+GB each)",
-		Value:    gconfig.Defaults.Ethash.DatasetsInMem,
+		Value:    gconfig.Defaults.Gash.DatasetsInMem,
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetsOnDiskFlag = &cli.IntFlag{
 		Name:     "gash.dagsondisk",
 		Usage:    "Number of recent ethash mining DAGs to keep on disk (1+GB each)",
-		Value:    gconfig.Defaults.Ethash.DatasetsOnDisk,
+		Value:    gconfig.Defaults.Gash.DatasetsOnDisk,
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetsLockMmapFlag = &cli.BoolFlag{
@@ -1613,28 +1613,28 @@ func setTxPool(ctx *cli.Context, cfg *core.TxPoolConfig) {
 
 func setEthash(ctx *cli.Context, cfg *gconfig.Config) {
 	if ctx.IsSet(EthashCacheDirFlag.Name) {
-		cfg.Ethash.CacheDir = ctx.String(EthashCacheDirFlag.Name)
+		cfg.Gash.CacheDir = ctx.String(EthashCacheDirFlag.Name)
 	}
 	if ctx.IsSet(EthashDatasetDirFlag.Name) {
-		cfg.Ethash.DatasetDir = ctx.String(EthashDatasetDirFlag.Name)
+		cfg.Gash.DatasetDir = ctx.String(EthashDatasetDirFlag.Name)
 	}
 	if ctx.IsSet(EthashCachesInMemoryFlag.Name) {
-		cfg.Ethash.CachesInMem = ctx.Int(EthashCachesInMemoryFlag.Name)
+		cfg.Gash.CachesInMem = ctx.Int(EthashCachesInMemoryFlag.Name)
 	}
 	if ctx.IsSet(EthashCachesOnDiskFlag.Name) {
-		cfg.Ethash.CachesOnDisk = ctx.Int(EthashCachesOnDiskFlag.Name)
+		cfg.Gash.CachesOnDisk = ctx.Int(EthashCachesOnDiskFlag.Name)
 	}
 	if ctx.IsSet(EthashCachesLockMmapFlag.Name) {
-		cfg.Ethash.CachesLockMmap = ctx.Bool(EthashCachesLockMmapFlag.Name)
+		cfg.Gash.CachesLockMmap = ctx.Bool(EthashCachesLockMmapFlag.Name)
 	}
 	if ctx.IsSet(EthashDatasetsInMemoryFlag.Name) {
-		cfg.Ethash.DatasetsInMem = ctx.Int(EthashDatasetsInMemoryFlag.Name)
+		cfg.Gash.DatasetsInMem = ctx.Int(EthashDatasetsInMemoryFlag.Name)
 	}
 	if ctx.IsSet(EthashDatasetsOnDiskFlag.Name) {
-		cfg.Ethash.DatasetsOnDisk = ctx.Int(EthashDatasetsOnDiskFlag.Name)
+		cfg.Gash.DatasetsOnDisk = ctx.Int(EthashDatasetsOnDiskFlag.Name)
 	}
 	if ctx.IsSet(EthashDatasetsLockMmapFlag.Name) {
-		cfg.Ethash.DatasetsLockMmap = ctx.Bool(EthashDatasetsLockMmapFlag.Name)
+		cfg.Gash.DatasetsLockMmap = ctx.Bool(EthashDatasetsLockMmapFlag.Name)
 	}
 }
 
@@ -2218,7 +2218,7 @@ func MakeChain(ctx *cli.Context, stack *node.Node) (*core.BlockChain, gdb.Databa
 	if err != nil {
 		Fatalf("%v", err)
 	}
-	ethashConfig := gconfig.Defaults.Ethash
+	ethashConfig := gconfig.Defaults.Gash
 	if ctx.Bool(FakePoWFlag.Name) {
 		ethashConfig.PowMode = gash.ModeFake
 	}

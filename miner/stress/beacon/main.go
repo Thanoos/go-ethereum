@@ -393,7 +393,7 @@ func main() {
 	// Pre-generate the ethash mining DAG so we don't race
 	gash.MakeDataset(1, filepath.Join(os.Getenv("HOME"), ".ethash"))
 
-	// Create an Ethash network based off of the Ropsten config
+	// Create an Gash network based off of the Ropsten config
 	genesis := makeGenesis(faucets)
 	manager := newNodeManager(genesis)
 	defer manager.shutdown()
@@ -438,7 +438,7 @@ func main() {
 	}
 }
 
-// makeGenesis creates a custom Ethash genesis block based on some pre-defined
+// makeGenesis creates a custom Gash genesis block based on some pre-defined
 // faucet accounts.
 func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	genesis := core.DefaultRopstenGenesisBlock()
@@ -486,7 +486,7 @@ func makeFullNode(genesis *core.Genesis) (*node.Node, *g.Ethereum, *gcatalyst.Co
 		DatabaseHandles: 256,
 		TxPool:          core.DefaultTxPoolConfig,
 		GPO:             gconfig.Defaults.GPO,
-		Ethash:          gconfig.Defaults.Ethash,
+		Gash:            gconfig.Defaults.Gash,
 		Miner: miner.Config{
 			GasFloor: genesis.GasLimit * 9 / 10,
 			GasCeil:  genesis.GasLimit * 11 / 10,
@@ -537,7 +537,7 @@ func makeLightNode(genesis *core.Genesis) (*node.Node, *les.LightEthereum, *lesc
 		DatabaseHandles: 256,
 		TxPool:          core.DefaultTxPoolConfig,
 		GPO:             gconfig.Defaults.GPO,
-		Ethash:          gconfig.Defaults.Ethash,
+		Gash:            gconfig.Defaults.Gash,
 		LightPeers:      10,
 	})
 	if err != nil {

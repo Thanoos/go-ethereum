@@ -335,7 +335,7 @@ func createNode(t *testing.T) *node.Node {
 func newGQLService(t *testing.T, stack *node.Node, gspec *core.Genesis, genBlocks int, genfunc func(i int, gen *core.BlockGen)) *handler {
 	ethConf := &gconfig.Config{
 		Genesis: gspec,
-		Ethash: gash.Config{
+		Gash: gash.Config{
 			PowMode: gash.ModeFake,
 		},
 		NetworkId:               1337,

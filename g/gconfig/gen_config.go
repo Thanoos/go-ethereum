@@ -96,7 +96,7 @@ func (c Config) MarshalTOML() (interface{}, error) {
 	enc.Preimages = c.Preimages
 	enc.FilterLogCacheSize = c.FilterLogCacheSize
 	enc.Miner = c.Miner
-	enc.Ethash = c.Ethash
+	enc.Ethash = c.Gash
 	enc.TxPool = c.TxPool
 	enc.GPO = c.GPO
 	enc.EnablePreimageRecording = c.EnablePreimageRecording
@@ -260,7 +260,7 @@ func (c *Config) UnmarshalTOML(unmarshal func(interface{}) error) error {
 		c.Miner = *dec.Miner
 	}
 	if dec.Ethash != nil {
-		c.Ethash = *dec.Ethash
+		c.Gash = *dec.Ethash
 	}
 	if dec.TxPool != nil {
 		c.TxPool = *dec.TxPool

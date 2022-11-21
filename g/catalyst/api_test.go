@@ -402,7 +402,7 @@ func startEthService(t *testing.T, genesis *core.Genesis, blocks []*types.Block)
 		t.Fatal("can't create node:", err)
 	}
 
-	ethcfg := &gconfig.Config{Genesis: genesis, Ethash: gash.Config{PowMode: gash.ModeFake}, SyncMode: downloader.FullSync, TrieTimeout: time.Minute, TrieDirtyCache: 256, TrieCleanCache: 256}
+	ethcfg := &gconfig.Config{Genesis: genesis, Gash: gash.Config{PowMode: gash.ModeFake}, SyncMode: downloader.FullSync, TrieTimeout: time.Minute, TrieDirtyCache: 256, TrieCleanCache: 256}
 	ethservice, err := g.New(n, ethcfg)
 	if err != nil {
 		t.Fatal("can't create g service:", err)

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-// This file contains a miner stress test based on the Ethash consensus engine.
+// This file contains a miner stress test based on the Gash consensus engine.
 package main
 
 import (
@@ -52,9 +52,9 @@ func main() {
 		faucets[i], _ = crypto.GenerateKey()
 	}
 	// Pre-generate the ethash mining DAG so we don't race
-	gash.MakeDataset(1, gconfig.Defaults.Ethash.DatasetDir)
+	gash.MakeDataset(1, gconfig.Defaults.Gash.DatasetDir)
 
-	// Create an Ethash network based off of the Ropsten config
+	// Create an Gash network based off of the Ropsten config
 	genesis := makeGenesis(faucets)
 
 	// Handle interrupts.
@@ -130,7 +130,7 @@ func main() {
 	}
 }
 
-// makeGenesis creates a custom Ethash genesis block based on some pre-defined
+// makeGenesis creates a custom Gash genesis block based on some pre-defined
 // faucet accounts.
 func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	genesis := core.DefaultRopstenGenesisBlock()
@@ -177,7 +177,7 @@ func makeMiner(genesis *core.Genesis) (*node.Node, *g.Ethereum, error) {
 		DatabaseHandles: 256,
 		TxPool:          core.DefaultTxPoolConfig,
 		GPO:             gconfig.Defaults.GPO,
-		Ethash:          gconfig.Defaults.Ethash,
+		Gash:            gconfig.Defaults.Gash,
 		Miner: miner.Config{
 			Etherbase: common.Address{1},
 			GasCeil:   genesis.GasLimit * 11 / 10,
