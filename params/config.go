@@ -420,11 +420,11 @@ func (c *ChainConfig) Description() string {
 	switch {
 	case c.Gash != nil:
 		if c.TerminalTotalDifficulty == nil {
-			banner += "Consensus: Ethash (proof-of-work)\n"
+			banner += "Consensus: Gash (proof-of-work)\n"
 		} else if !c.TerminalTotalDifficultyPassed {
-			banner += "Consensus: Beacon (proof-of-stake), merging from Ethash (proof-of-work)\n"
+			banner += "Consensus: Beacon (proof-of-stake), merging from Gash (proof-of-work)\n"
 		} else {
-			banner += "Consensus: Beacon (proof-of-stake), merged from Ethash (proof-of-work)\n"
+			banner += "Consensus: Beacon (proof-of-stake), merged from Gash (proof-of-work)\n"
 		}
 	case c.Clique != nil:
 		if c.TerminalTotalDifficulty == nil {

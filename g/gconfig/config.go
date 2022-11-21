@@ -104,13 +104,13 @@ func init() {
 		}
 	}
 	if runtime.GOOS == "darwin" {
-		Defaults.Gash.DatasetDir = filepath.Join(home, "Library", "Ethash")
+		Defaults.Gash.DatasetDir = filepath.Join(home, "Library", "Gash")
 	} else if runtime.GOOS == "windows" {
 		localappdata := os.Getenv("LOCALAPPDATA")
 		if localappdata != "" {
-			Defaults.Gash.DatasetDir = filepath.Join(localappdata, "Ethash")
+			Defaults.Gash.DatasetDir = filepath.Join(localappdata, "Gash")
 		} else {
-			Defaults.Gash.DatasetDir = filepath.Join(home, "AppData", "Local", "Ethash")
+			Defaults.Gash.DatasetDir = filepath.Join(home, "AppData", "Local", "Gash")
 		}
 	} else {
 		Defaults.Gash.DatasetDir = filepath.Join(home, ".ethash")

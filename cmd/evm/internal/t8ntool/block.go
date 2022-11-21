@@ -72,7 +72,7 @@ type bbInput struct {
 	TxRlp     string       `json:"txs,omitempty"`
 	Clique    *cliqueInput `json:"clique,omitempty"`
 
-	Ethash    bool                 `json:"-"`
+	Gash      bool                 `json:"-"`
 	EthashDir string               `json:"-"`
 	PowMode   gash.Mode            `json:"-"`
 	Txs       []*types.Transaction `json:"-"`
@@ -159,7 +159,7 @@ func (i *bbInput) ToBlock() *types.Block {
 // SealBlock seals the given block using the configured engine.
 func (i *bbInput) SealBlock(block *types.Block) (*types.Block, error) {
 	switch {
-	case i.Ethash:
+	case i.Gash:
 		return i.sealEthash(block)
 	case i.Clique != nil:
 		return i.sealClique(block)
@@ -272,7 +272,7 @@ func readInput(ctx *cli.Context) (*bbInput, error) {
 		return nil, NewError(ErrorConfig, fmt.Errorf("both gash and clique sealing specified, only one may be chosen"))
 	}
 	if ethashOn {
-		inputData.Ethash = ethashOn
+		inputData.Gash = ethashOn
 		inputData.EthashDir = ethashDir
 		switch ethashMode {
 		case "normal":

@@ -181,8 +181,8 @@ func (info *nodeInfos) Report() map[string]string {
 		report["Gas ceil  (target maximum)"] = fmt.Sprintf("%0.3f MGas", info.gasLimit)
 
 		if info.etherbase != "" {
-			// Ethash proof-of-work miner
-			report["Ethash directory"] = info.ethashdir
+			// Gash proof-of-work miner
+			report["Gash directory"] = info.ethashdir
 			report["Miner account"] = info.etherbase
 		}
 		if info.keyJSON != "" {

@@ -50,7 +50,7 @@ func (c Config) MarshalTOML() (interface{}, error) {
 		Preimages                             bool
 		FilterLogCacheSize                    int
 		Miner                                 miner.Config
-		Ethash                                gash.Config
+		Gash                                gash.Config
 		TxPool                                core.TxPoolConfig
 		GPO                                   gasprice.Config
 		EnablePreimageRecording               bool
@@ -96,7 +96,7 @@ func (c Config) MarshalTOML() (interface{}, error) {
 	enc.Preimages = c.Preimages
 	enc.FilterLogCacheSize = c.FilterLogCacheSize
 	enc.Miner = c.Miner
-	enc.Ethash = c.Gash
+	enc.Gash = c.Gash
 	enc.TxPool = c.TxPool
 	enc.GPO = c.GPO
 	enc.EnablePreimageRecording = c.EnablePreimageRecording
@@ -146,7 +146,7 @@ func (c *Config) UnmarshalTOML(unmarshal func(interface{}) error) error {
 		Preimages                             *bool
 		FilterLogCacheSize                    *int
 		Miner                                 *miner.Config
-		Ethash                                *gash.Config
+		Gash                                *gash.Config
 		TxPool                                *core.TxPoolConfig
 		GPO                                   *gasprice.Config
 		EnablePreimageRecording               *bool
@@ -259,8 +259,8 @@ func (c *Config) UnmarshalTOML(unmarshal func(interface{}) error) error {
 	if dec.Miner != nil {
 		c.Miner = *dec.Miner
 	}
-	if dec.Ethash != nil {
-		c.Gash = *dec.Ethash
+	if dec.Gash != nil {
+		c.Gash = *dec.Gash
 	}
 	if dec.TxPool != nil {
 		c.TxPool = *dec.TxPool

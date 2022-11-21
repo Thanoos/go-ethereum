@@ -2,7 +2,7 @@
 
 This test shows how `b11r` can be used to assemble a sealed block.
 
-## Ethash
+## Gash
 
 ```console
 $ go run . b11r --input.header=testdata/21/header.json --input.txs=testdata/21/txs.rlp --input.ommers=testdata/21/ommers.json --seal.ethash --seal.ethash.mode=test --output.block=stdout
