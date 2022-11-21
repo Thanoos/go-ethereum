@@ -561,7 +561,7 @@ func deployDashboard(client *sshClient, network string, conf *config, config *da
 		"Bootnodes":         conf.bootnodes,
 		"BootnodesFlat":     strings.Join(conf.bootnodes, ","),
 		"Ethstats":          statsLogin,
-		"Ethash":            conf.Genesis.Config.Ethash != nil,
+		"Ethash":            conf.Genesis.Config.Gash != nil,
 		"CppGenesis":        network + "-cpp.json",
 		"CppBootnodes":      strings.Join(bootCpp, " "),
 		"HarmonyGenesis":    network + "-harmony.json",
