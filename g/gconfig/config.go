@@ -64,7 +64,7 @@ var LightClientGPO = gasprice.Config{
 var Defaults = Config{
 	SyncMode: downloader.SnapSync,
 	Gash: gash.Config{
-		CacheDir:         "ethash",
+		CacheDir:         "gash",
 		CachesInMem:      2,
 		CachesOnDisk:     3,
 		CachesLockMmap:   false,
@@ -113,7 +113,7 @@ func init() {
 			Defaults.Gash.DatasetDir = filepath.Join(home, "AppData", "Local", "Gash")
 		}
 	} else {
-		Defaults.Gash.DatasetDir = filepath.Join(home, ".ethash")
+		Defaults.Gash.DatasetDir = filepath.Join(home, ".gash")
 	}
 }
 

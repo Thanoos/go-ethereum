@@ -51,7 +51,7 @@ func main() {
 	for i := 0; i < len(faucets); i++ {
 		faucets[i], _ = crypto.GenerateKey()
 	}
-	// Pre-generate the ethash mining DAG so we don't race
+	// Pre-generate the gash mining DAG so we don't race
 	gash.MakeDataset(1, gconfig.Defaults.Gash.DatasetDir)
 
 	// Create an Gash network based off of the Ropsten config

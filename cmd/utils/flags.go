@@ -332,47 +332,47 @@ var (
 	// Gash settings
 	EthashCacheDirFlag = &flags.DirectoryFlag{
 		Name:     "gash.cachedir",
-		Usage:    "Directory to store the ethash verification caches (default = inside the datadir)",
+		Usage:    "Directory to store the gash verification caches (default = inside the datadir)",
 		Category: flags.EthashCategory,
 	}
 	EthashCachesInMemoryFlag = &cli.IntFlag{
 		Name:     "gash.cachesinmem",
-		Usage:    "Number of recent ethash caches to keep in memory (16MB each)",
+		Usage:    "Number of recent gash caches to keep in memory (16MB each)",
 		Value:    gconfig.Defaults.Gash.CachesInMem,
 		Category: flags.EthashCategory,
 	}
 	EthashCachesOnDiskFlag = &cli.IntFlag{
 		Name:     "gash.cachesondisk",
-		Usage:    "Number of recent ethash caches to keep on disk (16MB each)",
+		Usage:    "Number of recent gash caches to keep on disk (16MB each)",
 		Value:    gconfig.Defaults.Gash.CachesOnDisk,
 		Category: flags.EthashCategory,
 	}
 	EthashCachesLockMmapFlag = &cli.BoolFlag{
 		Name:     "gash.cacheslockmmap",
-		Usage:    "Lock memory maps of recent ethash caches",
+		Usage:    "Lock memory maps of recent gash caches",
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetDirFlag = &flags.DirectoryFlag{
 		Name:     "gash.dagdir",
-		Usage:    "Directory to store the ethash mining DAGs",
+		Usage:    "Directory to store the gash mining DAGs",
 		Value:    flags.DirectoryString(gconfig.Defaults.Gash.DatasetDir),
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetsInMemoryFlag = &cli.IntFlag{
 		Name:     "gash.dagsinmem",
-		Usage:    "Number of recent ethash mining DAGs to keep in memory (1+GB each)",
+		Usage:    "Number of recent gash mining DAGs to keep in memory (1+GB each)",
 		Value:    gconfig.Defaults.Gash.DatasetsInMem,
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetsOnDiskFlag = &cli.IntFlag{
 		Name:     "gash.dagsondisk",
-		Usage:    "Number of recent ethash mining DAGs to keep on disk (1+GB each)",
+		Usage:    "Number of recent gash mining DAGs to keep on disk (1+GB each)",
 		Value:    gconfig.Defaults.Gash.DatasetsOnDisk,
 		Category: flags.EthashCategory,
 	}
 	EthashDatasetsLockMmapFlag = &cli.BoolFlag{
 		Name:     "gash.dagslockmmap",
-		Usage:    "Lock memory maps for recent ethash mining DAGs",
+		Usage:    "Lock memory maps for recent gash mining DAGs",
 		Category: flags.EthashCategory,
 	}
 

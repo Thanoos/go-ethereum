@@ -20,7 +20,7 @@ package web3ext
 var Modules = map[string]string{
 	"admin":    AdminJs,
 	"clique":   CliqueJs,
-	"ethash":   EthashJs,
+	"gash":     EthashJs,
 	"debug":    DebugJs,
 	"g":        EthJs,
 	"miner":    MinerJs,
@@ -91,7 +91,7 @@ web3._extend({
 
 const EthashJs = `
 web3._extend({
-	property: 'ethash',
+	property: 'gash',
 	methods: [
 		new web3._extend.Method({
 			name: 'getWork',

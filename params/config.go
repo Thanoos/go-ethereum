@@ -384,7 +384,7 @@ type ChainConfig struct {
 	TerminalTotalDifficultyPassed bool `json:"terminalTotalDifficultyPassed,omitempty"`
 
 	// Various consensus engines
-	Gash   *EthashConfig `json:"ethash,omitempty"`
+	Gash   *EthashConfig `json:"gash,omitempty"`
 	Clique *CliqueConfig `json:"clique,omitempty"`
 }
 
@@ -393,7 +393,7 @@ type EthashConfig struct{}
 
 // String implements the stringer interface, returning the consensus engine details.
 func (c *EthashConfig) String() string {
-	return "ethash"
+	return "gash"
 }
 
 // CliqueConfig is the consensus engine configs for proof-of-authority based sealing.

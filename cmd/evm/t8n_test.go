@@ -387,7 +387,7 @@ type b11rInput struct {
 	inOmmersRlp string
 	inTxsRlp    string
 	inClique    string
-	ethash      bool
+	gash        bool
 	ethashMode  string
 	ethashDir   string
 }
@@ -410,15 +410,15 @@ func (args *b11rInput) get(base string) []string {
 		out = append(out, "--seal.clique")
 		out = append(out, fmt.Sprintf("%v/%v", base, opt))
 	}
-	if args.ethash {
-		out = append(out, "--seal.ethash")
+	if args.gash {
+		out = append(out, "--seal.gash")
 	}
 	if opt := args.ethashMode; opt != "" {
-		out = append(out, "--seal.ethash.mode")
+		out = append(out, "--seal.gash.mode")
 		out = append(out, fmt.Sprintf("%v/%v", base, opt))
 	}
 	if opt := args.ethashDir; opt != "" {
-		out = append(out, "--seal.ethash.dir")
+		out = append(out, "--seal.gash.dir")
 		out = append(out, fmt.Sprintf("%v/%v", base, opt))
 	}
 	out = append(out, "--output.block")
@@ -444,7 +444,7 @@ func TestB11r(t *testing.T) {
 			},
 			expOut: "exp.json",
 		},
-		{ // ethash test seal
+		{ // gash test seal
 			base: "./testdata/21",
 			input: b11rInput{
 				inEnv:       "header.json",

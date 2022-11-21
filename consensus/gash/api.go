@@ -24,11 +24,11 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-var errEthashStopped = errors.New("ethash stopped")
+var errEthashStopped = errors.New("gash stopped")
 
-// API exposes ethash related methods for the RPC interface.
+// API exposes gash related methods for the RPC interface.
 type API struct {
-	ethash *Gash
+	gash *Gash
 }
 
 // GetWork returns a work package for external miner.
@@ -40,7 +40,7 @@ type API struct {
 //	result[2] - 32 bytes hex encoded boundary condition ("target"), 2^256/difficulty
 //	result[3] - hex encoded block number
 func (api *API) GetWork() ([4]string, error) {
-	if api.ethash.remote == nil {
+	if api.gash.remote == nil {
 		return [4]string{}, errors.New("not supported")
 	}
 
@@ -49,8 +49,8 @@ func (api *API) GetWork() ([4]string, error) {
 		errc   = make(chan error, 1)
 	)
 	select {
-	case api.ethash.remote.fetchWorkCh <- &sealWork{errc: errc, res: workCh}:
-	case <-api.ethash.remote.exitCh:
+	case api.gash.remote.fetchWorkCh <- &sealWork{errc: errc, res: workCh}:
+	case <-api.gash.remote.exitCh:
 		return [4]string{}, errEthashStopped
 	}
 	select {
@@ -65,19 +65,19 @@ func (api *API) GetWork() ([4]string, error) {
 // It returns an indication if the work was accepted.
 // Note either an invalid solution, a stale work a non-existent work will return false.
 func (api *API) SubmitWork(nonce types.BlockNonce, hash, digest common.Hash) bool {
-	if api.ethash.remote == nil {
+	if api.gash.remote == nil {
 		return false
 	}
 
 	var errc = make(chan error, 1)
 	select {
-	case api.ethash.remote.submitWorkCh <- &mineResult{
+	case api.gash.remote.submitWorkCh <- &mineResult{
 		nonce:     nonce,
 		mixDigest: digest,
 		hash:      hash,
 		errc:      errc,
 	}:
-	case <-api.ethash.remote.exitCh:
+	case <-api.gash.remote.exitCh:
 		return false
 	}
 	err := <-errc
@@ -91,14 +91,14 @@ func (api *API) SubmitWork(nonce types.BlockNonce, hash, digest common.Hash) boo
 // It accepts the miner hash rate and an identifier which must be unique
 // between nodes.
 func (api *API) SubmitHashrate(rate hexutil.Uint64, id common.Hash) bool {
-	if api.ethash.remote == nil {
+	if api.gash.remote == nil {
 		return false
 	}
 
 	var done = make(chan struct{}, 1)
 	select {
-	case api.ethash.remote.submitRateCh <- &hashrate{done: done, rate: uint64(rate), id: id}:
-	case <-api.ethash.remote.exitCh:
+	case api.gash.remote.submitRateCh <- &hashrate{done: done, rate: uint64(rate), id: id}:
+	case <-api.gash.remote.exitCh:
 		return false
 	}
 
@@ -109,5 +109,5 @@ func (api *API) SubmitHashrate(rate hexutil.Uint64, id common.Hash) bool {
 
 // GetHashrate returns the current hashrate for local CPU miner and remote miner.
 func (api *API) GetHashrate() uint64 {
-	return uint64(api.ethash.Hashrate())
+	return uint64(api.gash.Hashrate())
 }

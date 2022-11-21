@@ -122,16 +122,16 @@ var (
 		Usage: "Seal block with Clique. `stdin` or file name of where to find the Clique sealing data.",
 	}
 	SealEthashFlag = &cli.BoolFlag{
-		Name:  "seal.ethash",
-		Usage: "Seal block with ethash.",
+		Name:  "seal.gash",
+		Usage: "Seal block with gash.",
 	}
 	SealEthashDirFlag = &cli.StringFlag{
-		Name:  "seal.ethash.dir",
-		Usage: "Path to ethash DAG. If none exists, a new DAG will be generated.",
+		Name:  "seal.gash.dir",
+		Usage: "Path to gash DAG. If none exists, a new DAG will be generated.",
 	}
 	SealEthashModeFlag = &cli.StringFlag{
-		Name:  "seal.ethash.mode",
-		Usage: "Defines the type and amount of PoW verification an ethash engine makes.",
+		Name:  "seal.gash.mode",
+		Usage: "Defines the type and amount of PoW verification an gash engine makes.",
 		Value: "normal",
 	}
 	RewardFlag = &cli.Int64Flag{

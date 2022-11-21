@@ -62,7 +62,7 @@ func (w *wizard) makeGenesis() {
 	choice := w.read()
 	switch {
 	case choice == "1":
-		// In case of ethash, we're pretty much done
+		// In case of gash, we're pretty much done
 		genesis.Config.Gash = new(params.EthashConfig)
 		genesis.ExtraData = make([]byte, 32)
 

@@ -133,7 +133,7 @@ func New(stack *node.Node, config *gconfig.Config) (*Ethereum, error) {
 	if err := pruner.RecoverPruning(stack.ResolvePath(""), chainDb, stack.ResolvePath(config.TrieCleanCacheJournal)); err != nil {
 		log.Error("Failed to recover state", "error", err)
 	}
-	// Transfer mining-related config to the ethash config.
+	// Transfer mining-related config to the gash config.
 	ethashConfig := config.Gash
 	ethashConfig.NotifyFull = config.Miner.NotifyFull
 	cliqueConfig, err := core.LoadCliqueConfig(chainDb, config.Genesis)

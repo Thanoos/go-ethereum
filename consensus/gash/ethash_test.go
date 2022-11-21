@@ -29,15 +29,15 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-// Tests that ethash works correctly in test mode.
+// Tests that gash works correctly in test mode.
 func TestTestMode(t *testing.T) {
 	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100)}
 
-	ethash := NewTester(nil, false)
-	defer ethash.Close()
+	gash := NewTester(nil, false)
+	defer gash.Close()
 
 	results := make(chan *types.Block)
-	err := ethash.Seal(nil, types.NewBlockWithHeader(header), results, nil)
+	err := gash.Seal(nil, types.NewBlockWithHeader(header), results, nil)
 	if err != nil {
 		t.Fatalf("failed to seal block: %v", err)
 	}
@@ -45,7 +45,7 @@ func TestTestMode(t *testing.T) {
 	case block := <-results:
 		header.Nonce = types.EncodeNonce(block.Nonce())
 		header.MixDigest = block.MixDigest()
-		if err := ethash.verifySeal(nil, header, false); err != nil {
+		if err := gash.verifySeal(nil, header, false); err != nil {
 			t.Fatalf("unexpected verification error: %v", err)
 		}
 	case <-time.NewTimer(4 * time.Second).C:
@@ -58,7 +58,7 @@ func TestTestMode(t *testing.T) {
 func TestCacheFileEvict(t *testing.T) {
 	// TODO: t.TempDir fails to remove the directory on Windows
 	// \AppData\Local\Temp\1\TestCacheFileEvict2179435125\001\cache-R23-0000000000000000: Access is denied.
-	tmpdir, err := os.MkdirTemp("", "ethash-test")
+	tmpdir, err := os.MkdirTemp("", "gash-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -99,20 +99,20 @@ func verifyTest(wg *sync.WaitGroup, e *Gash, workerIndex, epochs int) {
 }
 
 func TestRemoteSealer(t *testing.T) {
-	ethash := NewTester(nil, false)
-	defer ethash.Close()
+	gash := NewTester(nil, false)
+	defer gash.Close()
 
-	api := &API{ethash}
+	api := &API{gash}
 	if _, err := api.GetWork(); err != errNoMiningWork {
 		t.Error("expect to return an error indicate there is no mining work")
 	}
 	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100)}
 	block := types.NewBlockWithHeader(header)
-	sealhash := ethash.SealHash(header)
+	sealhash := gash.SealHash(header)
 
 	// Push new work.
 	results := make(chan *types.Block)
-	ethash.Seal(nil, block, results, nil)
+	gash.Seal(nil, block, results, nil)
 
 	var (
 		work [4]string
@@ -128,8 +128,8 @@ func TestRemoteSealer(t *testing.T) {
 	// Push new block with same block number to replace the original one.
 	header = &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(1000)}
 	block = types.NewBlockWithHeader(header)
-	sealhash = ethash.SealHash(header)
-	ethash.Seal(nil, block, results, nil)
+	sealhash = gash.SealHash(header)
+	gash.Seal(nil, block, results, nil)
 
 	if work, err = api.GetWork(); err != nil || work[0] != sealhash.Hex() {
 		t.Error("expect to return the latest pushed work")
@@ -142,36 +142,36 @@ func TestHashrate(t *testing.T) {
 		expect   uint64
 		ids      = []common.Hash{common.HexToHash("a"), common.HexToHash("b"), common.HexToHash("c")}
 	)
-	ethash := NewTester(nil, false)
-	defer ethash.Close()
+	gash := NewTester(nil, false)
+	defer gash.Close()
 
-	if tot := ethash.Hashrate(); tot != 0 {
+	if tot := gash.Hashrate(); tot != 0 {
 		t.Error("expect the result should be zero")
 	}
 
-	api := &API{ethash}
+	api := &API{gash}
 	for i := 0; i < len(hashrate); i += 1 {
 		if res := api.SubmitHashrate(hashrate[i], ids[i]); !res {
 			t.Error("remote miner submit hashrate failed")
 		}
 		expect += uint64(hashrate[i])
 	}
-	if tot := ethash.Hashrate(); tot != float64(expect) {
+	if tot := gash.Hashrate(); tot != float64(expect) {
 		t.Error("expect total hashrate should be same")
 	}
 }
 
 func TestClosedRemoteSealer(t *testing.T) {
-	ethash := NewTester(nil, false)
+	gash := NewTester(nil, false)
 	time.Sleep(1 * time.Second) // ensure exit channel is listening
-	ethash.Close()
+	gash.Close()
 
-	api := &API{ethash}
+	api := &API{gash}
 	if _, err := api.GetWork(); err != errEthashStopped {
-		t.Error("expect to return an error to indicate ethash is stopped")
+		t.Error("expect to return an error to indicate gash is stopped")
 	}
 
 	if res := api.SubmitHashrate(hexutil.Uint64(100), common.HexToHash("a")); res {
-		t.Error("expect to return false when submit hashrate to a stopped ethash")
+		t.Error("expect to return false when submit hashrate to a stopped gash")
 	}
 }

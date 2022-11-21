@@ -171,7 +171,7 @@ func (i *bbInput) SealBlock(block *types.Block) (*types.Block, error) {
 // sealEthash seals the given block using gash.
 func (i *bbInput) sealEthash(block *types.Block) (*types.Block, error) {
 	if i.Header.Nonce != nil {
-		return nil, NewError(ErrorConfig, fmt.Errorf("sealing with ethash will overwrite provided nonce"))
+		return nil, NewError(ErrorConfig, fmt.Errorf("sealing with gash will overwrite provided nonce"))
 	}
 	ethashConfig := gash.Config{
 		PowMode:        i.PowMode,
