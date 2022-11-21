@@ -134,13 +134,13 @@ func New(stack *node.Node, config *gconfig.Config) (*Ethereum, error) {
 		log.Error("Failed to recover state", "error", err)
 	}
 	// Transfer mining-related config to the gash config.
-	ethashConfig := config.Gash
-	ethashConfig.NotifyFull = config.Miner.NotifyFull
+	gashConfig := config.Gash
+	gashConfig.NotifyFull = config.Miner.NotifyFull
 	cliqueConfig, err := core.LoadCliqueConfig(chainDb, config.Genesis)
 	if err != nil {
 		return nil, err
 	}
-	engine := gconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, config.Miner.Notify, config.Miner.Noverify, chainDb)
+	engine := gconfig.CreateConsensusEngine(stack, &gashConfig, cliqueConfig, config.Miner.Notify, config.Miner.Noverify, chainDb)
 
 	g := &Ethereum{
 		config:            config,

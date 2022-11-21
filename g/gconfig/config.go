@@ -217,13 +217,13 @@ type Config struct {
 }
 
 // CreateConsensusEngine creates a consensus engine for the given chain configuration.
-func CreateConsensusEngine(stack *node.Node, ethashConfig *gash.Config, cliqueConfig *params.CliqueConfig, notify []string, noverify bool, db gdb.Database) consensus.Engine {
+func CreateConsensusEngine(stack *node.Node, gashConfig *gash.Config, cliqueConfig *params.CliqueConfig, notify []string, noverify bool, db gdb.Database) consensus.Engine {
 	// If proof-of-authority is requested, set it up
 	var engine consensus.Engine
 	if cliqueConfig != nil {
 		engine = clique.New(cliqueConfig, db)
 	} else {
-		switch ethashConfig.PowMode {
+		switch gashConfig.PowMode {
 		case gash.ModeFake:
 			log.Warn("Gash used in fake mode")
 		case gash.ModeTest:
@@ -232,16 +232,16 @@ func CreateConsensusEngine(stack *node.Node, ethashConfig *gash.Config, cliqueCo
 			log.Warn("Gash used in shared mode")
 		}
 		engine = gash.New(gash.Config{
-			PowMode:          ethashConfig.PowMode,
-			CacheDir:         stack.ResolvePath(ethashConfig.CacheDir),
-			CachesInMem:      ethashConfig.CachesInMem,
-			CachesOnDisk:     ethashConfig.CachesOnDisk,
-			CachesLockMmap:   ethashConfig.CachesLockMmap,
-			DatasetDir:       ethashConfig.DatasetDir,
-			DatasetsInMem:    ethashConfig.DatasetsInMem,
-			DatasetsOnDisk:   ethashConfig.DatasetsOnDisk,
-			DatasetsLockMmap: ethashConfig.DatasetsLockMmap,
-			NotifyFull:       ethashConfig.NotifyFull,
+			PowMode:          gashConfig.PowMode,
+			CacheDir:         stack.ResolvePath(gashConfig.CacheDir),
+			CachesInMem:      gashConfig.CachesInMem,
+			CachesOnDisk:     gashConfig.CachesOnDisk,
+			CachesLockMmap:   gashConfig.CachesLockMmap,
+			DatasetDir:       gashConfig.DatasetDir,
+			DatasetsInMem:    gashConfig.DatasetsInMem,
+			DatasetsOnDisk:   gashConfig.DatasetsOnDisk,
+			DatasetsLockMmap: gashConfig.DatasetsLockMmap,
+			NotifyFull:       gashConfig.NotifyFull,
 		}, notify, noverify)
 		engine.(*gash.Gash).SetThreads(-1) // Disable CPU mining
 	}

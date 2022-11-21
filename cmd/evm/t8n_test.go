@@ -388,8 +388,8 @@ type b11rInput struct {
 	inTxsRlp    string
 	inClique    string
 	gash        bool
-	ethashMode  string
-	ethashDir   string
+	gashMode    string
+	gashDir     string
 }
 
 func (args *b11rInput) get(base string) []string {
@@ -413,11 +413,11 @@ func (args *b11rInput) get(base string) []string {
 	if args.gash {
 		out = append(out, "--seal.gash")
 	}
-	if opt := args.ethashMode; opt != "" {
+	if opt := args.gashMode; opt != "" {
 		out = append(out, "--seal.gash.mode")
 		out = append(out, fmt.Sprintf("%v/%v", base, opt))
 	}
-	if opt := args.ethashDir; opt != "" {
+	if opt := args.gashDir; opt != "" {
 		out = append(out, "--seal.gash.dir")
 		out = append(out, fmt.Sprintf("%v/%v", base, opt))
 	}

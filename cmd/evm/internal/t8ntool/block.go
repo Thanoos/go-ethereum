@@ -72,11 +72,11 @@ type bbInput struct {
 	TxRlp     string       `json:"txs,omitempty"`
 	Clique    *cliqueInput `json:"clique,omitempty"`
 
-	Gash      bool                 `json:"-"`
-	EthashDir string               `json:"-"`
-	PowMode   gash.Mode            `json:"-"`
-	Txs       []*types.Transaction `json:"-"`
-	Ommers    []*types.Header      `json:"-"`
+	Gash    bool                 `json:"-"`
+	GashDir string               `json:"-"`
+	PowMode gash.Mode            `json:"-"`
+	Txs     []*types.Transaction `json:"-"`
+	Ommers  []*types.Header      `json:"-"`
 }
 
 type cliqueInput struct {
@@ -173,16 +173,16 @@ func (i *bbInput) sealEthash(block *types.Block) (*types.Block, error) {
 	if i.Header.Nonce != nil {
 		return nil, NewError(ErrorConfig, fmt.Errorf("sealing with gash will overwrite provided nonce"))
 	}
-	ethashConfig := gash.Config{
+	gashConfig := gash.Config{
 		PowMode:        i.PowMode,
-		DatasetDir:     i.EthashDir,
-		CacheDir:       i.EthashDir,
+		DatasetDir:     i.GashDir,
+		CacheDir:       i.GashDir,
 		DatasetsInMem:  1,
 		DatasetsOnDisk: 2,
 		CachesInMem:    2,
 		CachesOnDisk:   3,
 	}
-	engine := gash.New(ethashConfig, nil, true)
+	engine := gash.New(gashConfig, nil, true)
 	defer engine.Close()
 	// Use a buffered chan for results.
 	// If the testmode is used, the sealer will return quickly, and complain
@@ -264,7 +264,7 @@ func readInput(ctx *cli.Context) (*bbInput, error) {
 		txsStr     = ctx.String(InputTxsRlpFlag.Name)
 		cliqueStr  = ctx.String(SealCliqueFlag.Name)
 		ethashOn   = ctx.Bool(SealEthashFlag.Name)
-		ethashDir  = ctx.String(SealEthashDirFlag.Name)
+		gashDir    = ctx.String(SealGashDirFlag.Name)
 		ethashMode = ctx.String(SealEthashModeFlag.Name)
 		inputData  = &bbInput{}
 	)
@@ -273,7 +273,7 @@ func readInput(ctx *cli.Context) (*bbInput, error) {
 	}
 	if ethashOn {
 		inputData.Gash = ethashOn
-		inputData.EthashDir = ethashDir
+		inputData.GashDir = gashDir
 		switch ethashMode {
 		case "normal":
 			inputData.PowMode = gash.ModeNormal

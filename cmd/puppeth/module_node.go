@@ -60,8 +60,8 @@ services:
       - "{{.Port}}:{{.Port}}"
       - "{{.Port}}:{{.Port}}/udp"
     volumes:
-      - {{.Datadir}}:/root/.ethereum{{if .Ethashdir}}
-      - {{.Ethashdir}}:/root/.gash{{end}}
+      - {{.Datadir}}:/root/.ethereum{{if .Gashdir}}
+      - {{.Gashdir}}:/root/.gash{{end}}
     environment:
       - PORT={{.Port}}/tcp
       - TOTAL_PEERS={{.TotalPeers}}
@@ -115,7 +115,7 @@ func deployNode(client *sshClient, network string, bootnodes []string, config *n
 	template.Must(template.New("").Parse(nodeComposefile)).Execute(composefile, map[string]interface{}{
 		"Type":       kind,
 		"Datadir":    config.datadir,
-		"Ethashdir":  config.ethashdir,
+		"Gashdir":    config.gashdir,
 		"Network":    network,
 		"Port":       config.port,
 		"TotalPeers": config.peersTotal,
@@ -152,7 +152,7 @@ type nodeInfos struct {
 	genesis    []byte
 	network    int64
 	datadir    string
-	ethashdir  string
+	gashdir    string
 	ethstats   string
 	port       int
 	enode      string
@@ -182,7 +182,7 @@ func (info *nodeInfos) Report() map[string]string {
 
 		if info.etherbase != "" {
 			// Gash proof-of-work miner
-			report["Gash directory"] = info.ethashdir
+			report["Gash directory"] = info.gashdir
 			report["Miner account"] = info.etherbase
 		}
 		if info.keyJSON != "" {
@@ -249,7 +249,7 @@ func checkNode(client *sshClient, network string, boot bool) (*nodeInfos, error)
 	stats := &nodeInfos{
 		genesis:    genesis,
 		datadir:    infos.volumes["/root/.ethereum"],
-		ethashdir:  infos.volumes["/root/.gash"],
+		gashdir:    infos.volumes["/root/.gash"],
 		port:       port,
 		peersTotal: totalPeers,
 		peersLight: lightPeers,

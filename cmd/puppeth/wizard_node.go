@@ -69,12 +69,12 @@ func (w *wizard) deployNode(boot bool) {
 	}
 	if w.conf.Genesis.Config.Gash != nil && !boot {
 		fmt.Println()
-		if infos.ethashdir == "" {
+		if infos.gashdir == "" {
 			fmt.Printf("Where should the gash mining DAGs be stored on the remote machine?\n")
-			infos.ethashdir = w.readString()
+			infos.gashdir = w.readString()
 		} else {
-			fmt.Printf("Where should the gash mining DAGs be stored on the remote machine? (default = %s)\n", infos.ethashdir)
-			infos.ethashdir = w.readDefaultString(infos.ethashdir)
+			fmt.Printf("Where should the gash mining DAGs be stored on the remote machine? (default = %s)\n", infos.gashdir)
+			infos.gashdir = w.readDefaultString(infos.gashdir)
 		}
 	}
 	// Figure out which port to listen on

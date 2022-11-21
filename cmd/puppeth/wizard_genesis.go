@@ -63,7 +63,7 @@ func (w *wizard) makeGenesis() {
 	switch {
 	case choice == "1":
 		// In case of gash, we're pretty much done
-		genesis.Config.Gash = new(params.EthashConfig)
+		genesis.Config.Gash = new(params.GashConfig)
 		genesis.ExtraData = make([]byte, 32)
 
 	case choice == "" || choice == "2":

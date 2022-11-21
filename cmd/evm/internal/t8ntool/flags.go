@@ -125,7 +125,7 @@ var (
 		Name:  "seal.gash",
 		Usage: "Seal block with gash.",
 	}
-	SealEthashDirFlag = &cli.StringFlag{
+	SealGashDirFlag = &cli.StringFlag{
 		Name:  "seal.gash.dir",
 		Usage: "Path to gash DAG. If none exists, a new DAG will be generated.",
 	}

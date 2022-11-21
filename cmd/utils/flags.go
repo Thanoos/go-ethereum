@@ -2218,11 +2218,11 @@ func MakeChain(ctx *cli.Context, stack *node.Node) (*core.BlockChain, gdb.Databa
 	if err != nil {
 		Fatalf("%v", err)
 	}
-	ethashConfig := gconfig.Defaults.Gash
+	gashConfig := gconfig.Defaults.Gash
 	if ctx.Bool(FakePoWFlag.Name) {
-		ethashConfig.PowMode = gash.ModeFake
+		gashConfig.PowMode = gash.ModeFake
 	}
-	engine := gconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, nil, false, chainDb)
+	engine := gconfig.CreateConsensusEngine(stack, &gashConfig, cliqueConfig, nil, false, chainDb)
 	if gcmode := ctx.String(GCModeFlag.Name); gcmode != "full" && gcmode != "archive" {
 		Fatalf("--%s must be either 'full' or 'archive'", GCModeFlag.Name)
 	}
