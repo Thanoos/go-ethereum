@@ -28,7 +28,7 @@ var errEthashStopped = errors.New("ethash stopped")
 
 // API exposes ethash related methods for the RPC interface.
 type API struct {
-	ethash *Ethash
+	ethash *Gash
 }
 
 // GetWork returns a work package for external miner.

@@ -48,7 +48,7 @@ var (
 
 // Seal implements consensus.Engine, attempting to find a nonce that satisfies
 // the block's difficulty requirements.
-func (ethash *Ethash) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
+func (ethash *Gash) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
 	// If we're running a fake PoW, simply return a 0 nonce immediately
 	if ethash.config.PowMode == ModeFake || ethash.config.PowMode == ModeFullFake {
 		header := block.Header()
@@ -129,7 +129,7 @@ func (ethash *Ethash) Seal(chain consensus.ChainHeaderReader, block *types.Block
 
 // mine is the actual proof-of-work miner that searches for a nonce starting from
 // seed that results in correct final block difficulty.
-func (ethash *Ethash) mine(block *types.Block, id int, seed uint64, abort chan struct{}, found chan *types.Block) {
+func (ethash *Gash) mine(block *types.Block, id int, seed uint64, abort chan struct{}, found chan *types.Block) {
 	// Extract some data from the header
 	var (
 		header  = block.Header()
@@ -151,7 +151,7 @@ search:
 		select {
 		case <-abort:
 			// Mining terminated, update stats and abort
-			logger.Trace("Ethash nonce search aborted", "attempts", nonce-seed)
+			logger.Trace("Gash nonce search aborted", "attempts", nonce-seed)
 			ethash.hashrate.Mark(attempts)
 			break search
 
@@ -173,9 +173,9 @@ search:
 				// Seal and return a block (if still needed)
 				select {
 				case found <- block.WithSeal(header):
-					logger.Trace("Ethash nonce found and reported", "attempts", nonce-seed, "nonce", nonce)
+					logger.Trace("Gash nonce found and reported", "attempts", nonce-seed, "nonce", nonce)
 				case <-abort:
-					logger.Trace("Ethash nonce found but discarded", "attempts", nonce-seed, "nonce", nonce)
+					logger.Trace("Gash nonce found but discarded", "attempts", nonce-seed, "nonce", nonce)
 				}
 				break search
 			}
@@ -199,7 +199,7 @@ type remoteSealer struct {
 	cancelNotify context.CancelFunc // cancels all notification requests
 	reqWG        sync.WaitGroup     // tracks notification request goroutines
 
-	ethash       *Ethash
+	ethash       *Gash
 	noverify     bool
 	notifyURLs   []string
 	results      chan<- *types.Block
@@ -242,7 +242,7 @@ type sealWork struct {
 	res  chan [4]string
 }
 
-func startRemoteSealer(ethash *Ethash, urls []string, noverify bool) *remoteSealer {
+func startRemoteSealer(ethash *Gash, urls []string, noverify bool) *remoteSealer {
 	ctx, cancel := context.WithCancel(context.Background())
 	s := &remoteSealer{
 		ethash:       ethash,
@@ -266,7 +266,7 @@ func startRemoteSealer(ethash *Ethash, urls []string, noverify bool) *remoteSeal
 
 func (s *remoteSealer) loop() {
 	defer func() {
-		s.ethash.config.Log.Trace("Ethash remote sealer is exiting")
+		s.ethash.config.Log.Trace("Gash remote sealer is exiting")
 		s.cancelNotify()
 		s.reqWG.Wait()
 		close(s.exitCh)
@@ -426,7 +426,7 @@ func (s *remoteSealer) submitWork(nonce types.BlockNonce, mixDigest common.Hash,
 	}
 	// Make sure the result channel is assigned.
 	if s.results == nil {
-		s.ethash.config.Log.Warn("Ethash result channel is empty, submitted mining result is rejected")
+		s.ethash.config.Log.Warn("Gash result channel is empty, submitted mining result is rejected")
 		return false
 	}
 	s.ethash.config.Log.Trace("Verified correct proof-of-work", "sealhash", sealhash, "elapsed", common.PrettyDuration(time.Since(start)))

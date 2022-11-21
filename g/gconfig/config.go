@@ -243,7 +243,7 @@ func CreateConsensusEngine(stack *node.Node, ethashConfig *gash.Config, cliqueCo
 			DatasetsLockMmap: ethashConfig.DatasetsLockMmap,
 			NotifyFull:       ethashConfig.NotifyFull,
 		}, notify, noverify)
-		engine.(*gash.Ethash).SetThreads(-1) // Disable CPU mining
+		engine.(*gash.Gash).SetThreads(-1) // Disable CPU mining
 	}
 	return beacon.New(engine)
 }
