@@ -56,7 +56,7 @@ func newCanonical(engine consensus.Engine, n int, full bool) (gdb.Database, *Gen
 	var (
 		genesis = &Genesis{
 			BaseFee: big.NewInt(params.InitialBaseFee),
-			Config:  params.AllEthashProtocolChanges,
+			Config:  params.AllGashProtocolChanges,
 		}
 	)
 	// Initialize a fresh chain with only a genesis block
@@ -3455,7 +3455,7 @@ func TestEIP1559Transition(t *testing.T) {
 		addr2   = crypto.PubkeyToAddress(key2.PublicKey)
 		funds   = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 		gspec   = &Genesis{
-			Config: params.AllEthashProtocolChanges,
+			Config: params.AllGashProtocolChanges,
 			Alloc: GenesisAlloc{
 				addr1: {Balance: funds},
 				addr2: {Balance: funds},

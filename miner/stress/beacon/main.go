@@ -446,7 +446,7 @@ func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	genesis.GasLimit = 25000000
 
 	genesis.BaseFee = big.NewInt(params.InitialBaseFee)
-	genesis.Config = params.AllEthashProtocolChanges
+	genesis.Config = params.AllGashProtocolChanges
 	genesis.Config.TerminalTotalDifficulty = transitionDifficulty
 
 	genesis.Alloc = core.GenesisAlloc{}

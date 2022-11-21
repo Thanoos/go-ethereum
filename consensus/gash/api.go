@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-var errEthashStopped = errors.New("gash stopped")
+var errGashStopped = errors.New("gash stopped")
 
 // API exposes gash related methods for the RPC interface.
 type API struct {
@@ -51,7 +51,7 @@ func (api *API) GetWork() ([4]string, error) {
 	select {
 	case api.gash.remote.fetchWorkCh <- &sealWork{errc: errc, res: workCh}:
 	case <-api.gash.remote.exitCh:
-		return [4]string{}, errEthashStopped
+		return [4]string{}, errGashStopped
 	}
 	select {
 	case work := <-workCh:

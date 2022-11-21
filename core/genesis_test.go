@@ -63,7 +63,7 @@ func TestSetupGenesis(t *testing.T) {
 				return SetupGenesisBlock(db, new(Genesis))
 			},
 			wantErr:    errGenesisNoConfig,
-			wantConfig: params.AllEthashProtocolChanges,
+			wantConfig: params.AllGashProtocolChanges,
 		},
 		{
 			name: "no block in DB, genesis == nil",

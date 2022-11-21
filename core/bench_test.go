@@ -262,7 +262,7 @@ func makeChainForBench(db gdb.Database, full bool, count uint64) {
 		rawdb.WriteTd(db, hash, n, big.NewInt(int64(n+1)))
 
 		if n == 0 {
-			rawdb.WriteChainConfig(db, hash, params.AllEthashProtocolChanges)
+			rawdb.WriteChainConfig(db, hash, params.AllGashProtocolChanges)
 		}
 		rawdb.WriteHeadHeaderHash(db, hash)
 

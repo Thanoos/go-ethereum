@@ -330,50 +330,50 @@ var (
 	}
 
 	// Gash settings
-	EthashCacheDirFlag = &flags.DirectoryFlag{
+	GashCacheDirFlag = &flags.DirectoryFlag{
 		Name:     "gash.cachedir",
 		Usage:    "Directory to store the gash verification caches (default = inside the datadir)",
-		Category: flags.EthashCategory,
+		Category: flags.GashCategory,
 	}
-	EthashCachesInMemoryFlag = &cli.IntFlag{
+	GashCachesInMemoryFlag = &cli.IntFlag{
 		Name:     "gash.cachesinmem",
 		Usage:    "Number of recent gash caches to keep in memory (16MB each)",
 		Value:    gconfig.Defaults.Gash.CachesInMem,
-		Category: flags.EthashCategory,
+		Category: flags.GashCategory,
 	}
-	EthashCachesOnDiskFlag = &cli.IntFlag{
+	GashCachesOnDiskFlag = &cli.IntFlag{
 		Name:     "gash.cachesondisk",
 		Usage:    "Number of recent gash caches to keep on disk (16MB each)",
 		Value:    gconfig.Defaults.Gash.CachesOnDisk,
-		Category: flags.EthashCategory,
+		Category: flags.GashCategory,
 	}
-	EthashCachesLockMmapFlag = &cli.BoolFlag{
+	GashCachesLockMmapFlag = &cli.BoolFlag{
 		Name:     "gash.cacheslockmmap",
 		Usage:    "Lock memory maps of recent gash caches",
-		Category: flags.EthashCategory,
+		Category: flags.GashCategory,
 	}
-	EthashDatasetDirFlag = &flags.DirectoryFlag{
+	GashDatasetDirFlag = &flags.DirectoryFlag{
 		Name:     "gash.dagdir",
 		Usage:    "Directory to store the gash mining DAGs",
 		Value:    flags.DirectoryString(gconfig.Defaults.Gash.DatasetDir),
-		Category: flags.EthashCategory,
+		Category: flags.GashCategory,
 	}
-	EthashDatasetsInMemoryFlag = &cli.IntFlag{
+	GashDatasetsInMemoryFlag = &cli.IntFlag{
 		Name:     "gash.dagsinmem",
 		Usage:    "Number of recent gash mining DAGs to keep in memory (1+GB each)",
 		Value:    gconfig.Defaults.Gash.DatasetsInMem,
-		Category: flags.EthashCategory,
+		Category: flags.GashCategory,
 	}
-	EthashDatasetsOnDiskFlag = &cli.IntFlag{
+	GashDatasetsOnDiskFlag = &cli.IntFlag{
 		Name:     "gash.dagsondisk",
 		Usage:    "Number of recent gash mining DAGs to keep on disk (1+GB each)",
 		Value:    gconfig.Defaults.Gash.DatasetsOnDisk,
-		Category: flags.EthashCategory,
+		Category: flags.GashCategory,
 	}
-	EthashDatasetsLockMmapFlag = &cli.BoolFlag{
+	GashDatasetsLockMmapFlag = &cli.BoolFlag{
 		Name:     "gash.dagslockmmap",
 		Usage:    "Lock memory maps for recent gash mining DAGs",
-		Category: flags.EthashCategory,
+		Category: flags.GashCategory,
 	}
 
 	// Transaction pool settings
@@ -1611,30 +1611,30 @@ func setTxPool(ctx *cli.Context, cfg *core.TxPoolConfig) {
 	}
 }
 
-func setEthash(ctx *cli.Context, cfg *gconfig.Config) {
-	if ctx.IsSet(EthashCacheDirFlag.Name) {
-		cfg.Gash.CacheDir = ctx.String(EthashCacheDirFlag.Name)
+func setGash(ctx *cli.Context, cfg *gconfig.Config) {
+	if ctx.IsSet(GashCacheDirFlag.Name) {
+		cfg.Gash.CacheDir = ctx.String(GashCacheDirFlag.Name)
 	}
-	if ctx.IsSet(EthashDatasetDirFlag.Name) {
-		cfg.Gash.DatasetDir = ctx.String(EthashDatasetDirFlag.Name)
+	if ctx.IsSet(GashDatasetDirFlag.Name) {
+		cfg.Gash.DatasetDir = ctx.String(GashDatasetDirFlag.Name)
 	}
-	if ctx.IsSet(EthashCachesInMemoryFlag.Name) {
-		cfg.Gash.CachesInMem = ctx.Int(EthashCachesInMemoryFlag.Name)
+	if ctx.IsSet(GashCachesInMemoryFlag.Name) {
+		cfg.Gash.CachesInMem = ctx.Int(GashCachesInMemoryFlag.Name)
 	}
-	if ctx.IsSet(EthashCachesOnDiskFlag.Name) {
-		cfg.Gash.CachesOnDisk = ctx.Int(EthashCachesOnDiskFlag.Name)
+	if ctx.IsSet(GashCachesOnDiskFlag.Name) {
+		cfg.Gash.CachesOnDisk = ctx.Int(GashCachesOnDiskFlag.Name)
 	}
-	if ctx.IsSet(EthashCachesLockMmapFlag.Name) {
-		cfg.Gash.CachesLockMmap = ctx.Bool(EthashCachesLockMmapFlag.Name)
+	if ctx.IsSet(GashCachesLockMmapFlag.Name) {
+		cfg.Gash.CachesLockMmap = ctx.Bool(GashCachesLockMmapFlag.Name)
 	}
-	if ctx.IsSet(EthashDatasetsInMemoryFlag.Name) {
-		cfg.Gash.DatasetsInMem = ctx.Int(EthashDatasetsInMemoryFlag.Name)
+	if ctx.IsSet(GashDatasetsInMemoryFlag.Name) {
+		cfg.Gash.DatasetsInMem = ctx.Int(GashDatasetsInMemoryFlag.Name)
 	}
-	if ctx.IsSet(EthashDatasetsOnDiskFlag.Name) {
-		cfg.Gash.DatasetsOnDisk = ctx.Int(EthashDatasetsOnDiskFlag.Name)
+	if ctx.IsSet(GashDatasetsOnDiskFlag.Name) {
+		cfg.Gash.DatasetsOnDisk = ctx.Int(GashDatasetsOnDiskFlag.Name)
 	}
-	if ctx.IsSet(EthashDatasetsLockMmapFlag.Name) {
-		cfg.Gash.DatasetsLockMmap = ctx.Bool(EthashDatasetsLockMmapFlag.Name)
+	if ctx.IsSet(GashDatasetsLockMmapFlag.Name) {
+		cfg.Gash.DatasetsLockMmap = ctx.Bool(GashDatasetsLockMmapFlag.Name)
 	}
 }
 
@@ -1749,7 +1749,7 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *gconfig.Config) {
 	setEtherbase(ctx, ks, cfg)
 	setGPO(ctx, &cfg.GPO, ctx.String(SyncModeFlag.Name) == "light")
 	setTxPool(ctx, &cfg.TxPool)
-	setEthash(ctx, cfg)
+	setGash(ctx, cfg)
 	setMiner(ctx, &cfg.Miner)
 	setRequiredBlocks(ctx, cfg)
 	setLes(ctx, cfg)

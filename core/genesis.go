@@ -290,7 +290,7 @@ func SetupGenesisBlock(db gdb.Database, genesis *Genesis) (*params.ChainConfig, 
 
 func SetupGenesisBlockWithOverride(db gdb.Database, genesis *Genesis, overrides *ChainOverrides) (*params.ChainConfig, common.Hash, error) {
 	if genesis != nil && genesis.Config == nil {
-		return params.AllEthashProtocolChanges, common.Hash{}, errGenesisNoConfig
+		return params.AllGashProtocolChanges, common.Hash{}, errGenesisNoConfig
 	}
 
 	applyOverrides := func(config *params.ChainConfig) {
@@ -434,7 +434,7 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 	case ghash == params.KilnGenesisHash:
 		return DefaultKilnGenesisBlock().Config
 	default:
-		return params.AllEthashProtocolChanges
+		return params.AllGashProtocolChanges
 	}
 }
 
@@ -483,7 +483,7 @@ func (g *Genesis) Commit(db gdb.Database) (*types.Block, error) {
 	}
 	config := g.Config
 	if config == nil {
-		config = params.AllEthashProtocolChanges
+		config = params.AllGashProtocolChanges
 	}
 	if err := config.CheckConfigForkOrder(); err != nil {
 		return nil, err

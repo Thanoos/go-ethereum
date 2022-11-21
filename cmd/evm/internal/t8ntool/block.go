@@ -160,7 +160,7 @@ func (i *bbInput) ToBlock() *types.Block {
 func (i *bbInput) SealBlock(block *types.Block) (*types.Block, error) {
 	switch {
 	case i.Gash:
-		return i.sealEthash(block)
+		return i.sealGash(block)
 	case i.Clique != nil:
 		return i.sealClique(block)
 	default:
@@ -168,8 +168,8 @@ func (i *bbInput) SealBlock(block *types.Block) (*types.Block, error) {
 	}
 }
 
-// sealEthash seals the given block using gash.
-func (i *bbInput) sealEthash(block *types.Block) (*types.Block, error) {
+// sealGash seals the given block using gash.
+func (i *bbInput) sealGash(block *types.Block) (*types.Block, error) {
 	if i.Header.Nonce != nil {
 		return nil, NewError(ErrorConfig, fmt.Errorf("sealing with gash will overwrite provided nonce"))
 	}
@@ -259,22 +259,22 @@ func BuildBlock(ctx *cli.Context) error {
 
 func readInput(ctx *cli.Context) (*bbInput, error) {
 	var (
-		headerStr  = ctx.String(InputHeaderFlag.Name)
-		ommersStr  = ctx.String(InputOmmersFlag.Name)
-		txsStr     = ctx.String(InputTxsRlpFlag.Name)
-		cliqueStr  = ctx.String(SealCliqueFlag.Name)
-		ethashOn   = ctx.Bool(SealEthashFlag.Name)
-		gashDir    = ctx.String(SealGashDirFlag.Name)
-		ethashMode = ctx.String(SealEthashModeFlag.Name)
-		inputData  = &bbInput{}
+		headerStr = ctx.String(InputHeaderFlag.Name)
+		ommersStr = ctx.String(InputOmmersFlag.Name)
+		txsStr    = ctx.String(InputTxsRlpFlag.Name)
+		cliqueStr = ctx.String(SealCliqueFlag.Name)
+		gashOn    = ctx.Bool(SealGashFlag.Name)
+		gashDir   = ctx.String(SealGashDirFlag.Name)
+		gashMode  = ctx.String(SealGashModeFlag.Name)
+		inputData = &bbInput{}
 	)
-	if ethashOn && cliqueStr != "" {
+	if gashOn && cliqueStr != "" {
 		return nil, NewError(ErrorConfig, fmt.Errorf("both gash and clique sealing specified, only one may be chosen"))
 	}
-	if ethashOn {
-		inputData.Gash = ethashOn
+	if gashOn {
+		inputData.Gash = gashOn
 		inputData.GashDir = gashDir
-		switch ethashMode {
+		switch gashMode {
 		case "normal":
 			inputData.PowMode = gash.ModeNormal
 		case "test":
@@ -282,7 +282,7 @@ func readInput(ctx *cli.Context) (*bbInput, error) {
 		case "fake":
 			inputData.PowMode = gash.ModeFake
 		default:
-			return nil, NewError(ErrorConfig, fmt.Errorf("unknown pow mode: %s, supported modes: test, fake, normal", ethashMode))
+			return nil, NewError(ErrorConfig, fmt.Errorf("unknown pow mode: %s, supported modes: test, fake, normal", gashMode))
 		}
 	}
 	if headerStr == stdinSelector || ommersStr == stdinSelector || txsStr == stdinSelector || cliqueStr == stdinSelector {

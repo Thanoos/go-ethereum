@@ -20,7 +20,7 @@ package web3ext
 var Modules = map[string]string{
 	"admin":    AdminJs,
 	"clique":   CliqueJs,
-	"gash":     EthashJs,
+	"gash":     GashJs,
 	"debug":    DebugJs,
 	"g":        EthJs,
 	"miner":    MinerJs,
@@ -89,28 +89,28 @@ web3._extend({
 });
 `
 
-const EthashJs = `
+const GashJs = `
 web3._extend({
 	property: 'gash',
 	methods: [
 		new web3._extend.Method({
 			name: 'getWork',
-			call: 'ethash_getWork',
+			call: 'gash_getWork',
 			params: 0
 		}),
 		new web3._extend.Method({
 			name: 'getHashrate',
-			call: 'ethash_getHashrate',
+			call: 'gash_getHashrate',
 			params: 0
 		}),
 		new web3._extend.Method({
 			name: 'submitWork',
-			call: 'ethash_submitWork',
+			call: 'gash_submitWork',
 			params: 3,
 		}),
 		new web3._extend.Method({
 			name: 'submitHashrate',
-			call: 'ethash_submitHashrate',
+			call: 'gash_submitHashrate',
 			params: 2,
 		}),
 	]

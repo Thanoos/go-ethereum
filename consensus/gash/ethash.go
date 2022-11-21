@@ -48,7 +48,7 @@ var (
 	two256 = new(big.Int).Exp(big.NewInt(2), big.NewInt(256), big.NewInt(0))
 
 	// sharedGash is a full instance that can be shared between multiple users.
-	sharedEthash *Gash
+	sharedGash *Gash
 
 	// algorithmRevision is the data structure version used for file naming.
 	algorithmRevision = 23
@@ -63,7 +63,7 @@ func init() {
 		CachesInMem:   3,
 		DatasetsInMem: 1,
 	}
-	sharedEthash = New(sharedConfig, nil, false)
+	sharedGash = New(sharedConfig, nil, false)
 }
 
 // isLittleEndian returns whether the local system is running in little or big
@@ -483,7 +483,7 @@ func New(config Config, notify []string, noverify bool) *Gash {
 		hashrate: metrics.NewMeterForced(),
 	}
 	if config.PowMode == ModeShared {
-		gash.shared = sharedEthash
+		gash.shared = sharedGash
 	}
 	gash.remote = startRemoteSealer(gash, notify, noverify)
 	return gash
@@ -547,7 +547,7 @@ func NewFullFaker() *Gash {
 // NewShared creates a full sized gash PoW shared between all requesters running
 // in the same process.
 func NewShared() *Gash {
-	return &Gash{shared: sharedEthash}
+	return &Gash{shared: sharedGash}
 }
 
 // Close closes the exit channel to notify all backend threads exiting.

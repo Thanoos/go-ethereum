@@ -195,7 +195,7 @@ func makeTransaction(nonce uint64, privKey *ecdsa.PrivateKey, signer types.Signe
 func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	genesis := core.DefaultRopstenGenesisBlock()
 
-	genesis.Config = params.AllEthashProtocolChanges
+	genesis.Config = params.AllGashProtocolChanges
 	genesis.Config.LondonBlock = londonBlock
 	genesis.Difficulty = params.MinimumDifficulty
 

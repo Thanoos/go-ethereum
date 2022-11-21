@@ -51,7 +51,7 @@ var (
 )
 
 func generatePreMergeChain(n int) (*core.Genesis, []*types.Block) {
-	config := *params.AllEthashProtocolChanges
+	config := *params.AllGashProtocolChanges
 	genesis := &core.Genesis{
 		Config:     &config,
 		Alloc:      core.GenesisAlloc{testAddr: {Balance: testBalance}},

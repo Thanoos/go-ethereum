@@ -167,7 +167,7 @@ func TestClosedRemoteSealer(t *testing.T) {
 	gash.Close()
 
 	api := &API{gash}
-	if _, err := api.GetWork(); err != errEthashStopped {
+	if _, err := api.GetWork(); err != errGashStopped {
 		t.Error("expect to return an error to indicate gash is stopped")
 	}
 

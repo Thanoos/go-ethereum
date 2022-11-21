@@ -1766,7 +1766,7 @@ func testRepair(t *testing.T, tt *rewindTest, snapshots bool) {
 	var (
 		gspec = &Genesis{
 			BaseFee: big.NewInt(params.InitialBaseFee),
-			Config:  params.AllEthashProtocolChanges,
+			Config:  params.AllGashProtocolChanges,
 		}
 		engine = gash.NewFullFaker()
 		config = &CacheConfig{
