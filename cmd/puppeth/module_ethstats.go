@@ -31,7 +31,7 @@ import (
 // gstatsDockerfile is the Dockerfile required to build an gstats backend
 // and associated monitoring site.
 var gstatsDockerfile = `
-FROM puppeth/gstats:latest
+FROM puppg/gstats:latest
 
 RUN echo 'module.exports = {trusted: [{{.Trusted}}], banned: [{{.Banned}}], reserved: ["yournode"]};' > lib/utils/config.js
 `
