@@ -21,7 +21,7 @@ import (
 	"testing"
 )
 
-func TestParseEthstatsURL(t *testing.T) {
+func TestParseGstatsURL(t *testing.T) {
 	cases := []struct {
 		url              string
 		node, pass, host string
@@ -57,7 +57,7 @@ func TestParseEthstatsURL(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		parts, err := parseEthstatsURL(c.url)
+		parts, err := parseGstatsURL(c.url)
 		if err != nil {
 			t.Fatal(err)
 		}

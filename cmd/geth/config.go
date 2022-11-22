@@ -82,15 +82,15 @@ var tomlSettings = toml.Config{
 	},
 }
 
-type ethstatsConfig struct {
+type gstatsConfig struct {
 	URL string `toml:",omitempty"`
 }
 
 type gethConfig struct {
-	G        gconfig.Config
-	Node     node.Config
-	Ethstats ethstatsConfig
-	Metrics  metrics.Config
+	G       gconfig.Config
+	Node    node.Config
+	Gstats  gstatsConfig
+	Metrics metrics.Config
 }
 
 func loadConfig(file string, cfg *gethConfig) error {
@@ -147,8 +147,8 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, gethConfig) {
 	}
 
 	utils.SetEthConfig(ctx, stack, &cfg.G)
-	if ctx.IsSet(utils.EthStatsURLFlag.Name) {
-		cfg.Ethstats.URL = ctx.String(utils.EthStatsURLFlag.Name)
+	if ctx.IsSet(utils.GStatsURLFlag.Name) {
+		cfg.Gstats.URL = ctx.String(utils.GStatsURLFlag.Name)
 	}
 	applyMetricConfig(ctx, &cfg)
 
@@ -196,8 +196,8 @@ func makeFullNode(ctx *cli.Context) (*node.Node, gapi.Backend) {
 	}
 
 	// Add the Ethereum Stats daemon if requested.
-	if cfg.Ethstats.URL != "" {
-		utils.RegisterEthStatsService(stack, backend, cfg.Ethstats.URL)
+	if cfg.Gstats.URL != "" {
+		utils.RegisterGStatsService(stack, backend, cfg.Gstats.URL)
 	}
 	return stack, backend
 }
