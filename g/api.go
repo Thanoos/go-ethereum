@@ -123,9 +123,9 @@ func (api *MinerAPI) SetGasLimit(gasLimit hexutil.Uint64) bool {
 	return true
 }
 
-// SetACbase sets the etherbase of the miner.
-func (api *MinerAPI) SetACbase(etherbase common.Address) bool {
-	api.e.SetACbase(etherbase)
+// SetACbase sets the acbase of the miner.
+func (api *MinerAPI) SetACbase(acbase common.Address) bool {
+	api.e.SetACbase(acbase)
 	return true
 }
 

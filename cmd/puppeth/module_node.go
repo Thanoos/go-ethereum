@@ -42,7 +42,7 @@ ADD genesis.json /genesis.json
 RUN \
   echo 'geth --cache 512 init /genesis.json' > geth.sh && \{{if .Unlock}}
 	echo 'mkdir -p /root/.ethereum/keystore/ && cp /signer.json /root/.ethereum/keystore/' >> geth.sh && \{{end}}
-	echo $'exec geth --networkid {{.NetworkID}} --cache 512 --port {{.Port}} --nat extip:{{.IP}} --maxpeers {{.Peers}} {{.LightFlag}} --gstats \'{{.Gstats}}\' {{if .Bootnodes}}--bootnodes {{.Bootnodes}}{{end}} {{if .Etherbase}}--miner.etherbase {{.Etherbase}} --mine --miner.threads 1{{end}} {{if .Unlock}}--unlock 0 --password /signer.pass --mine{{end}} --miner.gaslimit {{.GasLimit}} --miner.gasprice {{.GasPrice}}' >> geth.sh
+	echo $'exec geth --networkid {{.NetworkID}} --cache 512 --port {{.Port}} --nat extip:{{.IP}} --maxpeers {{.Peers}} {{.LightFlag}} --gstats \'{{.Gstats}}\' {{if .Bootnodes}}--bootnodes {{.Bootnodes}}{{end}} {{if .ACbase}}--miner.acbase {{.ACbase}} --mine --miner.threads 1{{end}} {{if .Unlock}}--unlock 0 --password /signer.pass --mine{{end}} --miner.gaslimit {{.GasLimit}} --miner.gasprice {{.GasPrice}}' >> geth.sh
 
 ENTRYPOINT ["/bin/sh", "geth.sh"]
 `
@@ -67,7 +67,7 @@ services:
       - TOTAL_PEERS={{.TotalPeers}}
       - LIGHT_PEERS={{.LightPeers}}
       - STATS_NAME={{.Gstats}}
-      - MINER_NAME={{.Etherbase}}
+      - MINER_NAME={{.ACbase}}
       - GAS_LIMIT={{.GasLimit}}
       - GAS_PRICE={{.GasPrice}}
     logging:
@@ -83,7 +83,7 @@ services:
 // already exists there, it will be overwritten!
 func deployNode(client *sshClient, network string, bootnodes []string, config *nodeInfos, nocache bool) ([]byte, error) {
 	kind := "sealnode"
-	if config.keyJSON == "" && config.etherbase == "" {
+	if config.keyJSON == "" && config.acbase == "" {
 		kind = "bootnode"
 		bootnodes = make([]string, 0)
 	}
@@ -104,7 +104,7 @@ func deployNode(client *sshClient, network string, bootnodes []string, config *n
 		"LightFlag": lightFlag,
 		"Bootnodes": strings.Join(bootnodes, ","),
 		"Gstats":    config.gstats,
-		"Etherbase": config.etherbase,
+		"ACbase":    config.acbase,
 		"GasLimit":  uint64(1000000 * config.gasLimit),
 		"GasPrice":  uint64(1000000000 * config.gasPrice),
 		"Unlock":    config.keyJSON != "",
@@ -122,7 +122,7 @@ func deployNode(client *sshClient, network string, bootnodes []string, config *n
 		"Light":      config.peersLight > 0,
 		"LightPeers": config.peersLight,
 		"Gstats":     getEthName(config.gstats),
-		"Etherbase":  config.etherbase,
+		"ACbase":     config.acbase,
 		"GasLimit":   config.gasLimit,
 		"GasPrice":   config.gasPrice,
 	})
@@ -158,7 +158,7 @@ type nodeInfos struct {
 	enode      string
 	peersTotal int
 	peersLight int
-	etherbase  string
+	acbase     string
 	keyJSON    string
 	keyPass    string
 	gasLimit   float64
@@ -180,10 +180,10 @@ func (info *nodeInfos) Report() map[string]string {
 		report["Gas price (minimum accepted)"] = fmt.Sprintf("%0.3f GWei", info.gasPrice)
 		report["Gas ceil  (target maximum)"] = fmt.Sprintf("%0.3f MGas", info.gasLimit)
 
-		if info.etherbase != "" {
+		if info.acbase != "" {
 			// Gash proof-of-work miner
 			report["Gash directory"] = info.gashdir
-			report["Miner account"] = info.etherbase
+			report["Miner account"] = info.acbase
 		}
 		if info.keyJSON != "" {
 			// Clique proof-of-authority signer
@@ -254,7 +254,7 @@ func checkNode(client *sshClient, network string, boot bool) (*nodeInfos, error)
 		peersTotal: totalPeers,
 		peersLight: lightPeers,
 		gstats:     infos.envvars["STATS_NAME"],
-		etherbase:  infos.envvars["MINER_NAME"],
+		acbase:     infos.envvars["MINER_NAME"],
 		keyJSON:    keyJSON,
 		keyPass:    keyPass,
 		gasLimit:   gasLimit,

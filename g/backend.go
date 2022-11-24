@@ -406,7 +406,7 @@ func (s *Ethereum) SetACbase(acbase common.Address) {
 	s.acbase = acbase
 	s.lock.Unlock()
 
-	s.miner.SetEtherbase(acbase)
+	s.miner.SetACbase(acbase)
 }
 
 // StartMining starts the miner with the given number of CPU threads. If mining

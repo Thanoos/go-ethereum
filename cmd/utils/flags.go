@@ -1347,24 +1347,24 @@ func MakeAddress(ks *keystore.KeyStore, account string) (accounts.Account, error
 	return accs[index], nil
 }
 
-// setACbase retrieves the etherbase either from the directly specified
+// setACbase retrieves the acbase either from the directly specified
 // command line flags or from the keystore if CLI indexed.
 func setACbase(ctx *cli.Context, ks *keystore.KeyStore, cfg *gconfig.Config) {
-	// Extract the current etherbase
-	var etherbase string
+	// Extract the current acbase
+	var acbase string
 	if ctx.IsSet(MinerACbaseFlag.Name) {
-		etherbase = ctx.String(MinerACbaseFlag.Name)
+		acbase = ctx.String(MinerACbaseFlag.Name)
 	}
-	// Convert the etherbase into an address and configure it
-	if etherbase != "" {
+	// Convert the acbase into an address and configure it
+	if acbase != "" {
 		if ks != nil {
-			account, err := MakeAddress(ks, etherbase)
+			account, err := MakeAddress(ks, acbase)
 			if err != nil {
-				Fatalf("Invalid miner etherbase: %v", err)
+				Fatalf("Invalid miner acbase: %v", err)
 			}
 			cfg.Miner.ACbase = account.Address
 		} else {
-			Fatalf("No etherbase configured")
+			Fatalf("No acbase configured")
 		}
 	}
 }

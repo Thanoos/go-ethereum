@@ -302,8 +302,8 @@ func newWorker(config *Config, chainConfig *params.ChainConfig, engine consensus
 	return worker
 }
 
-// setEtherbase sets the etherbase used to initialize the block coinbase field.
-func (w *worker) setEtherbase(addr common.Address) {
+// setACbase sets the acbase used to initialize the block coinbase field.
+func (w *worker) setACbase(addr common.Address) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	w.coinbase = addr
@@ -1096,7 +1096,7 @@ func (w *worker) commitWork(interrupt *int32, noempty bool, timestamp int64) {
 	var coinbase common.Address
 	if w.isRunning() {
 		if w.coinbase == (common.Address{}) {
-			log.Error("Refusing to mine without etherbase")
+			log.Error("Refusing to mine without gbase")
 			return
 		}
 		coinbase = w.coinbase // Use the preset address as the fee recipient
