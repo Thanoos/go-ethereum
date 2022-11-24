@@ -153,7 +153,7 @@ type Conn struct {
 	caps                       []p2p.Cap
 }
 
-// Read reads an eth66 packet from the connection.
+// Read reads an g66 packet from the connection.
 func (c *Conn) Read() Message {
 	code, rawData, _, err := c.Conn.Read()
 	if err != nil {
