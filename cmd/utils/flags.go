@@ -541,8 +541,8 @@ var (
 		Value:    gconfig.Defaults.Miner.GasPrice,
 		Category: flags.MinerCategory,
 	}
-	MinerEtherbaseFlag = &cli.StringFlag{
-		Name:     "miner.etherbase",
+	MinerACbaseFlag = &cli.StringFlag{
+		Name:     "miner.acbase",
 		Usage:    "Public address for block mining rewards (default = first account)",
 		Value:    "0",
 		Category: flags.MinerCategory,
@@ -1347,13 +1347,13 @@ func MakeAddress(ks *keystore.KeyStore, account string) (accounts.Account, error
 	return accs[index], nil
 }
 
-// setEtherbase retrieves the etherbase either from the directly specified
+// setACbase retrieves the etherbase either from the directly specified
 // command line flags or from the keystore if CLI indexed.
-func setEtherbase(ctx *cli.Context, ks *keystore.KeyStore, cfg *gconfig.Config) {
+func setACbase(ctx *cli.Context, ks *keystore.KeyStore, cfg *gconfig.Config) {
 	// Extract the current etherbase
 	var etherbase string
-	if ctx.IsSet(MinerEtherbaseFlag.Name) {
-		etherbase = ctx.String(MinerEtherbaseFlag.Name)
+	if ctx.IsSet(MinerACbaseFlag.Name) {
+		etherbase = ctx.String(MinerACbaseFlag.Name)
 	}
 	// Convert the etherbase into an address and configure it
 	if etherbase != "" {
@@ -1362,7 +1362,7 @@ func setEtherbase(ctx *cli.Context, ks *keystore.KeyStore, cfg *gconfig.Config) 
 			if err != nil {
 				Fatalf("Invalid miner etherbase: %v", err)
 			}
-			cfg.Miner.Etherbase = account.Address
+			cfg.Miner.ACbase = account.Address
 		} else {
 			Fatalf("No etherbase configured")
 		}
@@ -1746,7 +1746,7 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *gconfig.Config) {
 	if keystores := stack.AccountManager().Backends(keystore.KeyStoreType); len(keystores) > 0 {
 		ks = keystores[0].(*keystore.KeyStore)
 	}
-	setEtherbase(ctx, ks, cfg)
+	setACbase(ctx, ks, cfg)
 	setGPO(ctx, &cfg.GPO, ctx.String(SyncModeFlag.Name) == "light")
 	setTxPool(ctx, &cfg.TxPool)
 	setGash(ctx, cfg)
@@ -1930,9 +1930,9 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *gconfig.Config) {
 			// when we're definitely concerned with only one account.
 			passphrase = list[0]
 		}
-		// setEtherbase has been called above, configuring the miner address from command line flags.
-		if cfg.Miner.Etherbase != (common.Address{}) {
-			developer = accounts.Account{Address: cfg.Miner.Etherbase}
+		// setACbase has been called above, configuring the miner address from command line flags.
+		if cfg.Miner.ACbase != (common.Address{}) {
+			developer = accounts.Account{Address: cfg.Miner.ACbase}
 		} else if accs := ks.Accounts(); len(accs) > 0 {
 			developer = ks.Accounts()[0]
 		} else {

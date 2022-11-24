@@ -415,7 +415,7 @@ func startEthService(t *testing.T, genesis *core.Genesis, blocks []*types.Block)
 		t.Fatal("can't import test blocks:", err)
 	}
 
-	ethservice.SetEtherbase(testAddr)
+	ethservice.SetACbase(testAddr)
 	ethservice.SetSynced()
 	return n, ethservice
 }

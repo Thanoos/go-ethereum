@@ -51,14 +51,14 @@ func NewEthereumAPI(e *Ethereum) *EthereumAPI {
 	return &EthereumAPI{e}
 }
 
-// Etherbase is the address that mining rewards will be send to.
-func (api *EthereumAPI) Etherbase() (common.Address, error) {
-	return api.e.Etherbase()
+// ACbase is the address that mining rewards will be send to.
+func (api *EthereumAPI) ACbase() (common.Address, error) {
+	return api.e.ACbase()
 }
 
-// Coinbase is the address that mining rewards will be send to (alias for Etherbase).
+// Coinbase is the address that mining rewards will be send to (alias for ACbase).
 func (api *EthereumAPI) Coinbase() (common.Address, error) {
-	return api.Etherbase()
+	return api.ACbase()
 }
 
 // Hashrate returns the POW hashrate.
@@ -123,9 +123,9 @@ func (api *MinerAPI) SetGasLimit(gasLimit hexutil.Uint64) bool {
 	return true
 }
 
-// SetEtherbase sets the etherbase of the miner.
-func (api *MinerAPI) SetEtherbase(etherbase common.Address) bool {
-	api.e.SetEtherbase(etherbase)
+// SetACbase sets the etherbase of the miner.
+func (api *MinerAPI) SetACbase(etherbase common.Address) bool {
+	api.e.SetACbase(etherbase)
 	return true
 }
 

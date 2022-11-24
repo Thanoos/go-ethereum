@@ -86,16 +86,16 @@ type Ethereum struct {
 
 	APIBackend *EthAPIBackend
 
-	miner     *miner.Miner
-	gasPrice  *big.Int
-	etherbase common.Address
+	miner    *miner.Miner
+	gasPrice *big.Int
+	acbase   common.Address
 
 	networkID     uint64
 	netRPCService *gapi.NetAPI
 
 	p2pServer *p2p.Server
 
-	lock sync.RWMutex // Protects the variadic fields (e.g. gas price and etherbase)
+	lock sync.RWMutex // Protects the variadic fields (e.g. gas price and acbase)
 
 	shutdownTracker *shutdowncheck.ShutdownTracker // Tracks if and when the node has shutdown ungracefully
 }
@@ -152,7 +152,7 @@ func New(stack *node.Node, config *gconfig.Config) (*Ethereum, error) {
 		closeBloomHandler: make(chan struct{}),
 		networkID:         config.NetworkId,
 		gasPrice:          config.Miner.GasPrice,
-		etherbase:         config.Miner.Etherbase,
+		acbase:            config.Miner.ACbase,
 		bloomRequests:     make(chan chan *bloombits.Retrieval),
 		bloomIndexer:      core.NewBloomIndexer(chainDb, params.BloomBitsBlocks, params.BloomConfirms),
 		p2pServer:         stack.Server(),
@@ -323,33 +323,33 @@ func (s *Ethereum) ResetWithGenesisBlock(gb *types.Block) {
 	s.blockchain.ResetWithGenesisBlock(gb)
 }
 
-func (s *Ethereum) Etherbase() (eb common.Address, err error) {
+func (s *Ethereum) ACbase() (eb common.Address, err error) {
 	s.lock.RLock()
-	etherbase := s.etherbase
+	acbase := s.acbase
 	s.lock.RUnlock()
 
-	if etherbase != (common.Address{}) {
-		return etherbase, nil
+	if acbase != (common.Address{}) {
+		return acbase, nil
 	}
 	if wallets := s.AccountManager().Wallets(); len(wallets) > 0 {
 		if accounts := wallets[0].Accounts(); len(accounts) > 0 {
-			etherbase := accounts[0].Address
+			acbase := accounts[0].Address
 
 			s.lock.Lock()
-			s.etherbase = etherbase
+			s.acbase = acbase
 			s.lock.Unlock()
 
-			log.Info("Etherbase automatically configured", "address", etherbase)
-			return etherbase, nil
+			log.Info("ACbase automatically configured", "address", acbase)
+			return acbase, nil
 		}
 	}
-	return common.Address{}, fmt.Errorf("etherbase must be explicitly specified")
+	return common.Address{}, fmt.Errorf("acbase must be explicitly specified")
 }
 
 // isLocalBlock checks whether the specified block is mined
 // by local miner accounts.
 //
-// We regard two types of accounts as local miner account: etherbase
+// We regard two types of accounts as local miner account: acbase
 // and accounts specified via `txpool.locals` flag.
 func (s *Ethereum) isLocalBlock(header *types.Header) bool {
 	author, err := s.engine.Author(header)
@@ -357,11 +357,11 @@ func (s *Ethereum) isLocalBlock(header *types.Header) bool {
 		log.Warn("Failed to retrieve block author", "number", header.Number.Uint64(), "hash", header.Hash(), "err", err)
 		return false
 	}
-	// Check whether the given address is etherbase.
+	// Check whether the given address is acbase.
 	s.lock.RLock()
-	etherbase := s.etherbase
+	acbase := s.acbase
 	s.lock.RUnlock()
-	if author == etherbase {
+	if author == acbase {
 		return true
 	}
 	// Check whether the given address is specified by `txpool.local`
@@ -400,13 +400,13 @@ func (s *Ethereum) shouldPreserve(header *types.Header) bool {
 	return s.isLocalBlock(header)
 }
 
-// SetEtherbase sets the mining reward address.
-func (s *Ethereum) SetEtherbase(etherbase common.Address) {
+// SetACbase sets the mining reward address.
+func (s *Ethereum) SetACbase(acbase common.Address) {
 	s.lock.Lock()
-	s.etherbase = etherbase
+	s.acbase = acbase
 	s.lock.Unlock()
 
-	s.miner.SetEtherbase(etherbase)
+	s.miner.SetEtherbase(acbase)
 }
 
 // StartMining starts the miner with the given number of CPU threads. If mining
@@ -433,10 +433,10 @@ func (s *Ethereum) StartMining(threads int) error {
 		s.txPool.SetGasPrice(price)
 
 		// Configure the local mining address
-		eb, err := s.Etherbase()
+		eb, err := s.ACbase()
 		if err != nil {
-			log.Error("Cannot start mining without etherbase", "err", err)
-			return fmt.Errorf("etherbase missing: %v", err)
+			log.Error("Cannot start mining without acbase", "err", err)
+			return fmt.Errorf("acbase missing: %v", err)
 		}
 		var cli *clique.Clique
 		if c, ok := s.engine.(*clique.Clique); ok {
@@ -449,7 +449,7 @@ func (s *Ethereum) StartMining(threads int) error {
 		if cli != nil {
 			wallet, err := s.accountManager.Find(accounts.Account{Address: eb})
 			if wallet == nil || err != nil {
-				log.Error("Etherbase account unavailable locally", "err", err)
+				log.Error("ACbase account unavailable locally", "err", err)
 				return fmt.Errorf("signer missing: %v", err)
 			}
 			cli.Authorize(eb, wallet.SignData)

@@ -179,10 +179,10 @@ func makeMiner(genesis *core.Genesis) (*node.Node, *g.Ethereum, error) {
 		GPO:             gconfig.Defaults.GPO,
 		Gash:            gconfig.Defaults.Gash,
 		Miner: miner.Config{
-			Etherbase: common.Address{1},
-			GasCeil:   genesis.GasLimit * 11 / 10,
-			GasPrice:  big.NewInt(1),
-			Recommit:  time.Second,
+			ACbase:   common.Address{1},
+			GasCeil:  genesis.GasLimit * 11 / 10,
+			GasPrice: big.NewInt(1),
+			Recommit: time.Second,
 		},
 	})
 	if err != nil {
