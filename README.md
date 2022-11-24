@@ -96,7 +96,7 @@ Transitioning towards developers, if you'd like to play around with creating Eth
 contracts, you almost certainly would like to do that without any real money involved until
 you get the hang of the entire system. In other words, instead of attaching to the main
 network, you want to join the **test** network with your node, which is fully equivalent to
-the main network, but with play-Ether only.
+the main network, but with play-AC only.
 
 ```shell
 $ geth --goerli console

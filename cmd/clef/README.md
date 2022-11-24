@@ -434,7 +434,7 @@ Response
       },
       "primaryType": "Mail",
       "domain": {
-        "name": "Ether Mail",
+        "name": "AC Mail",
         "version": "1",
         "chainId": 1,
         "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
