@@ -191,9 +191,9 @@ func TestTraceCall(t *testing.T) {
 	genesis := &core.Genesis{
 		Config: params.TestChainConfig,
 		Alloc: core.GenesisAlloc{
-			accounts[0].addr: {Balance: big.NewInt(params.Ether)},
-			accounts[1].addr: {Balance: big.NewInt(params.Ether)},
-			accounts[2].addr: {Balance: big.NewInt(params.Ether)},
+			accounts[0].addr: {Balance: big.NewInt(params.AC)},
+			accounts[1].addr: {Balance: big.NewInt(params.AC)},
+			accounts[2].addr: {Balance: big.NewInt(params.AC)},
 		},
 	}
 	genBlocks := 10
@@ -324,8 +324,8 @@ func TestTraceTransaction(t *testing.T) {
 	genesis := &core.Genesis{
 		Config: params.TestChainConfig,
 		Alloc: core.GenesisAlloc{
-			accounts[0].addr: {Balance: big.NewInt(params.Ether)},
-			accounts[1].addr: {Balance: big.NewInt(params.Ether)},
+			accounts[0].addr: {Balance: big.NewInt(params.AC)},
+			accounts[1].addr: {Balance: big.NewInt(params.AC)},
 		},
 	}
 	target := common.Hash{}
@@ -364,9 +364,9 @@ func TestTraceBlock(t *testing.T) {
 	genesis := &core.Genesis{
 		Config: params.TestChainConfig,
 		Alloc: core.GenesisAlloc{
-			accounts[0].addr: {Balance: big.NewInt(params.Ether)},
-			accounts[1].addr: {Balance: big.NewInt(params.Ether)},
-			accounts[2].addr: {Balance: big.NewInt(params.Ether)},
+			accounts[0].addr: {Balance: big.NewInt(params.AC)},
+			accounts[1].addr: {Balance: big.NewInt(params.AC)},
+			accounts[2].addr: {Balance: big.NewInt(params.AC)},
 		},
 	}
 	genBlocks := 10
@@ -442,9 +442,9 @@ func TestTracingWithOverrides(t *testing.T) {
 	genesis := &core.Genesis{
 		Config: params.TestChainConfig,
 		Alloc: core.GenesisAlloc{
-			accounts[0].addr: {Balance: big.NewInt(params.Ether)},
-			accounts[1].addr: {Balance: big.NewInt(params.Ether)},
-			accounts[2].addr: {Balance: big.NewInt(params.Ether)},
+			accounts[0].addr: {Balance: big.NewInt(params.AC)},
+			accounts[1].addr: {Balance: big.NewInt(params.AC)},
+			accounts[2].addr: {Balance: big.NewInt(params.AC)},
 		},
 	}
 	genBlocks := 10
@@ -479,7 +479,7 @@ func TestTracingWithOverrides(t *testing.T) {
 			},
 			config: &TraceCallConfig{
 				StateOverrides: &gapi.StateOverride{
-					randomAccounts[0].addr: gapi.OverrideAccount{Balance: newRPCBalance(new(big.Int).Mul(big.NewInt(1), big.NewInt(params.Ether)))},
+					randomAccounts[0].addr: gapi.OverrideAccount{Balance: newRPCBalance(new(big.Int).Mul(big.NewInt(1), big.NewInt(params.AC)))},
 				},
 			},
 			want: `{"gas":21000,"failed":false,"returnValue":""}`,
@@ -641,9 +641,9 @@ func TestTraceChain(t *testing.T) {
 	genesis := &core.Genesis{
 		Config: params.TestChainConfig,
 		Alloc: core.GenesisAlloc{
-			accounts[0].addr: {Balance: big.NewInt(params.Ether)},
-			accounts[1].addr: {Balance: big.NewInt(params.Ether)},
-			accounts[2].addr: {Balance: big.NewInt(params.Ether)},
+			accounts[0].addr: {Balance: big.NewInt(params.AC)},
+			accounts[1].addr: {Balance: big.NewInt(params.AC)},
+			accounts[2].addr: {Balance: big.NewInt(params.AC)},
 		},
 	}
 	genBlocks := 50
