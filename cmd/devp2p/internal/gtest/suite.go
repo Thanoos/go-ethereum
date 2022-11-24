@@ -49,7 +49,7 @@ func NewSuite(dest *enode.Node, chainfile string, genesisfile string) (*Suite, e
 	}, nil
 }
 
-func (s *Suite) EthTests() []utesting.Test {
+func (s *Suite) GTests() []utesting.Test {
 	return []utesting.Test{
 		// status
 		{Name: "TestStatus", Fn: s.TestStatus},

@@ -34,7 +34,7 @@ var (
 		Usage: "RLPx Commands",
 		Subcommands: []*cli.Command{
 			rlpxPingCommand,
-			rlpxEthTestCommand,
+			rlpxGTestCommand,
 			rlpxSnapTestCommand,
 		},
 	}
@@ -43,7 +43,7 @@ var (
 		Usage:  "ping <node>",
 		Action: rlpxPing,
 	}
-	rlpxEthTestCommand = &cli.Command{
+	rlpxGTestCommand = &cli.Command{
 		Name:      "g-test",
 		Usage:     "Runs tests against a node",
 		ArgsUsage: "<node> <chain.rlp> <genesis.json>",
@@ -109,7 +109,7 @@ func rlpxEthTest(ctx *cli.Context) error {
 	if err != nil {
 		exit(err)
 	}
-	return runTests(ctx, suite.EthTests())
+	return runTests(ctx, suite.GTests())
 }
 
 // rlpxSnapTest runs the snap protocol test suite.

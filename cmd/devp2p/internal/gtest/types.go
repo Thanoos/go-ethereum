@@ -173,29 +173,29 @@ func (c *Conn) Read() Message {
 	case (Status{}).Code():
 		msg = new(Status)
 	case (GetBlockHeaders{}).Code():
-		ethMsg := new(g.GetBlockHeadersPacket66)
-		if err := rlp.DecodeBytes(rawData, ethMsg); err != nil {
+		gMsg := new(g.GetBlockHeadersPacket66)
+		if err := rlp.DecodeBytes(rawData, gMsg); err != nil {
 			return errorf("could not rlp decode message: %v", err)
 		}
-		return (*GetBlockHeaders)(ethMsg)
+		return (*GetBlockHeaders)(gMsg)
 	case (BlockHeaders{}).Code():
-		ethMsg := new(g.BlockHeadersPacket66)
-		if err := rlp.DecodeBytes(rawData, ethMsg); err != nil {
+		gMsg := new(g.BlockHeadersPacket66)
+		if err := rlp.DecodeBytes(rawData, gMsg); err != nil {
 			return errorf("could not rlp decode message: %v", err)
 		}
-		return (*BlockHeaders)(ethMsg)
+		return (*BlockHeaders)(gMsg)
 	case (GetBlockBodies{}).Code():
-		ethMsg := new(g.GetBlockBodiesPacket66)
-		if err := rlp.DecodeBytes(rawData, ethMsg); err != nil {
+		gMsg := new(g.GetBlockBodiesPacket66)
+		if err := rlp.DecodeBytes(rawData, gMsg); err != nil {
 			return errorf("could not rlp decode message: %v", err)
 		}
-		return (*GetBlockBodies)(ethMsg)
+		return (*GetBlockBodies)(gMsg)
 	case (BlockBodies{}).Code():
-		ethMsg := new(g.BlockBodiesPacket66)
-		if err := rlp.DecodeBytes(rawData, ethMsg); err != nil {
+		gMsg := new(g.BlockBodiesPacket66)
+		if err := rlp.DecodeBytes(rawData, gMsg); err != nil {
 			return errorf("could not rlp decode message: %v", err)
 		}
-		return (*BlockBodies)(ethMsg)
+		return (*BlockBodies)(gMsg)
 	case (NewBlock{}).Code():
 		msg = new(NewBlock)
 	case (NewBlockHashes{}).Code():
@@ -205,17 +205,17 @@ func (c *Conn) Read() Message {
 	case (NewPooledTransactionHashes{}).Code():
 		msg = new(NewPooledTransactionHashes)
 	case (GetPooledTransactions{}.Code()):
-		ethMsg := new(g.GetPooledTransactionsPacket66)
-		if err := rlp.DecodeBytes(rawData, ethMsg); err != nil {
+		gMsg := new(g.GetPooledTransactionsPacket66)
+		if err := rlp.DecodeBytes(rawData, gMsg); err != nil {
 			return errorf("could not rlp decode message: %v", err)
 		}
-		return (*GetPooledTransactions)(ethMsg)
+		return (*GetPooledTransactions)(gMsg)
 	case (PooledTransactions{}.Code()):
-		ethMsg := new(g.PooledTransactionsPacket66)
-		if err := rlp.DecodeBytes(rawData, ethMsg); err != nil {
+		gMsg := new(g.PooledTransactionsPacket66)
+		if err := rlp.DecodeBytes(rawData, gMsg); err != nil {
 			return errorf("could not rlp decode message: %v", err)
 		}
-		return (*PooledTransactions)(ethMsg)
+		return (*PooledTransactions)(gMsg)
 	default:
 		msg = errorf("invalid message code: %d", code)
 	}
