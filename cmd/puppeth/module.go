@@ -151,7 +151,7 @@ func checkPort(host string, port int) error {
 	return nil
 }
 
-// getEthName gets the Ethereum Name from gstats
+// getGName gets the Ethereum Name from gstats
 func getEthName(s string) string {
 	n := strings.Index(s, ":")
 	if n >= 0 {

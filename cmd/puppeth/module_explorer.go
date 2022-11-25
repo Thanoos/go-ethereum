@@ -60,7 +60,7 @@ services:
             - "{{.WebPort}}:4000"{{end}}
         environment:
             - ETH_PORT={{.GPort}}
-            - ETH_NAME={{.EthName}}
+            - ETH_NAME={{.GName}}
             - BLOCK_TRANSFORMER={{.Transformer}}{{if .VHost}}
             - VIRTUAL_HOST={{.VHost}}
             - VIRTUAL_PORT=4000{{end}}
@@ -104,7 +104,7 @@ func deployExplorer(client *sshClient, network string, bootnodes []string, confi
 		"Datadir":     config.node.datadir,
 		"DBDir":       config.dbdir,
 		"GPort":       config.node.port,
-		"EthName":     getEthName(config.node.gstats),
+		"GName":       getEthName(config.node.gstats),
 		"WebPort":     config.port,
 		"Transformer": transformer,
 	})

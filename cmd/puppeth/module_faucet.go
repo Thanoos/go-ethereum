@@ -66,7 +66,7 @@ services:
       - {{.Datadir}}:/root/.faucet
     environment:
       - ETH_PORT={{.GPort}}
-      - ETH_NAME={{.EthName}}
+      - ETH_NAME={{.GName}}
       - FAUCET_AMOUNT={{.FaucetAmount}}
       - FAUCET_MINUTES={{.FaucetMinutes}}
       - FAUCET_TIERS={{.FaucetTiers}}
@@ -116,7 +116,7 @@ func deployFaucet(client *sshClient, network string, bootnodes []string, config 
 		"VHost":         config.host,
 		"ApiPort":       config.port,
 		"GPort":         config.node.port,
-		"EthName":       getEthName(config.node.gstats),
+		"GName":         getEthName(config.node.gstats),
 		"CaptchaToken":  config.captchaToken,
 		"CaptchaSecret": config.captchaSecret,
 		"FaucetAmount":  config.amount,
