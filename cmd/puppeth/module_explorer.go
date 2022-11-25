@@ -35,8 +35,8 @@ FROM puppg/blockscout:latest
 ADD genesis.json /genesis.json
 RUN \
   echo 'geth --cache 512 init /genesis.json' > explorer.sh && \
-  echo $'geth --networkid {{.NetworkID}} --syncmode "full" --gcmode "archive" --port {{.EthPort}} --bootnodes {{.Bootnodes}} --gstats \'{{.Gstats}}\' --cache=512 --http --http.api "net,web3,g,debug,txpool" --http.corsdomain "*" --http.vhosts "*" --ws --ws.origins "*" --exitwhensynced' >> explorer.sh && \
-  echo $'exec geth --networkid {{.NetworkID}} --syncmode "full" --gcmode "archive" --port {{.EthPort}} --bootnodes {{.Bootnodes}} --gstats \'{{.Gstats}}\' --cache=512 --http --http.api "net,web3,g,debug,txpool" --http.corsdomain "*" --http.vhosts "*" --ws --ws.origins "*" &' >> explorer.sh && \
+  echo $'geth --networkid {{.NetworkID}} --syncmode "full" --gcmode "archive" --port {{.GPort}} --bootnodes {{.Bootnodes}} --gstats \'{{.Gstats}}\' --cache=512 --http --http.api "net,web3,g,debug,txpool" --http.corsdomain "*" --http.vhosts "*" --ws --ws.origins "*" --exitwhensynced' >> explorer.sh && \
+  echo $'exec geth --networkid {{.NetworkID}} --syncmode "full" --gcmode "archive" --port {{.GPort}} --bootnodes {{.Bootnodes}} --gstats \'{{.Gstats}}\' --cache=512 --http --http.api "net,web3,g,debug,txpool" --http.corsdomain "*" --http.vhosts "*" --ws --ws.origins "*" &' >> explorer.sh && \
   echo '/usr/local/bin/docker-entrypoint.sh postgres &' >> explorer.sh && \
   echo 'sleep 5' >> explorer.sh && \
   echo 'mix do ecto.drop --force, ecto.create, ecto.migrate' >> explorer.sh && \
@@ -55,11 +55,11 @@ services:
         image: {{.Network}}/explorer
         container_name: {{.Network}}_explorer_1
         ports:
-            - "{{.EthPort}}:{{.EthPort}}"
-            - "{{.EthPort}}:{{.EthPort}}/udp"{{if not .VHost}}
+            - "{{.GPort}}:{{.GPort}}"
+            - "{{.GPort}}:{{.GPort}}/udp"{{if not .VHost}}
             - "{{.WebPort}}:4000"{{end}}
         environment:
-            - ETH_PORT={{.EthPort}}
+            - ETH_PORT={{.GPort}}
             - ETH_NAME={{.EthName}}
             - BLOCK_TRANSFORMER={{.Transformer}}{{if .VHost}}
             - VIRTUAL_HOST={{.VHost}}
@@ -88,7 +88,7 @@ func deployExplorer(client *sshClient, network string, bootnodes []string, confi
 		"NetworkID": config.node.network,
 		"Bootnodes": strings.Join(bootnodes, ","),
 		"Gstats":    config.node.gstats,
-		"EthPort":   config.node.port,
+		"GPort":     config.node.port,
 	})
 	files[filepath.Join(workdir, "Dockerfile")] = dockerfile.Bytes()
 
@@ -103,7 +103,7 @@ func deployExplorer(client *sshClient, network string, bootnodes []string, confi
 		"Gstats":      config.node.gstats,
 		"Datadir":     config.node.datadir,
 		"DBDir":       config.dbdir,
-		"EthPort":     config.node.port,
+		"GPort":       config.node.port,
 		"EthName":     getEthName(config.node.gstats),
 		"WebPort":     config.port,
 		"Transformer": transformer,
