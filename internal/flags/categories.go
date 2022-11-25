@@ -19,7 +19,7 @@ package flags
 import "github.com/urfave/cli/v2"
 
 const (
-	EthCategory        = "ETHEREUM"
+	GCategory          = "ETHEREUM"
 	LightCategory      = "LIGHT CLIENT"
 	DevCategory        = "DEVELOPER CHAIN"
 	GashCategory       = "GASH"

@@ -70,7 +70,7 @@ func main() {
 	)
 	for _, sealer := range sealers {
 		// Start the node and wait until it's up
-		stack, ethBackend, err := makeSealer(genesis)
+		stack, gBackend, err := makeSealer(genesis)
 		if err != nil {
 			panic(err)
 		}
@@ -85,7 +85,7 @@ func main() {
 		}
 		// Start tracking the node and its enode
 		stacks = append(stacks, stack)
-		nodes = append(nodes, ethBackend)
+		nodes = append(nodes, gBackend)
 		enodes = append(enodes, stack.Server().Self())
 
 		// Inject the signer key and start sealing with it
@@ -200,7 +200,7 @@ func makeSealer(genesis *core.Genesis) (*node.Node, *g.Ethereum, error) {
 		return nil, nil, err
 	}
 	// Create and register the backend
-	ethBackend, err := g.New(stack, &gconfig.Config{
+	gBackend, err := g.New(stack, &gconfig.Config{
 		Genesis:         genesis,
 		NetworkId:       genesis.Config.ChainID.Uint64(),
 		SyncMode:        downloader.FullSync,
@@ -219,5 +219,5 @@ func makeSealer(genesis *core.Genesis) (*node.Node, *g.Ethereum, error) {
 	}
 
 	err = stack.Start()
-	return stack, ethBackend, err
+	return stack, gBackend, err
 }

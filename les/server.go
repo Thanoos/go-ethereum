@@ -43,7 +43,7 @@ var (
 
 const defaultConnectedBias = time.Minute * 3
 
-type ethBackend interface {
+type gBackend interface {
 	ArchiveMode() bool
 	BlockChain() *core.BlockChain
 	BloomIndexer() *core.ChainIndexer
@@ -76,7 +76,7 @@ type LesServer struct {
 	p2pSrv *p2p.Server
 }
 
-func NewLesServer(node *node.Node, e ethBackend, config *gconfig.Config) (*LesServer, error) {
+func NewLesServer(node *node.Node, e gBackend, config *gconfig.Config) (*LesServer, error) {
 	lesDb, err := node.OpenDatabase("les.server", 0, 0, "g/db/lesserver/", false)
 	if err != nil {
 		return nil, err

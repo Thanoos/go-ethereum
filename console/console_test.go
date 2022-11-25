@@ -106,7 +106,7 @@ func newTester(t *testing.T, confOverride func(*gconfig.Config)) *tester {
 	if confOverride != nil {
 		confOverride(ethConf)
 	}
-	ethBackend, err := g.New(stack, ethConf)
+	gBackend, err := g.New(stack, ethConf)
 	if err != nil {
 		t.Fatalf("failed to register Ethereum protocol: %v", err)
 	}
@@ -136,7 +136,7 @@ func newTester(t *testing.T, confOverride func(*gconfig.Config)) *tester {
 	return &tester{
 		workspace: workspace,
 		stack:     stack,
-		ethereum:  ethBackend,
+		ethereum:  gBackend,
 		console:   console,
 		input:     prompter,
 		output:    printer,

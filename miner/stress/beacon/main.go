@@ -92,7 +92,7 @@ type ethNode struct {
 	stack      *node.Node
 	enode      *enode.Node
 	api        *gcatalyst.ConsensusAPI
-	ethBackend *g.Ethereum
+	gBackend   *g.Ethereum
 	lapi       *lescatalyst.ConsensusAPI
 	lesBackend *les.LightEthereum
 }
@@ -103,14 +103,14 @@ func newNode(typ nodetype, genesis *core.Genesis, enodes []*enode.Node) *ethNode
 		api        *gcatalyst.ConsensusAPI
 		lapi       *lescatalyst.ConsensusAPI
 		stack      *node.Node
-		ethBackend *g.Ethereum
+		gBackend   *g.Ethereum
 		lesBackend *les.LightEthereum
 	)
 	// Start the node and wait until it's up
 	if typ == eth2LightClient {
 		stack, lesBackend, lapi, err = makeLightNode(genesis)
 	} else {
-		stack, ethBackend, api, err = makeFullNode(genesis)
+		stack, gBackend, api, err = makeFullNode(genesis)
 	}
 	if err != nil {
 		panic(err)
@@ -133,7 +133,7 @@ func newNode(typ nodetype, genesis *core.Genesis, enodes []*enode.Node) *ethNode
 	return &ethNode{
 		typ:        typ,
 		api:        api,
-		ethBackend: ethBackend,
+		gBackend:   gBackend,
 		lapi:       lapi,
 		lesBackend: lesBackend,
 		stack:      stack,
@@ -258,7 +258,7 @@ func (mgr *nodeManager) getNodes(typ nodetype) []*ethNode {
 
 func (mgr *nodeManager) startMining() {
 	for _, node := range append(mgr.getNodes(eth2MiningNode), mgr.getNodes(legacyMiningNode)...) {
-		if err := node.ethBackend.StartMining(1); err != nil {
+		if err := node.gBackend.StartMining(1); err != nil {
 			panic(err)
 		}
 	}
@@ -275,7 +275,7 @@ func (mgr *nodeManager) run() {
 	if len(mgr.nodes) == 0 {
 		return
 	}
-	chain := mgr.nodes[0].ethBackend.BlockChain()
+	chain := mgr.nodes[0].gBackend.BlockChain()
 	sink := make(chan core.ChainHeadEvent, 1024)
 	sub := chain.SubscribeChainHeadEvent(sink)
 	defer sub.Unsubscribe()
@@ -426,13 +426,13 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		if err := node.ethBackend.TxPool().AddLocal(tx); err != nil {
+		if err := node.gBackend.TxPool().AddLocal(tx); err != nil {
 			panic(err)
 		}
 		nonces[index]++
 
 		// Wait if we're too saturated
-		if pend, _ := node.ethBackend.TxPool().Stats(); pend > 2048 {
+		if pend, _ := node.gBackend.TxPool().Stats(); pend > 2048 {
 			time.Sleep(100 * time.Millisecond)
 		}
 	}
@@ -497,16 +497,16 @@ func makeFullNode(genesis *core.Genesis) (*node.Node, *g.Ethereum, *gcatalyst.Co
 		LightPeers:       10,
 		LightNoSyncServe: true,
 	}
-	ethBackend, err := g.New(stack, econfig)
+	gBackend, err := g.New(stack, econfig)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	_, err = les.NewLesServer(stack, ethBackend, econfig)
+	_, err = les.NewLesServer(stack, gBackend, econfig)
 	if err != nil {
 		log.Crit("Failed to create the LES server", "err", err)
 	}
 	err = stack.Start()
-	return stack, ethBackend, gcatalyst.NewConsensusAPI(ethBackend), err
+	return stack, gBackend, gcatalyst.NewConsensusAPI(gBackend), err
 }
 
 func makeLightNode(genesis *core.Genesis) (*node.Node, *les.LightEthereum, *lescatalyst.ConsensusAPI, error) {

@@ -374,7 +374,7 @@ func startNode(ctx *cli.Context, stack *node.Node, backend gapi.Backend, isConso
 	if err != nil {
 		utils.Fatalf("Failed to attach to self: %v", err)
 	}
-	ethClient := gclient.NewClient(rpcClient)
+	gClient := gclient.NewClient(rpcClient)
 
 	go func() {
 		// Open any wallets already attached
@@ -400,7 +400,7 @@ func startNode(ctx *cli.Context, stack *node.Node, backend gapi.Backend, isConso
 				}
 				derivationPaths = append(derivationPaths, accounts.DefaultBaseDerivationPath)
 
-				event.Wallet.SelfDerive(derivationPaths, ethClient)
+				event.Wallet.SelfDerive(derivationPaths, gClient)
 
 			case accounts.WalletDropped:
 				log.Info("Old wallet dropped", "url", event.Wallet.URL())
@@ -439,16 +439,16 @@ func startNode(ctx *cli.Context, stack *node.Node, backend gapi.Backend, isConso
 		if ctx.String(utils.SyncModeFlag.Name) == "light" {
 			utils.Fatalf("Light clients do not support mining")
 		}
-		ethBackend, ok := backend.(*g.EthAPIBackend)
+		gBackend, ok := backend.(*g.GAPIBackend)
 		if !ok {
 			utils.Fatalf("Ethereum service not running")
 		}
 		// Set the gas price to the limits from the CLI and start mining
 		gasprice := flags.GlobalBig(ctx, utils.MinerGasPriceFlag.Name)
-		ethBackend.TxPool().SetGasPrice(gasprice)
+		gBackend.TxPool().SetGasPrice(gasprice)
 		// start mining
 		threads := ctx.Int(utils.MinerThreadsFlag.Name)
-		if err := ethBackend.StartMining(threads); err != nil {
+		if err := gBackend.StartMining(threads); err != nil {
 			utils.Fatalf("Failed to start mining: %v", err)
 		}
 	}

@@ -84,7 +84,7 @@ type Ethereum struct {
 	bloomIndexer      *core.ChainIndexer             // Bloom indexer operating during block imports
 	closeBloomHandler chan struct{}
 
-	APIBackend *EthAPIBackend
+	APIBackend *GAPIBackend
 
 	miner    *miner.Miner
 	gasPrice *big.Int
@@ -235,7 +235,7 @@ func New(stack *node.Node, config *gconfig.Config) (*Ethereum, error) {
 	g.miner = miner.New(g, &config.Miner, g.blockchain.Config(), g.EventMux(), g.engine, g.isLocalBlock)
 	g.miner.SetExtra(makeExtraData(config.Miner.ExtraData))
 
-	g.APIBackend = &EthAPIBackend{stack.Config().ExtRPCEnabled(), stack.Config().AllowUnprotectedTxs, g, nil}
+	g.APIBackend = &GAPIBackend{stack.Config().ExtRPCEnabled(), stack.Config().AllowUnprotectedTxs, g, nil}
 	if g.APIBackend.allowUnprotectedTxs {
 		log.Info("Unprotected transactions allowed")
 	}

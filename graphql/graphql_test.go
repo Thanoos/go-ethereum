@@ -346,20 +346,20 @@ func newGQLService(t *testing.T, stack *node.Node, gspec *core.Genesis, genBlock
 		TrieTimeout:             60 * time.Minute,
 		SnapshotCache:           5,
 	}
-	ethBackend, err := g.New(stack, ethConf)
+	gBackend, err := g.New(stack, ethConf)
 	if err != nil {
 		t.Fatalf("could not create g backend: %v", err)
 	}
 	// Create some blocks and import them
-	chain, _ := core.GenerateChain(params.AllGashProtocolChanges, ethBackend.BlockChain().Genesis(),
-		gash.NewFaker(), ethBackend.ChainDb(), genBlocks, genfunc)
-	_, err = ethBackend.BlockChain().InsertChain(chain)
+	chain, _ := core.GenerateChain(params.AllGashProtocolChanges, gBackend.BlockChain().Genesis(),
+		gash.NewFaker(), gBackend.ChainDb(), genBlocks, genfunc)
+	_, err = gBackend.BlockChain().InsertChain(chain)
 	if err != nil {
 		t.Fatalf("could not create import blocks: %v", err)
 	}
 	// Set up handler
-	filterSystem := filters.NewFilterSystem(ethBackend.APIBackend, filters.Config{})
-	handler, err := newHandler(stack, ethBackend.APIBackend, filterSystem, []string{}, []string{})
+	filterSystem := filters.NewFilterSystem(gBackend.APIBackend, filters.Config{})
+	handler, err := newHandler(stack, gBackend.APIBackend, filterSystem, []string{}, []string{})
 	if err != nil {
 		t.Fatalf("could not create graphql service: %v", err)
 	}

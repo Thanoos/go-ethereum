@@ -86,7 +86,7 @@ var (
 		Name:     "datadir",
 		Usage:    "Data directory for the databases and keystore",
 		Value:    flags.DirectoryString(node.DefaultDataDir()),
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	RemoteDBFlag = &cli.StringFlag{
 		Name:     "remotedb",
@@ -96,12 +96,12 @@ var (
 	AncientFlag = &flags.DirectoryFlag{
 		Name:     "datadir.ancient",
 		Usage:    "Root directory for ancient data (default = inside chaindata)",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	MinFreeDiskSpaceFlag = &flags.DirectoryFlag{
 		Name:     "datadir.minfreedisk",
 		Usage:    "Minimum free disk space in MB, once reached triggers auto shut down (default = --cache.gc converted to MB, 0 = disabled)",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	KeyStoreDirFlag = &flags.DirectoryFlag{
 		Name:     "keystore",
@@ -123,37 +123,37 @@ var (
 		Name:     "networkid",
 		Usage:    "Explicitly set network id (integer)(For testnets: use --ropsten, --rinkeby, --goerli instead)",
 		Value:    gconfig.Defaults.NetworkId,
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	MainnetFlag = &cli.BoolFlag{
 		Name:     "mainnet",
 		Usage:    "Ethereum mainnet",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	RopstenFlag = &cli.BoolFlag{
 		Name:     "ropsten",
 		Usage:    "Ropsten network: pre-configured proof-of-stake test network",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	RinkebyFlag = &cli.BoolFlag{
 		Name:     "rinkeby",
 		Usage:    "Rinkeby network: pre-configured proof-of-authority test network",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	GoerliFlag = &cli.BoolFlag{
 		Name:     "goerli",
 		Usage:    "Görli network: pre-configured proof-of-authority test network",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	SepoliaFlag = &cli.BoolFlag{
 		Name:     "sepolia",
 		Usage:    "Sepolia network: pre-configured proof-of-work test network",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	KilnFlag = &cli.BoolFlag{
 		Name:     "kiln",
 		Usage:    "Kiln network: pre-configured proof-of-work to proof-of-stake test network",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 
 	// Dev mode
@@ -188,7 +188,7 @@ var (
 	ExitWhenSyncedFlag = &cli.BoolFlag{
 		Name:     "exitwhensynced",
 		Usage:    "Exits after block synchronisation completes",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 
 	// Dump command options.
@@ -225,25 +225,25 @@ var (
 		Name:     "syncmode",
 		Usage:    `Blockchain sync mode ("snap", "full" or "light")`,
 		Value:    &defaultSyncMode,
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	GCModeFlag = &cli.StringFlag{
 		Name:     "gcmode",
 		Usage:    `Blockchain garbage collection mode ("full", "archive")`,
 		Value:    "full",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	SnapshotFlag = &cli.BoolFlag{
 		Name:     "snapshot",
 		Usage:    `Enables snapshot-database mode (default = enable)`,
 		Value:    true,
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	TxLookupLimitFlag = &cli.Uint64Flag{
 		Name:     "txlookuplimit",
 		Usage:    "Number of recent blocks to maintain transactions index for (default = about one year, 0 = entire chain)",
 		Value:    gconfig.Defaults.TxLookupLimit,
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	LightKDFFlag = &cli.BoolFlag{
 		Name:     "lightkdf",
@@ -253,7 +253,7 @@ var (
 	EthRequiredBlocksFlag = &cli.StringFlag{
 		Name:     "g.requiredblocks",
 		Usage:    "Comma separated block number-to-hash mappings to require for peering (<number>=<hash>)",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	LegacyWhitelistFlag = &cli.StringFlag{
 		Name:     "whitelist",
@@ -264,17 +264,17 @@ var (
 		Name:     "bloomfilter.size",
 		Usage:    "Megabytes of memory allocated to bloom-filter for pruning",
 		Value:    2048,
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	OverrideTerminalTotalDifficulty = &flags.BigFlag{
 		Name:     "override.terminaltotaldifficulty",
 		Usage:    "Manually specify TerminalTotalDifficulty, overriding the bundled setting",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	OverrideTerminalTotalDifficultyPassed = &cli.BoolFlag{
 		Name:     "override.terminaltotaldifficultypassed",
 		Usage:    "Manually specify TerminalTotalDifficultyPassed, overriding the bundled setting",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	// Light server and client settings
 	LightServeFlag = &cli.IntFlag{

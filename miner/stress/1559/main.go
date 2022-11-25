@@ -72,7 +72,7 @@ func main() {
 	)
 	for i := 0; i < 4; i++ {
 		// Start the node and wait until it's up
-		stack, ethBackend, err := makeMiner(genesis)
+		stack, gBackend, err := makeMiner(genesis)
 		if err != nil {
 			panic(err)
 		}
@@ -86,7 +86,7 @@ func main() {
 			stack.Server().AddPeer(n)
 		}
 		// Start tracking the node and its enode
-		nodes = append(nodes, ethBackend)
+		nodes = append(nodes, gBackend)
 		enodes = append(enodes, stack.Server().Self())
 	}
 
@@ -239,7 +239,7 @@ func makeMiner(genesis *core.Genesis) (*node.Node, *g.Ethereum, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	ethBackend, err := g.New(stack, &gconfig.Config{
+	gBackend, err := g.New(stack, &gconfig.Config{
 		Genesis:         genesis,
 		NetworkId:       genesis.Config.ChainID.Uint64(),
 		SyncMode:        downloader.FullSync,
@@ -259,5 +259,5 @@ func makeMiner(genesis *core.Genesis) (*node.Node, *g.Ethereum, error) {
 		return nil, nil, err
 	}
 	err = stack.Start()
-	return stack, ethBackend, err
+	return stack, gBackend, err
 }
