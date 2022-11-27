@@ -57,21 +57,21 @@ var (
 // is only used for necessary consensus checks. The legacy consensus engine can be any
 // engine implements the consensus interface (except the beacon itself).
 type Beacon struct {
-	ethone consensus.Engine // Original consensus engine used in eth1, e.g. gash or clique
+	gone consensus.Engine // Original consensus engine used in eth1, e.g. gash or clique
 }
 
 // New creates a consensus engine with the given embedded eth1 engine.
-func New(ethone consensus.Engine) *Beacon {
-	if _, ok := ethone.(*Beacon); ok {
+func New(gone consensus.Engine) *Beacon {
+	if _, ok := gone.(*Beacon); ok {
 		panic("nested consensus engine")
 	}
-	return &Beacon{ethone: ethone}
+	return &Beacon{gone: gone}
 }
 
 // Author implements consensus.Engine, returning the verified author of the block.
 func (beacon *Beacon) Author(header *types.Header) (common.Address, error) {
 	if !beacon.IsPoSHeader(header) {
-		return beacon.ethone.Author(header)
+		return beacon.gone.Author(header)
 	}
 	return header.Coinbase, nil
 }
@@ -84,7 +84,7 @@ func (beacon *Beacon) VerifyHeader(chain consensus.ChainHeaderReader, header *ty
 		return err
 	}
 	if !reached {
-		return beacon.ethone.VerifyHeader(chain, header, seal)
+		return beacon.gone.VerifyHeader(chain, header, seal)
 	}
 	// Short circuit if the parent is not known
 	parent := chain.GetHeader(header.ParentHash, header.Number.Uint64()-1)
@@ -101,7 +101,7 @@ func (beacon *Beacon) VerifyHeader(chain consensus.ChainHeaderReader, header *ty
 // VerifyHeaders expect the headers to be ordered and continuous.
 func (beacon *Beacon) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*types.Header, seals []bool) (chan<- struct{}, <-chan error) {
 	if !beacon.IsPoSHeader(headers[len(headers)-1]) {
-		return beacon.ethone.VerifyHeaders(chain, headers, seals)
+		return beacon.gone.VerifyHeaders(chain, headers, seals)
 	}
 	var (
 		preHeaders  []*types.Header
@@ -144,7 +144,7 @@ func (beacon *Beacon) VerifyHeaders(chain consensus.ChainHeaderReader, headers [
 			old, new, out      = 0, len(preHeaders), 0
 			errors             = make([]error, len(headers))
 			done               = make([]bool, len(headers))
-			oldDone, oldResult = beacon.ethone.VerifyHeaders(chain, preHeaders, preSeals)
+			oldDone, oldResult = beacon.gone.VerifyHeaders(chain, preHeaders, preSeals)
 			newDone, newResult = beacon.verifyHeaders(chain, postHeaders, preHeaders[len(preHeaders)-1])
 		)
 		// Verify that pre-merge headers don't overflow the TTD
@@ -212,7 +212,7 @@ func verifyTerminalPoWBlock(chain consensus.ChainHeaderReader, preHeaders []*typ
 // rules of the Ethereum consensus engine.
 func (beacon *Beacon) VerifyUncles(chain consensus.ChainReader, block *types.Block) error {
 	if !beacon.IsPoSHeader(block.Header()) {
-		return beacon.ethone.VerifyUncles(chain, block)
+		return beacon.gone.VerifyUncles(chain, block)
 	}
 	// Verify that there is no uncle block. It's explicitly disabled in the beacon
 	if len(block.Uncles()) > 0 {
@@ -316,7 +316,7 @@ func (beacon *Beacon) Prepare(chain consensus.ChainHeaderReader, header *types.H
 		return err
 	}
 	if !reached {
-		return beacon.ethone.Prepare(chain, header)
+		return beacon.gone.Prepare(chain, header)
 	}
 	header.Difficulty = beaconDifficulty
 	return nil
@@ -327,7 +327,7 @@ func (beacon *Beacon) Finalize(chain consensus.ChainHeaderReader, header *types.
 	// Finalize is different with Prepare, it can be used in both block generation
 	// and verification. So determine the consensus rules by header type.
 	if !beacon.IsPoSHeader(header) {
-		beacon.ethone.Finalize(chain, header, state, txs, uncles)
+		beacon.gone.Finalize(chain, header, state, txs, uncles)
 		return
 	}
 	// The block reward is no longer handled here. It's done by the
@@ -341,7 +341,7 @@ func (beacon *Beacon) FinalizeAndAssemble(chain consensus.ChainHeaderReader, hea
 	// FinalizeAndAssemble is different with Prepare, it can be used in both block
 	// generation and verification. So determine the consensus rules by header type.
 	if !beacon.IsPoSHeader(header) {
-		return beacon.ethone.FinalizeAndAssemble(chain, header, state, txs, uncles, receipts)
+		return beacon.gone.FinalizeAndAssemble(chain, header, state, txs, uncles, receipts)
 	}
 	// Finalize and assemble the block
 	beacon.Finalize(chain, header, state, txs, uncles)
@@ -355,7 +355,7 @@ func (beacon *Beacon) FinalizeAndAssemble(chain consensus.ChainHeaderReader, hea
 // than one result may also be returned depending on the consensus algorithm.
 func (beacon *Beacon) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
 	if !beacon.IsPoSHeader(block.Header()) {
-		return beacon.ethone.Seal(chain, block, results, stop)
+		return beacon.gone.Seal(chain, block, results, stop)
 	}
 	// The seal verification is done by the external consensus engine,
 	// return directly without pushing any block back. In another word
@@ -366,7 +366,7 @@ func (beacon *Beacon) Seal(chain consensus.ChainHeaderReader, block *types.Block
 
 // SealHash returns the hash of a block prior to it being sealed.
 func (beacon *Beacon) SealHash(header *types.Header) common.Hash {
-	return beacon.ethone.SealHash(header)
+	return beacon.gone.SealHash(header)
 }
 
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
@@ -375,19 +375,19 @@ func (beacon *Beacon) SealHash(header *types.Header) common.Hash {
 func (beacon *Beacon) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
 	// Transition isn't triggered yet, use the legacy rules for calculation
 	if reached, _ := IsTTDReached(chain, parent.Hash(), parent.Number.Uint64()); !reached {
-		return beacon.ethone.CalcDifficulty(chain, time, parent)
+		return beacon.gone.CalcDifficulty(chain, time, parent)
 	}
 	return beaconDifficulty
 }
 
 // APIs implements consensus.Engine, returning the user facing RPC APIs.
 func (beacon *Beacon) APIs(chain consensus.ChainHeaderReader) []rpc.API {
-	return beacon.ethone.APIs(chain)
+	return beacon.gone.APIs(chain)
 }
 
 // Close shutdowns the consensus engine
 func (beacon *Beacon) Close() error {
-	return beacon.ethone.Close()
+	return beacon.gone.Close()
 }
 
 // IsPoSHeader reports the header belongs to the PoS-stage with some special fields.
@@ -402,7 +402,7 @@ func (beacon *Beacon) IsPoSHeader(header *types.Header) bool {
 
 // InnerEngine returns the embedded eth1 consensus engine.
 func (beacon *Beacon) InnerEngine() consensus.Engine {
-	return beacon.ethone
+	return beacon.gone
 }
 
 // SetThreads updates the mining threads. Delegate the call
@@ -411,7 +411,7 @@ func (beacon *Beacon) SetThreads(threads int) {
 	type threaded interface {
 		SetThreads(threads int)
 	}
-	if th, ok := beacon.ethone.(threaded); ok {
+	if th, ok := beacon.gone.(threaded); ok {
 		th.SetThreads(threads)
 	}
 }

@@ -1419,11 +1419,11 @@ func SetP2PConfig(ctx *cli.Context, cfg *p2p.Config) {
 	if !(lightClient || lightServer) {
 		lightPeers = 0
 	}
-	ethPeers := cfg.MaxPeers - lightPeers
+	gPeers := cfg.MaxPeers - lightPeers
 	if lightClient {
-		ethPeers = 0
+		gPeers = 0
 	}
-	log.Info("Maximum peer count", "G", ethPeers, "LES", lightPeers, "total", cfg.MaxPeers)
+	log.Info("Maximum peer count", "G", gPeers, "LES", lightPeers, "total", cfg.MaxPeers)
 
 	if ctx.IsSet(MaxPendingPeersFlag.Name) {
 		cfg.MaxPendingPeers = ctx.Int(MaxPendingPeersFlag.Name)
