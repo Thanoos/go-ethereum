@@ -260,7 +260,7 @@ func testRecvTransactions(t *testing.T, protocol uint) {
 	defer sink.Close()
 
 	go handler.handler.runEthPeer(sink, func(peer *g.Peer) error {
-		return g.Handle((*ethHandler)(handler.handler), peer)
+		return g.Handle((*gHandler)(handler.handler), peer)
 	})
 	// Run the handshake locally to avoid spinning up a source handler
 	var (
@@ -321,7 +321,7 @@ func testSendTransactions(t *testing.T, protocol uint) {
 	defer sink.Close()
 
 	go handler.handler.runEthPeer(src, func(peer *g.Peer) error {
-		return g.Handle((*ethHandler)(handler.handler), peer)
+		return g.Handle((*gHandler)(handler.handler), peer)
 	})
 	// Run the handshake locally to avoid spinning up a source handler
 	var (
@@ -409,10 +409,10 @@ func testTransactionPropagation(t *testing.T, protocol uint) {
 		defer sinkPeer.Close()
 
 		go source.handler.runEthPeer(sourcePeer, func(peer *g.Peer) error {
-			return g.Handle((*ethHandler)(source.handler), peer)
+			return g.Handle((*gHandler)(source.handler), peer)
 		})
 		go sink.handler.runEthPeer(sinkPeer, func(peer *g.Peer) error {
-			return g.Handle((*ethHandler)(sink.handler), peer)
+			return g.Handle((*gHandler)(sink.handler), peer)
 		})
 	}
 	// Subscribe to all the transaction pools
@@ -525,7 +525,7 @@ func testCheckpointChallenge(t *testing.T, syncmode downloader.SyncMode, checkpo
 	go func() {
 		defer close(handlerDone)
 		handler.handler.runEthPeer(local, func(peer *g.Peer) error {
-			return g.Handle((*ethHandler)(handler.handler), peer)
+			return g.Handle((*gHandler)(handler.handler), peer)
 		})
 	}()
 
@@ -631,7 +631,7 @@ func testBroadcastBlock(t *testing.T, peers, bcasts int) {
 		defer sinkPeer.Close()
 
 		go source.handler.runEthPeer(sourcePeer, func(peer *g.Peer) error {
-			return g.Handle((*ethHandler)(source.handler), peer)
+			return g.Handle((*gHandler)(source.handler), peer)
 		})
 		if err := sinkPeer.Handshake(1, td, genesis.Hash(), genesis.Hash(), forkid.NewIDWithChain(source.chain), forkid.NewFilter(source.chain)); err != nil {
 			t.Fatalf("failed to run protocol handshake")
@@ -698,7 +698,7 @@ func testBroadcastMalformedBlock(t *testing.T, protocol uint) {
 	defer sink.Close()
 
 	go source.handler.runEthPeer(src, func(peer *g.Peer) error {
-		return g.Handle((*ethHandler)(source.handler), peer)
+		return g.Handle((*gHandler)(source.handler), peer)
 	})
 	// Run the handshake locally to avoid spinning up a sink handler
 	var (

@@ -29,20 +29,20 @@ import (
 	"github.com/ethereum/go-ethereum/p2p/enode"
 )
 
-// ethHandler implements the g.Backend interface to handle the various network
+// gHandler implements the g.Backend interface to handle the various network
 // packets that are sent as replies or broadcasts.
-type ethHandler handler
+type gHandler handler
 
-func (h *ethHandler) Chain() *core.BlockChain { return h.chain }
-func (h *ethHandler) TxPool() g.TxPool        { return h.txpool }
+func (h *gHandler) Chain() *core.BlockChain { return h.chain }
+func (h *gHandler) TxPool() g.TxPool        { return h.txpool }
 
 // RunPeer is invoked when a peer joins on the `g` protocol.
-func (h *ethHandler) RunPeer(peer *g.Peer, hand g.Handler) error {
+func (h *gHandler) RunPeer(peer *g.Peer, hand g.Handler) error {
 	return (*handler)(h).runEthPeer(peer, hand)
 }
 
 // PeerInfo retrieves all known `g` information about a peer.
-func (h *ethHandler) PeerInfo(id enode.ID) interface{} {
+func (h *gHandler) PeerInfo(id enode.ID) interface{} {
 	if p := h.peers.peer(id.String()); p != nil {
 		return p.info()
 	}
@@ -51,13 +51,13 @@ func (h *ethHandler) PeerInfo(id enode.ID) interface{} {
 
 // AcceptTxs retrieves whether transaction processing is enabled on the node
 // or if inbound transactions should simply be dropped.
-func (h *ethHandler) AcceptTxs() bool {
+func (h *gHandler) AcceptTxs() bool {
 	return atomic.LoadUint32(&h.acceptTxs) == 1
 }
 
 // Handle is invoked from a peer's message handler when it receives a new remote
 // message that the handler couldn't consume and serve itself.
-func (h *ethHandler) Handle(peer *g.Peer, packet g.Packet) error {
+func (h *gHandler) Handle(peer *g.Peer, packet g.Packet) error {
 	// Consume any broadcasts and announces, forwarding the rest to the downloader
 	switch packet := packet.(type) {
 	case *g.NewBlockHashesPacket:
@@ -83,7 +83,7 @@ func (h *ethHandler) Handle(peer *g.Peer, packet g.Packet) error {
 
 // handleBlockAnnounces is invoked from a peer's message handler when it transmits a
 // batch of block announcements for the local node to process.
-func (h *ethHandler) handleBlockAnnounces(peer *g.Peer, hashes []common.Hash, numbers []uint64) error {
+func (h *gHandler) handleBlockAnnounces(peer *g.Peer, hashes []common.Hash, numbers []uint64) error {
 	// Drop all incoming block announces from the p2p network if
 	// the chain already entered the pos stage and disconnect the
 	// remote peer.
@@ -111,7 +111,7 @@ func (h *ethHandler) handleBlockAnnounces(peer *g.Peer, hashes []common.Hash, nu
 
 // handleBlockBroadcast is invoked from a peer's message handler when it transmits a
 // block broadcast for the local node to process.
-func (h *ethHandler) handleBlockBroadcast(peer *g.Peer, block *types.Block, td *big.Int) error {
+func (h *gHandler) handleBlockBroadcast(peer *g.Peer, block *types.Block, td *big.Int) error {
 	// Drop all incoming block announces from the p2p network if
 	// the chain already entered the pos stage and disconnect the
 	// remote peer.
