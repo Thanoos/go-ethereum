@@ -132,7 +132,7 @@ var jsonTypedData = `
       },
       "primaryType": "Mail",
       "domain": {
-        "name": "Ether Mail",
+        "name": "AC Mail",
         "version": "1",
         "chainId": "1",
         "verifyingContract": "0xCCCcccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
@@ -155,7 +155,7 @@ var jsonTypedData = `
 const primaryType = "Mail"
 
 var domainStandard = apitypes.TypedDataDomain{
-	Name:              "Ether Mail",
+	Name:              "AC Mail",
 	Version:           "1",
 	ChainId:           math.NewHexOrDecimal256(1),
 	VerifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",

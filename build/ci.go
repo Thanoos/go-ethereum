@@ -77,7 +77,7 @@ var (
 		executablePath("bootnode"),
 		executablePath("evm"),
 		executablePath("geth"),
-		executablePath("puppeth"),
+		executablePath("puppg"),
 		executablePath("rlpdump"),
 		executablePath("clef"),
 	}
@@ -101,7 +101,7 @@ var (
 			Description: "Ethereum CLI client.",
 		},
 		{
-			BinaryName:  "puppeth",
+			BinaryName:  "puppg",
 			Description: "Ethereum private network manager.",
 		},
 		{

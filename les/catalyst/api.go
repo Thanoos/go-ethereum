@@ -113,7 +113,7 @@ func (api *ConsensusAPI) ExecutePayloadV1(params beacon.ExecutableDataV1) (beaco
 	if !api.les.BlockChain().HasHeader(block.ParentHash(), block.NumberU64()-1) {
 		/*
 			TODO (MariusVanDerWijden) reenable once sync is merged
-			if err := api.eth.Downloader().BeaconSync(api.eth.SyncMode(), block.Header()); err != nil {
+			if err := api.g.Downloader().BeaconSync(api.g.SyncMode(), block.Header()); err != nil {
 				return SYNCING, err
 			}
 		*/

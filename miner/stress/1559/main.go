@@ -27,13 +27,13 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/fdlimit"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/consensus/gash"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
+	"github.com/ethereum/go-ethereum/g"
+	"github.com/ethereum/go-ethereum/g/downloader"
+	"github.com/ethereum/go-ethereum/g/gconfig"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/miner"
 	"github.com/ethereum/go-ethereum/node"
@@ -55,10 +55,10 @@ func main() {
 	for i := 0; i < len(faucets); i++ {
 		faucets[i], _ = crypto.GenerateKey()
 	}
-	// Pre-generate the ethash mining DAG so we don't race
-	ethash.MakeDataset(1, ethconfig.Defaults.Ethash.DatasetDir)
+	// Pre-generate the gash mining DAG so we don't race
+	gash.MakeDataset(1, gconfig.Defaults.Gash.DatasetDir)
 
-	// Create an Ethash network based off of the Ropsten config
+	// Create an Gash network based off of the Ropsten config
 	genesis := makeGenesis(faucets)
 
 	// Handle interrupts.
@@ -67,12 +67,12 @@ func main() {
 
 	var (
 		stacks []*node.Node
-		nodes  []*eth.Ethereum
+		nodes  []*g.Ethereum
 		enodes []*enode.Node
 	)
 	for i := 0; i < 4; i++ {
 		// Start the node and wait until it's up
-		stack, ethBackend, err := makeMiner(genesis)
+		stack, gBackend, err := makeMiner(genesis)
 		if err != nil {
 			panic(err)
 		}
@@ -86,7 +86,7 @@ func main() {
 			stack.Server().AddPeer(n)
 		}
 		// Start tracking the node and its enode
-		nodes = append(nodes, ethBackend)
+		nodes = append(nodes, gBackend)
 		enodes = append(enodes, stack.Server().Self())
 	}
 
@@ -190,12 +190,12 @@ func makeTransaction(nonce uint64, privKey *ecdsa.PrivateKey, signer types.Signe
 	})
 }
 
-// makeGenesis creates a custom Ethash genesis block based on some pre-defined
+// makeGenesis creates a custom Gash genesis block based on some pre-defined
 // faucet accounts.
 func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	genesis := core.DefaultRopstenGenesisBlock()
 
-	genesis.Config = params.AllEthashProtocolChanges
+	genesis.Config = params.AllGashProtocolChanges
 	genesis.Config.LondonBlock = londonBlock
 	genesis.Difficulty = params.MinimumDifficulty
 
@@ -219,7 +219,7 @@ func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	return genesis
 }
 
-func makeMiner(genesis *core.Genesis) (*node.Node, *eth.Ethereum, error) {
+func makeMiner(genesis *core.Genesis) (*node.Node, *g.Ethereum, error) {
 	// Define the basic configurations for the Ethereum node
 	datadir, _ := os.MkdirTemp("", "")
 
@@ -239,25 +239,25 @@ func makeMiner(genesis *core.Genesis) (*node.Node, *eth.Ethereum, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	ethBackend, err := eth.New(stack, &ethconfig.Config{
+	gBackend, err := g.New(stack, &gconfig.Config{
 		Genesis:         genesis,
 		NetworkId:       genesis.Config.ChainID.Uint64(),
 		SyncMode:        downloader.FullSync,
 		DatabaseCache:   256,
 		DatabaseHandles: 256,
 		TxPool:          core.DefaultTxPoolConfig,
-		GPO:             ethconfig.Defaults.GPO,
-		Ethash:          ethconfig.Defaults.Ethash,
+		GPO:             gconfig.Defaults.GPO,
+		Gash:            gconfig.Defaults.Gash,
 		Miner: miner.Config{
-			Etherbase: common.Address{1},
-			GasCeil:   genesis.GasLimit * 11 / 10,
-			GasPrice:  big.NewInt(1),
-			Recommit:  time.Second,
+			ACbase:   common.Address{1},
+			GasCeil:  genesis.GasLimit * 11 / 10,
+			GasPrice: big.NewInt(1),
+			Recommit: time.Second,
 		},
 	})
 	if err != nil {
 		return nil, nil, err
 	}
 	err = stack.Start()
-	return stack, ethBackend, err
+	return stack, gBackend, err
 }

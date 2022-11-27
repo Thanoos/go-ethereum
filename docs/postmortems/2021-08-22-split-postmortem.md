@@ -58,7 +58,7 @@ It was decided that in this specific instance, it would be possible to make a pu
 - The fix can be made pretty 'generically', e.g. always copying data on input to precompiles. 
 - The flaw is pretty difficult to find, given a generic fix in the call. The attacker needs to figure out that it concerns the precompiles, specifically the datcopy, and that it concerns the `RETURNDATA` buffer rather than the regular memory, and lastly the special circumstances to trigger it (overlapping but shifted input/output). 
 
-Since we had merged the removal of `ETH65`, if the entire network were to upgrade, then nodes which have not yet implemented `ETH66` would be cut off from the network. After further discussions, we decided to:
+Since we had merged the removal of `ETH65`, if the entire network were to upgrade, then nodes which have not yet implemented `G66` would be cut off from the network. After further discussions, we decided to:
 
 - Announce an upcoming security release on Tuesday (August 24th), via Twitter and official channels, plus reach out to downstream projects.
 - Temporarily revert the `ETH65`-removal.
@@ -68,7 +68,7 @@ Since we had merged the removal of `ETH65`, if the entire network were to upgrad
 
 ## Exploit
 
-At block [13107518](https://etherscan.io/block/13107518), mined at (Aug-27-2021 12:50:07 PM +UTC), a minority chain split occurred. The discord user @AlexSSD7 notified the allcoredevs-channel on the Eth R&D discord, on Aug 27 13:09  UTC. 
+At block [13107518](https://etherscan.io/block/13107518), mined at (Aug-27-2021 12:50:07 PM +UTC), a minority chain split occurred. The discord user @AlexSSD7 notified the allcoredevs-channel on the G R&D discord, on Aug 27 13:09  UTC. 
 
 
 At 14:09 UTC, it was confirmed that the transaction `0x1cb6fb36633d270edefc04d048145b4298e67b8aa82a9e5ec4aa1435dd770ce4` had triggered the bug, leading to a minority-split of the chain. The term 'minority split' means that the majority of miners continued to mine on the correct chain.

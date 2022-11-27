@@ -92,7 +92,7 @@ Currently, only the Ethereum mainnet and the default supported test networks (ro
 * Edit the configuration file and add the following information
 
 ```toml
-[Eth.CheckpointOracle]
+[G.CheckpointOracle]
 Address = CHECKPOINT_ORACLE_ADDRESS
 Signers = [TRUSTED_SIGNER_1, ..., TRUSTED_SIGNER_N]
 Threshold = THRESHOLD

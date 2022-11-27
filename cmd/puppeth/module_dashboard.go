@@ -77,17 +77,17 @@ var dashboardContent = `
 						<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
 							<div class="menu_section">
 								<ul class="nav side-menu">
-									{{if .EthstatsPage}}<li id="stats_menu"><a onclick="load('#stats')"><i class="fa fa-tachometer"></i> Network Stats</a></li>{{end}}
+									{{if .GstatsPage}}<li id="stats_menu"><a onclick="load('#stats')"><i class="fa fa-tachometer"></i> Network Stats</a></li>{{end}}
 									{{if .ExplorerPage}}<li id="explorer_menu"><a onclick="load('#explorer')"><i class="fa fa-database"></i> Block Explorer</a></li>{{end}}
 									{{if .FaucetPage}}<li id="faucet_menu"><a onclick="load('#faucet')"><i class="fa fa-bath"></i> Crypto Faucet</a></li>{{end}}
 									<li id="connect_menu"><a><i class="fa fa-plug"></i> Connect Yourself</a>
 										<ul id="connect_list" class="nav child_menu">
 											<li><a onclick="$('#connect_menu').removeClass('active'); $('#connect_list').toggle(); load('#geth')">Go Ethereum: Geth</a></li>
-											<li><a onclick="$('#connect_menu').removeClass('active'); $('#connect_list').toggle(); load('#mobile')">Go Ethereum: Android & iOS</a></li>{{if .Ethash}}
+											<li><a onclick="$('#connect_menu').removeClass('active'); $('#connect_list').toggle(); load('#mobile')">Go Ethereum: Android & iOS</a></li>{{if .Gash}}
 											<li><a onclick="$('#connect_menu').removeClass('active'); $('#connect_list').toggle(); load('#other')">Other Ethereum Clients</a></li>{{end}}
 										</ul>
 									</li>
-									<li id="about_menu"><a onclick="load('#about')"><i class="fa fa-heartbeat"></i> About Puppeth</a></li>
+									<li id="about_menu"><a onclick="load('#about')"><i class="fa fa-heartbeat"></i> About Puppg</a></li>
 								</ul>
 							</div>
 						</div>
@@ -114,7 +114,7 @@ var dashboardContent = `
 										<br/>
 										<p>To run an archive node, download <a href="/{{.GethGenesis}}"><code>{{.GethGenesis}}</code></a> and start Geth with:
 											<pre>geth --datadir=$HOME/.{{.Network}} init {{.GethGenesis}}</pre>
-											<pre>geth --networkid={{.NetworkID}} --datadir=$HOME/.{{.Network}} --cache=1024 --syncmode=full{{if .Ethstats}} --ethstats='{{.Ethstats}}'{{end}} --bootnodes={{.BootnodesFlat}}</pre>
+											<pre>geth --networkid={{.NetworkID}} --datadir=$HOME/.{{.Network}} --cache=1024 --syncmode=full{{if .Gstats}} --gstats='{{.Gstats}}'{{end}} --bootnodes={{.BootnodesFlat}}</pre>
 										</p>
 										<br/>
 										<p>You can download Geth from <a href="https://geth.ethereum.org/downloads/" target="about:blank">https://geth.ethereum.org/downloads/</a>.</p>
@@ -133,7 +133,7 @@ var dashboardContent = `
 										<br/>
 										<p>To run a full node, download <a href="/{{.GethGenesis}}"><code>{{.GethGenesis}}</code></a> and start Geth with:
 											<pre>geth --datadir=$HOME/.{{.Network}} init {{.GethGenesis}}</pre>
-											<pre>geth --networkid={{.NetworkID}} --datadir=$HOME/.{{.Network}} --cache=512{{if .Ethstats}} --ethstats='{{.Ethstats}}'{{end}} --bootnodes={{.BootnodesFlat}}</pre>
+											<pre>geth --networkid={{.NetworkID}} --datadir=$HOME/.{{.Network}} --cache=512{{if .Gstats}} --gstats='{{.Gstats}}'{{end}} --bootnodes={{.BootnodesFlat}}</pre>
 										</p>
 										<br/>
 										<p>You can download Geth from <a href="https://geth.ethereum.org/downloads/" target="about:blank">https://geth.ethereum.org/downloads/</a>.</p>
@@ -155,7 +155,7 @@ var dashboardContent = `
 										<br/>
 										<p>To run a light node, download <a href="/{{.GethGenesis}}"><code>{{.GethGenesis}}</code></a> and start Geth with:
 											<pre>geth --datadir=$HOME/.{{.Network}} init {{.GethGenesis}}</pre>
-											<pre>geth --networkid={{.NetworkID}} --datadir=$HOME/.{{.Network}} --syncmode=light{{if .Ethstats}} --ethstats='{{.Ethstats}}'{{end}} --bootnodes={{.BootnodesFlat}}</pre>
+											<pre>geth --networkid={{.NetworkID}} --datadir=$HOME/.{{.Network}} --syncmode=light{{if .Gstats}} --gstats='{{.Gstats}}'{{end}} --bootnodes={{.BootnodesFlat}}</pre>
 										</p>
 										<br/>
 										<p>You can download Geth from <a href="https://geth.ethereum.org/downloads/" target="about:blank">https://geth.ethereum.org/downloads/</a>.</p>
@@ -174,7 +174,7 @@ var dashboardContent = `
 										<br/>
 										<p>To run an embedded node, download <a href="/{{.GethGenesis}}"><code>{{.GethGenesis}}</code></a> and start Geth with:
 											<pre>geth --datadir=$HOME/.{{.Network}} init {{.GethGenesis}}</pre>
-											<pre>geth --networkid={{.NetworkID}} --datadir=$HOME/.{{.Network}} --cache=16 --ethash.cachesinmem=1 --syncmode=light{{if .Ethstats}} --ethstats='{{.Ethstats}}'{{end}} --bootnodes={{.BootnodesFlat}}</pre>
+											<pre>geth --networkid={{.NetworkID}} --datadir=$HOME/.{{.Network}} --cache=16 --gash.cachesinmem=1 --syncmode=light{{if .Gstats}} --gstats='{{.Gstats}}'{{end}} --bootnodes={{.BootnodesFlat}}</pre>
 										</p>
 										<br/>
 										<p>You can download Geth from <a href="https://geth.ethereum.org/downloads/" target="about:blank">https://geth.ethereum.org/downloads/</a>.</p>
@@ -212,8 +212,8 @@ bootnodes.append(new Enode("{{.}}"));{{end}}
 NodeConfig config = new NodeConfig();
 config.setBootstrapNodes(bootnodes);
 config.setEthereumNetworkID({{.NetworkID}});
-config.setEthereumGenesis(genesis);{{if .Ethstats}}
-config.setEthereumNetStats("{{.Ethstats}}");{{end}}
+config.setEthereumGenesis(genesis);{{if .Gstats}}
+config.setEthereumNetStats("{{.Gstats}}");{{end}}
 
 Node node = new Node(getFilesDir() + "/.{{.Network}}", config);
 node.start();
@@ -245,8 +245,8 @@ bootnodes?.append(GethNewEnode("{{.}}", &error)){{end}}
 let config = GethNewNodeConfig()
 config?.setBootstrapNodes(bootnodes)
 config?.setEthereumNetworkID({{.NetworkID}})
-config?.setEthereumGenesis(genesis){{if .Ethstats}}
-config?.setEthereumNetStats("{{.Ethstats}}"){{end}}
+config?.setEthereumGenesis(genesis){{if .Gstats}}
+config?.setEthereumNetStats("{{.Gstats}}"){{end}}
 
 let datadir = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
 let node = GethNewNode(datadir + "/.{{.Network}}", config, &error);
@@ -257,7 +257,7 @@ try! node?.start();
 								</div>
 							</div>
 						</div>
-					</div>{{if .Ethash}}
+					</div>{{if .Gash}}
 					<div id="other" hidden style="padding: 16px;">
 						<div class="page-title">
 							<div class="title_left">
@@ -279,7 +279,7 @@ try! node?.start();
 										<p>C++ Ethereum is the third most popular of the Ethereum clients, focusing on code portability to a broad range of operating systems and hardware. The client is currently a full node with transaction processing based synchronization.</p>
 										<br/>
 										<p>To run a cpp-ethereum node, download <a href="/{{.CppGenesis}}"><code>{{.CppGenesis}}</code></a> and start the node with:
-											<pre>eth --config {{.CppGenesis}} --datadir $HOME/.{{.Network}} --peerset "{{.CppBootnodes}}"</pre>
+											<pre>g --config {{.CppGenesis}} --datadir $HOME/.{{.Network}} --peerset "{{.CppBootnodes}}"</pre>
 										</p>
 										<br/>
 										<p>You can find cpp-ethereum at <a href="https://github.com/ethereum/cpp-ethereum/" target="about:blank">https://github.com/ethereum/cpp-ethereum/</a>.</p>
@@ -343,7 +343,7 @@ try! node?.start();
 										<br/>
 										<p>To run a pyethapp node, download <a href="/{{.PythonGenesis}}"><code>{{.PythonGenesis}}</code></a> and start the node with:
 											<pre>mkdir -p $HOME/.config/pyethapp/{{.Network}}</pre>
-											<pre>pyethapp -c eth.genesis="$(cat {{.PythonGenesis}})" -c eth.network_id={{.NetworkID}} -c data_dir=$HOME/.config/pyethapp/{{.Network}} -c discovery.bootstrap_nodes="[{{.PythonBootnodes}}]" -c eth.block.HOMESTEAD_FORK_BLKNUM={{.Homestead}} -c eth.block.ANTI_DOS_FORK_BLKNUM={{.Tangerine}} -c eth.block.SPURIOUS_DRAGON_FORK_BLKNUM={{.Spurious}} -c eth.block.METROPOLIS_FORK_BLKNUM={{.Byzantium}} -c eth.block.DAO_FORK_BLKNUM=18446744073709551615 run --console</pre>
+											<pre>pyethapp -c g.genesis="$(cat {{.PythonGenesis}})" -c g.network_id={{.NetworkID}} -c data_dir=$HOME/.config/pyethapp/{{.Network}} -c discovery.bootstrap_nodes="[{{.PythonBootnodes}}]" -c g.block.HOMESTEAD_FORK_BLKNUM={{.Homestead}} -c g.block.ANTI_DOS_FORK_BLKNUM={{.Tangerine}} -c g.block.SPURIOUS_DRAGON_FORK_BLKNUM={{.Spurious}} -c g.block.METROPOLIS_FORK_BLKNUM={{.Byzantium}} -c g.block.DAO_FORK_BLKNUM=18446744073709551615 run --console</pre>
 										</p>
 										<br/>
 										<p>You can find pyethapp at <a href="https://github.com/ethereum/pyethapp/" target="about:blank">https://github.com/ethereum/pyethapp/</a>.</p>
@@ -357,19 +357,19 @@ try! node?.start();
 							<div style="margin: 0 auto;">
 								<div class="x_panel">
 									<div class="x_title">
-										<h3>Puppeth &ndash; Your Ethereum private network manager</h3>
+										<h3>Puppg &ndash; Your Ethereum private network manager</h3>
 										<div class="clearfix"></div>
 									</div>
 									<div style="display: inline-block; vertical-align: bottom; width: 623px; margin-top: 16px;">
-										<p>Puppeth is a tool to aid you in creating a new Ethereum network down to the genesis block, bootnodes, signers, ethstats server, crypto faucet,  block explorer, dashboard and more; without the hassle that it would normally entail to manually configure all these services one by one.</p>
-										<p>Puppeth uses ssh to dial in to remote servers, and builds its network components out of docker containers using docker-compose. The user is guided through the process via a command line wizard that does the heavy lifting and topology configuration automatically behind the scenes.</p>
+										<p>Puppg is a tool to aid you in creating a new Ethereum network down to the genesis block, bootnodes, signers, gstats server, crypto faucet,  block explorer, dashboard and more; without the hassle that it would normally entail to manually configure all these services one by one.</p>
+										<p>Puppg uses ssh to dial in to remote servers, and builds its network components out of docker containers using docker-compose. The user is guided through the process via a command line wizard that does the heavy lifting and topology configuration automatically behind the scenes.</p>
 										<br/>
-										<p>Puppeth is distributed as part of the <a href="https://geth.ethereum.org/downloads/" target="about:blank">Geth &amp; Tools</a> bundles, but can also be installed separately via:<pre>go get github.com/ethereum/go-ethereum/cmd/puppeth</pre></p>
+										<p>Puppg is distributed as part of the <a href="https://geth.ethereum.org/downloads/" target="about:blank">Geth &amp; Tools</a> bundles, but can also be installed separately via:<pre>go get github.com/ethereum/go-ethereum/cmd/puppg</pre></p>
 										<br/>
 										<p><em>Copyright 2017. The go-ethereum Authors.</em></p>
 									</div>
 									<div style="display: inline-block; vertical-align: bottom; width: 217px;">
-										<img src="puppeth.png" style="height: 256px; margin: 16px 16px 16px 16px"></img>
+										<img src="puppg.png" style="height: 256px; margin: 16px 16px 16px 16px"></img>
 									</div>
 								</div>
 							</div>
@@ -401,7 +401,7 @@ try! node?.start();
 				var url = hash;
 				switch (hash) {
 					case "#stats":
-						url = "//{{.EthstatsPage}}";
+						url = "//{{.GstatsPage}}";
 						break;
 					case "#explorer":
 						url = "//{{.ExplorerPage}}";
@@ -477,7 +477,7 @@ ADD {{.Network}}-harmony.json /dashboard/{{.Network}}-harmony.json
 ADD {{.Network}}-parity.json /dashboard/{{.Network}}-parity.json
 ADD {{.Network}}-python.json /dashboard/{{.Network}}-python.json
 ADD index.html /dashboard/index.html
-ADD puppeth.png /dashboard/puppeth.png
+ADD puppg.png /dashboard/puppg.png
 
 EXPOSE 80
 
@@ -495,7 +495,7 @@ services:
     ports:
       - "{{.Port}}:80"{{end}}
     environment:
-      - ETHSTATS_PAGE={{.EthstatsPage}}
+      - GSTATS_PAGE={{.GstatsPage}}
       - EXPLORER_PAGE={{.ExplorerPage}}
       - WALLET_PAGE={{.WalletPage}}
       - FAUCET_PAGE={{.FaucetPage}}{{if .VHost}}
@@ -527,13 +527,13 @@ func deployDashboard(client *sshClient, network string, conf *config, config *da
 		"Network":      network,
 		"Port":         config.port,
 		"VHost":        config.host,
-		"EthstatsPage": config.ethstats,
+		"GstatsPage":   config.gstats,
 		"ExplorerPage": config.explorer,
 		"FaucetPage":   config.faucet,
 	})
 	files[filepath.Join(workdir, "docker-compose.yaml")] = composefile.Bytes()
 
-	statsLogin := fmt.Sprintf("yournode:%s", conf.ethstats)
+	statsLogin := fmt.Sprintf("yournode:%s", conf.gstats)
 	if !config.trusted {
 		statsLogin = ""
 	}
@@ -554,14 +554,14 @@ func deployDashboard(client *sshClient, network string, conf *config, config *da
 		"Network":           network,
 		"NetworkID":         conf.Genesis.Config.ChainID,
 		"NetworkTitle":      strings.Title(network),
-		"EthstatsPage":      config.ethstats,
+		"GstatsPage":        config.gstats,
 		"ExplorerPage":      config.explorer,
 		"FaucetPage":        config.faucet,
 		"GethGenesis":       network + ".json",
 		"Bootnodes":         conf.bootnodes,
 		"BootnodesFlat":     strings.Join(conf.bootnodes, ","),
-		"Ethstats":          statsLogin,
-		"Ethash":            conf.Genesis.Config.Ethash != nil,
+		"Gstats":            statsLogin,
+		"Gash":              conf.Genesis.Config.Gash != nil,
 		"CppGenesis":        network + "-cpp.json",
 		"CppBootnodes":      strings.Join(bootCpp, " "),
 		"HarmonyGenesis":    network + "-harmony.json",
@@ -581,7 +581,7 @@ func deployDashboard(client *sshClient, network string, conf *config, config *da
 	// Marshal the genesis spec files for go-ethereum and all the other clients
 	genesis, _ := conf.Genesis.MarshalJSON()
 	files[filepath.Join(workdir, network+".json")] = genesis
-	files[filepath.Join(workdir, "puppeth.png")] = dashboardMascot
+	files[filepath.Join(workdir, "puppg.png")] = dashboardMascot
 
 	// Upload the deployment files to the remote server (and clean up afterwards)
 	if out, err := client.Upload(files); err != nil {
@@ -603,7 +603,7 @@ type dashboardInfos struct {
 	port    int
 	trusted bool
 
-	ethstats string
+	gstats   string
 	explorer string
 	faucet   string
 }
@@ -614,7 +614,7 @@ func (info *dashboardInfos) Report() map[string]string {
 	return map[string]string{
 		"Website address":       info.host,
 		"Website listener port": strconv.Itoa(info.port),
-		"Ethstats service":      info.ethstats,
+		"Gstats service":        info.gstats,
 		"Explorer service":      info.explorer,
 		"Faucet service":        info.faucet,
 	}
@@ -623,7 +623,7 @@ func (info *dashboardInfos) Report() map[string]string {
 // checkDashboard does a health-check against a dashboard container to verify if
 // it's running, and if yes, gathering a collection of useful infos about it.
 func checkDashboard(client *sshClient, network string) (*dashboardInfos, error) {
-	// Inspect a possible ethstats container on the host
+	// Inspect a possible gstats container on the host
 	infos, err := inspectContainer(client, fmt.Sprintf("%s_dashboard_1", network))
 	if err != nil {
 		return nil, err
@@ -654,7 +654,7 @@ func checkDashboard(client *sshClient, network string) (*dashboardInfos, error) 
 	return &dashboardInfos{
 		host:     host,
 		port:     port,
-		ethstats: infos.envvars["ETHSTATS_PAGE"],
+		gstats:   infos.envvars["GSTATS_PAGE"],
 		explorer: infos.envvars["EXPLORER_PAGE"],
 		faucet:   infos.envvars["FAUCET_PAGE"],
 	}, nil

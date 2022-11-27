@@ -36,24 +36,24 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/fdlimit"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/consensus/gash"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth"
-	ethcatalyst "github.com/ethereum/go-ethereum/eth/catalyst"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
-	"github.com/ethereum/go-ethereum/eth/filters"
-	"github.com/ethereum/go-ethereum/eth/gasprice"
-	"github.com/ethereum/go-ethereum/eth/tracers"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/ethdb/remotedb"
-	"github.com/ethereum/go-ethereum/ethstats"
+	"github.com/ethereum/go-ethereum/g"
+	gcatalyst "github.com/ethereum/go-ethereum/g/catalyst"
+	"github.com/ethereum/go-ethereum/g/downloader"
+	"github.com/ethereum/go-ethereum/g/filters"
+	"github.com/ethereum/go-ethereum/g/gasprice"
+	"github.com/ethereum/go-ethereum/g/gconfig"
+	"github.com/ethereum/go-ethereum/g/tracers"
+	"github.com/ethereum/go-ethereum/gdb"
+	"github.com/ethereum/go-ethereum/gdb/remotedb"
 	"github.com/ethereum/go-ethereum/graphql"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
+	"github.com/ethereum/go-ethereum/gstats"
 	"github.com/ethereum/go-ethereum/internal/flags"
+	"github.com/ethereum/go-ethereum/internal/gapi"
 	"github.com/ethereum/go-ethereum/les"
 	lescatalyst "github.com/ethereum/go-ethereum/les/catalyst"
 	"github.com/ethereum/go-ethereum/log"
@@ -86,7 +86,7 @@ var (
 		Name:     "datadir",
 		Usage:    "Data directory for the databases and keystore",
 		Value:    flags.DirectoryString(node.DefaultDataDir()),
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	RemoteDBFlag = &cli.StringFlag{
 		Name:     "remotedb",
@@ -96,12 +96,12 @@ var (
 	AncientFlag = &flags.DirectoryFlag{
 		Name:     "datadir.ancient",
 		Usage:    "Root directory for ancient data (default = inside chaindata)",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	MinFreeDiskSpaceFlag = &flags.DirectoryFlag{
 		Name:     "datadir.minfreedisk",
 		Usage:    "Minimum free disk space in MB, once reached triggers auto shut down (default = --cache.gc converted to MB, 0 = disabled)",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	KeyStoreDirFlag = &flags.DirectoryFlag{
 		Name:     "keystore",
@@ -122,38 +122,38 @@ var (
 	NetworkIdFlag = &cli.Uint64Flag{
 		Name:     "networkid",
 		Usage:    "Explicitly set network id (integer)(For testnets: use --ropsten, --rinkeby, --goerli instead)",
-		Value:    ethconfig.Defaults.NetworkId,
-		Category: flags.EthCategory,
+		Value:    gconfig.Defaults.NetworkId,
+		Category: flags.GCategory,
 	}
 	MainnetFlag = &cli.BoolFlag{
 		Name:     "mainnet",
 		Usage:    "Ethereum mainnet",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	RopstenFlag = &cli.BoolFlag{
 		Name:     "ropsten",
 		Usage:    "Ropsten network: pre-configured proof-of-stake test network",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	RinkebyFlag = &cli.BoolFlag{
 		Name:     "rinkeby",
 		Usage:    "Rinkeby network: pre-configured proof-of-authority test network",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	GoerliFlag = &cli.BoolFlag{
 		Name:     "goerli",
 		Usage:    "Görli network: pre-configured proof-of-authority test network",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	SepoliaFlag = &cli.BoolFlag{
 		Name:     "sepolia",
 		Usage:    "Sepolia network: pre-configured proof-of-work test network",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	KilnFlag = &cli.BoolFlag{
 		Name:     "kiln",
 		Usage:    "Kiln network: pre-configured proof-of-work to proof-of-stake test network",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 
 	// Dev mode
@@ -188,7 +188,7 @@ var (
 	ExitWhenSyncedFlag = &cli.BoolFlag{
 		Name:     "exitwhensynced",
 		Usage:    "Exits after block synchronisation completes",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 
 	// Dump command options.
@@ -220,30 +220,30 @@ var (
 		Value: 0,
 	}
 
-	defaultSyncMode = ethconfig.Defaults.SyncMode
+	defaultSyncMode = gconfig.Defaults.SyncMode
 	SyncModeFlag    = &flags.TextMarshalerFlag{
 		Name:     "syncmode",
 		Usage:    `Blockchain sync mode ("snap", "full" or "light")`,
 		Value:    &defaultSyncMode,
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	GCModeFlag = &cli.StringFlag{
 		Name:     "gcmode",
 		Usage:    `Blockchain garbage collection mode ("full", "archive")`,
 		Value:    "full",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	SnapshotFlag = &cli.BoolFlag{
 		Name:     "snapshot",
 		Usage:    `Enables snapshot-database mode (default = enable)`,
 		Value:    true,
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	TxLookupLimitFlag = &cli.Uint64Flag{
 		Name:     "txlookuplimit",
 		Usage:    "Number of recent blocks to maintain transactions index for (default = about one year, 0 = entire chain)",
-		Value:    ethconfig.Defaults.TxLookupLimit,
-		Category: flags.EthCategory,
+		Value:    gconfig.Defaults.TxLookupLimit,
+		Category: flags.GCategory,
 	}
 	LightKDFFlag = &cli.BoolFlag{
 		Name:     "lightkdf",
@@ -251,66 +251,66 @@ var (
 		Category: flags.AccountCategory,
 	}
 	EthRequiredBlocksFlag = &cli.StringFlag{
-		Name:     "eth.requiredblocks",
+		Name:     "g.requiredblocks",
 		Usage:    "Comma separated block number-to-hash mappings to require for peering (<number>=<hash>)",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	LegacyWhitelistFlag = &cli.StringFlag{
 		Name:     "whitelist",
-		Usage:    "Comma separated block number-to-hash mappings to enforce (<number>=<hash>) (deprecated in favor of --eth.requiredblocks)",
+		Usage:    "Comma separated block number-to-hash mappings to enforce (<number>=<hash>) (deprecated in favor of --g.requiredblocks)",
 		Category: flags.DeprecatedCategory,
 	}
 	BloomFilterSizeFlag = &cli.Uint64Flag{
 		Name:     "bloomfilter.size",
 		Usage:    "Megabytes of memory allocated to bloom-filter for pruning",
 		Value:    2048,
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	OverrideTerminalTotalDifficulty = &flags.BigFlag{
 		Name:     "override.terminaltotaldifficulty",
 		Usage:    "Manually specify TerminalTotalDifficulty, overriding the bundled setting",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	OverrideTerminalTotalDifficultyPassed = &cli.BoolFlag{
 		Name:     "override.terminaltotaldifficultypassed",
 		Usage:    "Manually specify TerminalTotalDifficultyPassed, overriding the bundled setting",
-		Category: flags.EthCategory,
+		Category: flags.GCategory,
 	}
 	// Light server and client settings
 	LightServeFlag = &cli.IntFlag{
 		Name:     "light.serve",
 		Usage:    "Maximum percentage of time allowed for serving LES requests (multi-threaded processing allows values over 100)",
-		Value:    ethconfig.Defaults.LightServ,
+		Value:    gconfig.Defaults.LightServ,
 		Category: flags.LightCategory,
 	}
 	LightIngressFlag = &cli.IntFlag{
 		Name:     "light.ingress",
 		Usage:    "Incoming bandwidth limit for serving light clients (kilobytes/sec, 0 = unlimited)",
-		Value:    ethconfig.Defaults.LightIngress,
+		Value:    gconfig.Defaults.LightIngress,
 		Category: flags.LightCategory,
 	}
 	LightEgressFlag = &cli.IntFlag{
 		Name:     "light.egress",
 		Usage:    "Outgoing bandwidth limit for serving light clients (kilobytes/sec, 0 = unlimited)",
-		Value:    ethconfig.Defaults.LightEgress,
+		Value:    gconfig.Defaults.LightEgress,
 		Category: flags.LightCategory,
 	}
 	LightMaxPeersFlag = &cli.IntFlag{
 		Name:     "light.maxpeers",
 		Usage:    "Maximum number of light clients to serve, or light servers to attach to",
-		Value:    ethconfig.Defaults.LightPeers,
+		Value:    gconfig.Defaults.LightPeers,
 		Category: flags.LightCategory,
 	}
 	UltraLightServersFlag = &cli.StringFlag{
 		Name:     "ulc.servers",
 		Usage:    "List of trusted ultra-light servers",
-		Value:    strings.Join(ethconfig.Defaults.UltraLightServers, ","),
+		Value:    strings.Join(gconfig.Defaults.UltraLightServers, ","),
 		Category: flags.LightCategory,
 	}
 	UltraLightFractionFlag = &cli.IntFlag{
 		Name:     "ulc.fraction",
 		Usage:    "Minimum % of trusted ultra-light servers required to announce a new head",
-		Value:    ethconfig.Defaults.UltraLightFraction,
+		Value:    gconfig.Defaults.UltraLightFraction,
 		Category: flags.LightCategory,
 	}
 	UltraLightOnlyAnnounceFlag = &cli.BoolFlag{
@@ -329,51 +329,51 @@ var (
 		Category: flags.LightCategory,
 	}
 
-	// Ethash settings
-	EthashCacheDirFlag = &flags.DirectoryFlag{
-		Name:     "ethash.cachedir",
-		Usage:    "Directory to store the ethash verification caches (default = inside the datadir)",
-		Category: flags.EthashCategory,
+	// Gash settings
+	GashCacheDirFlag = &flags.DirectoryFlag{
+		Name:     "gash.cachedir",
+		Usage:    "Directory to store the gash verification caches (default = inside the datadir)",
+		Category: flags.GashCategory,
 	}
-	EthashCachesInMemoryFlag = &cli.IntFlag{
-		Name:     "ethash.cachesinmem",
-		Usage:    "Number of recent ethash caches to keep in memory (16MB each)",
-		Value:    ethconfig.Defaults.Ethash.CachesInMem,
-		Category: flags.EthashCategory,
+	GashCachesInMemoryFlag = &cli.IntFlag{
+		Name:     "gash.cachesinmem",
+		Usage:    "Number of recent gash caches to keep in memory (16MB each)",
+		Value:    gconfig.Defaults.Gash.CachesInMem,
+		Category: flags.GashCategory,
 	}
-	EthashCachesOnDiskFlag = &cli.IntFlag{
-		Name:     "ethash.cachesondisk",
-		Usage:    "Number of recent ethash caches to keep on disk (16MB each)",
-		Value:    ethconfig.Defaults.Ethash.CachesOnDisk,
-		Category: flags.EthashCategory,
+	GashCachesOnDiskFlag = &cli.IntFlag{
+		Name:     "gash.cachesondisk",
+		Usage:    "Number of recent gash caches to keep on disk (16MB each)",
+		Value:    gconfig.Defaults.Gash.CachesOnDisk,
+		Category: flags.GashCategory,
 	}
-	EthashCachesLockMmapFlag = &cli.BoolFlag{
-		Name:     "ethash.cacheslockmmap",
-		Usage:    "Lock memory maps of recent ethash caches",
-		Category: flags.EthashCategory,
+	GashCachesLockMmapFlag = &cli.BoolFlag{
+		Name:     "gash.cacheslockmmap",
+		Usage:    "Lock memory maps of recent gash caches",
+		Category: flags.GashCategory,
 	}
-	EthashDatasetDirFlag = &flags.DirectoryFlag{
-		Name:     "ethash.dagdir",
-		Usage:    "Directory to store the ethash mining DAGs",
-		Value:    flags.DirectoryString(ethconfig.Defaults.Ethash.DatasetDir),
-		Category: flags.EthashCategory,
+	GashDatasetDirFlag = &flags.DirectoryFlag{
+		Name:     "gash.dagdir",
+		Usage:    "Directory to store the gash mining DAGs",
+		Value:    flags.DirectoryString(gconfig.Defaults.Gash.DatasetDir),
+		Category: flags.GashCategory,
 	}
-	EthashDatasetsInMemoryFlag = &cli.IntFlag{
-		Name:     "ethash.dagsinmem",
-		Usage:    "Number of recent ethash mining DAGs to keep in memory (1+GB each)",
-		Value:    ethconfig.Defaults.Ethash.DatasetsInMem,
-		Category: flags.EthashCategory,
+	GashDatasetsInMemoryFlag = &cli.IntFlag{
+		Name:     "gash.dagsinmem",
+		Usage:    "Number of recent gash mining DAGs to keep in memory (1+GB each)",
+		Value:    gconfig.Defaults.Gash.DatasetsInMem,
+		Category: flags.GashCategory,
 	}
-	EthashDatasetsOnDiskFlag = &cli.IntFlag{
-		Name:     "ethash.dagsondisk",
-		Usage:    "Number of recent ethash mining DAGs to keep on disk (1+GB each)",
-		Value:    ethconfig.Defaults.Ethash.DatasetsOnDisk,
-		Category: flags.EthashCategory,
+	GashDatasetsOnDiskFlag = &cli.IntFlag{
+		Name:     "gash.dagsondisk",
+		Usage:    "Number of recent gash mining DAGs to keep on disk (1+GB each)",
+		Value:    gconfig.Defaults.Gash.DatasetsOnDisk,
+		Category: flags.GashCategory,
 	}
-	EthashDatasetsLockMmapFlag = &cli.BoolFlag{
-		Name:     "ethash.dagslockmmap",
-		Usage:    "Lock memory maps for recent ethash mining DAGs",
-		Category: flags.EthashCategory,
+	GashDatasetsLockMmapFlag = &cli.BoolFlag{
+		Name:     "gash.dagslockmmap",
+		Usage:    "Lock memory maps for recent gash mining DAGs",
+		Category: flags.GashCategory,
 	}
 
 	// Transaction pool settings
@@ -402,43 +402,43 @@ var (
 	TxPoolPriceLimitFlag = &cli.Uint64Flag{
 		Name:     "txpool.pricelimit",
 		Usage:    "Minimum gas price limit to enforce for acceptance into the pool",
-		Value:    ethconfig.Defaults.TxPool.PriceLimit,
+		Value:    gconfig.Defaults.TxPool.PriceLimit,
 		Category: flags.TxPoolCategory,
 	}
 	TxPoolPriceBumpFlag = &cli.Uint64Flag{
 		Name:     "txpool.pricebump",
 		Usage:    "Price bump percentage to replace an already existing transaction",
-		Value:    ethconfig.Defaults.TxPool.PriceBump,
+		Value:    gconfig.Defaults.TxPool.PriceBump,
 		Category: flags.TxPoolCategory,
 	}
 	TxPoolAccountSlotsFlag = &cli.Uint64Flag{
 		Name:     "txpool.accountslots",
 		Usage:    "Minimum number of executable transaction slots guaranteed per account",
-		Value:    ethconfig.Defaults.TxPool.AccountSlots,
+		Value:    gconfig.Defaults.TxPool.AccountSlots,
 		Category: flags.TxPoolCategory,
 	}
 	TxPoolGlobalSlotsFlag = &cli.Uint64Flag{
 		Name:     "txpool.globalslots",
 		Usage:    "Maximum number of executable transaction slots for all accounts",
-		Value:    ethconfig.Defaults.TxPool.GlobalSlots,
+		Value:    gconfig.Defaults.TxPool.GlobalSlots,
 		Category: flags.TxPoolCategory,
 	}
 	TxPoolAccountQueueFlag = &cli.Uint64Flag{
 		Name:     "txpool.accountqueue",
 		Usage:    "Maximum number of non-executable transaction slots permitted per account",
-		Value:    ethconfig.Defaults.TxPool.AccountQueue,
+		Value:    gconfig.Defaults.TxPool.AccountQueue,
 		Category: flags.TxPoolCategory,
 	}
 	TxPoolGlobalQueueFlag = &cli.Uint64Flag{
 		Name:     "txpool.globalqueue",
 		Usage:    "Maximum number of non-executable transaction slots for all accounts",
-		Value:    ethconfig.Defaults.TxPool.GlobalQueue,
+		Value:    gconfig.Defaults.TxPool.GlobalQueue,
 		Category: flags.TxPoolCategory,
 	}
 	TxPoolLifetimeFlag = &cli.DurationFlag{
 		Name:     "txpool.lifetime",
 		Usage:    "Maximum amount of time non-executable transaction are queued",
-		Value:    ethconfig.Defaults.TxPool.Lifetime,
+		Value:    gconfig.Defaults.TxPool.Lifetime,
 		Category: flags.TxPoolCategory,
 	}
 
@@ -464,13 +464,13 @@ var (
 	CacheTrieJournalFlag = &cli.StringFlag{
 		Name:     "cache.trie.journal",
 		Usage:    "Disk journal directory for trie cache to survive node restarts",
-		Value:    ethconfig.Defaults.TrieCleanCacheJournal,
+		Value:    gconfig.Defaults.TrieCleanCacheJournal,
 		Category: flags.PerfCategory,
 	}
 	CacheTrieRejournalFlag = &cli.DurationFlag{
 		Name:     "cache.trie.rejournal",
 		Usage:    "Time interval to regenerate the trie cache journal",
-		Value:    ethconfig.Defaults.TrieCleanCacheRejournal,
+		Value:    gconfig.Defaults.TrieCleanCacheRejournal,
 		Category: flags.PerfCategory,
 	}
 	CacheGCFlag = &cli.IntFlag{
@@ -499,7 +499,7 @@ var (
 		Name:     "cache.blocklogs",
 		Usage:    "Size (in number of blocks) of the log cache for filtering",
 		Category: flags.PerfCategory,
-		Value:    ethconfig.Defaults.FilterLogCacheSize,
+		Value:    gconfig.Defaults.FilterLogCacheSize,
 	}
 	FDLimitFlag = &cli.IntFlag{
 		Name:     "fdlimit",
@@ -532,17 +532,17 @@ var (
 	MinerGasLimitFlag = &cli.Uint64Flag{
 		Name:     "miner.gaslimit",
 		Usage:    "Target gas ceiling for mined blocks",
-		Value:    ethconfig.Defaults.Miner.GasCeil,
+		Value:    gconfig.Defaults.Miner.GasCeil,
 		Category: flags.MinerCategory,
 	}
 	MinerGasPriceFlag = &flags.BigFlag{
 		Name:     "miner.gasprice",
 		Usage:    "Minimum gas price for mining a transaction",
-		Value:    ethconfig.Defaults.Miner.GasPrice,
+		Value:    gconfig.Defaults.Miner.GasPrice,
 		Category: flags.MinerCategory,
 	}
-	MinerEtherbaseFlag = &cli.StringFlag{
-		Name:     "miner.etherbase",
+	MinerACbaseFlag = &cli.StringFlag{
+		Name:     "miner.acbase",
 		Usage:    "Public address for block mining rewards (default = first account)",
 		Value:    "0",
 		Category: flags.MinerCategory,
@@ -555,7 +555,7 @@ var (
 	MinerRecommitIntervalFlag = &cli.DurationFlag{
 		Name:     "miner.recommit",
 		Usage:    "Time interval to recreate the block being mined",
-		Value:    ethconfig.Defaults.Miner.Recommit,
+		Value:    gconfig.Defaults.Miner.Recommit,
 		Category: flags.MinerCategory,
 	}
 	MinerNoVerifyFlag = &cli.BoolFlag{
@@ -600,19 +600,19 @@ var (
 	RPCGlobalGasCapFlag = &cli.Uint64Flag{
 		Name:     "rpc.gascap",
 		Usage:    "Sets a cap on gas that can be used in eth_call/estimateGas (0=infinite)",
-		Value:    ethconfig.Defaults.RPCGasCap,
+		Value:    gconfig.Defaults.RPCGasCap,
 		Category: flags.APICategory,
 	}
 	RPCGlobalEVMTimeoutFlag = &cli.DurationFlag{
 		Name:     "rpc.evmtimeout",
 		Usage:    "Sets a timeout used for eth_call (0=infinite)",
-		Value:    ethconfig.Defaults.RPCEVMTimeout,
+		Value:    gconfig.Defaults.RPCEVMTimeout,
 		Category: flags.APICategory,
 	}
 	RPCGlobalTxFeeCapFlag = &cli.Float64Flag{
 		Name:     "rpc.txfeecap",
-		Usage:    "Sets a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap)",
-		Value:    ethconfig.Defaults.RPCTxFeeCap,
+		Usage:    "Sets a cap on transaction fee (in ac) that can be sent via the RPC APIs (0 = no cap)",
+		Value:    gconfig.Defaults.RPCTxFeeCap,
 		Category: flags.APICategory,
 	}
 	// Authenticated RPC HTTP settings
@@ -641,9 +641,9 @@ var (
 	}
 
 	// Logging and debug settings
-	EthStatsURLFlag = &cli.StringFlag{
-		Name:     "ethstats",
-		Usage:    "Reporting URL of a ethstats service (nodename:secret@host:port)",
+	GStatsURLFlag = &cli.StringFlag{
+		Name:     "gstats",
+		Usage:    "Reporting URL of a gstats service (nodename:secret@host:port)",
 		Category: flags.MetricsCategory,
 	}
 	FakePoWFlag = &cli.BoolFlag{
@@ -863,25 +863,25 @@ var (
 	GpoBlocksFlag = &cli.IntFlag{
 		Name:     "gpo.blocks",
 		Usage:    "Number of recent blocks to check for gas prices",
-		Value:    ethconfig.Defaults.GPO.Blocks,
+		Value:    gconfig.Defaults.GPO.Blocks,
 		Category: flags.GasPriceCategory,
 	}
 	GpoPercentileFlag = &cli.IntFlag{
 		Name:     "gpo.percentile",
 		Usage:    "Suggested gas price is the given percentile of a set of recent transaction gas prices",
-		Value:    ethconfig.Defaults.GPO.Percentile,
+		Value:    gconfig.Defaults.GPO.Percentile,
 		Category: flags.GasPriceCategory,
 	}
 	GpoMaxGasPriceFlag = &cli.Int64Flag{
 		Name:     "gpo.maxprice",
 		Usage:    "Maximum transaction priority fee (or gasprice before London fork) to be recommended by gpo",
-		Value:    ethconfig.Defaults.GPO.MaxPrice.Int64(),
+		Value:    gconfig.Defaults.GPO.MaxPrice.Int64(),
 		Category: flags.GasPriceCategory,
 	}
 	GpoIgnoreGasPriceFlag = &cli.Int64Flag{
 		Name:     "gpo.ignoreprice",
 		Usage:    "Gas price below which gpo will ignore transactions",
-		Value:    ethconfig.Defaults.GPO.IgnorePrice.Int64(),
+		Value:    gconfig.Defaults.GPO.IgnorePrice.Int64(),
 		Category: flags.GasPriceCategory,
 	}
 
@@ -1261,7 +1261,7 @@ func setIPC(ctx *cli.Context, cfg *node.Config) {
 }
 
 // setLes configures the les server and ultra light client settings from the command line flags.
-func setLes(ctx *cli.Context, cfg *ethconfig.Config) {
+func setLes(ctx *cli.Context, cfg *gconfig.Config) {
 	if ctx.IsSet(LightServeFlag.Name) {
 		cfg.LightServ = ctx.Int(LightServeFlag.Name)
 	}
@@ -1281,8 +1281,8 @@ func setLes(ctx *cli.Context, cfg *ethconfig.Config) {
 		cfg.UltraLightFraction = ctx.Int(UltraLightFractionFlag.Name)
 	}
 	if cfg.UltraLightFraction <= 0 && cfg.UltraLightFraction > 100 {
-		log.Error("Ultra light fraction is invalid", "had", cfg.UltraLightFraction, "updated", ethconfig.Defaults.UltraLightFraction)
-		cfg.UltraLightFraction = ethconfig.Defaults.UltraLightFraction
+		log.Error("Ultra light fraction is invalid", "had", cfg.UltraLightFraction, "updated", gconfig.Defaults.UltraLightFraction)
+		cfg.UltraLightFraction = gconfig.Defaults.UltraLightFraction
 	}
 	if ctx.IsSet(UltraLightOnlyAnnounceFlag.Name) {
 		cfg.UltraLightOnlyAnnounce = ctx.Bool(UltraLightOnlyAnnounceFlag.Name)
@@ -1347,24 +1347,24 @@ func MakeAddress(ks *keystore.KeyStore, account string) (accounts.Account, error
 	return accs[index], nil
 }
 
-// setEtherbase retrieves the etherbase either from the directly specified
+// setACbase retrieves the acbase either from the directly specified
 // command line flags or from the keystore if CLI indexed.
-func setEtherbase(ctx *cli.Context, ks *keystore.KeyStore, cfg *ethconfig.Config) {
-	// Extract the current etherbase
-	var etherbase string
-	if ctx.IsSet(MinerEtherbaseFlag.Name) {
-		etherbase = ctx.String(MinerEtherbaseFlag.Name)
+func setACbase(ctx *cli.Context, ks *keystore.KeyStore, cfg *gconfig.Config) {
+	// Extract the current acbase
+	var acbase string
+	if ctx.IsSet(MinerACbaseFlag.Name) {
+		acbase = ctx.String(MinerACbaseFlag.Name)
 	}
-	// Convert the etherbase into an address and configure it
-	if etherbase != "" {
+	// Convert the acbase into an address and configure it
+	if acbase != "" {
 		if ks != nil {
-			account, err := MakeAddress(ks, etherbase)
+			account, err := MakeAddress(ks, acbase)
 			if err != nil {
-				Fatalf("Invalid miner etherbase: %v", err)
+				Fatalf("Invalid miner acbase: %v", err)
 			}
-			cfg.Miner.Etherbase = account.Address
+			cfg.Miner.ACbase = account.Address
 		} else {
-			Fatalf("No etherbase configured")
+			Fatalf("No acbase configured")
 		}
 	}
 }
@@ -1419,11 +1419,11 @@ func SetP2PConfig(ctx *cli.Context, cfg *p2p.Config) {
 	if !(lightClient || lightServer) {
 		lightPeers = 0
 	}
-	ethPeers := cfg.MaxPeers - lightPeers
+	gPeers := cfg.MaxPeers - lightPeers
 	if lightClient {
-		ethPeers = 0
+		gPeers = 0
 	}
-	log.Info("Maximum peer count", "ETH", ethPeers, "LES", lightPeers, "total", cfg.MaxPeers)
+	log.Info("Maximum peer count", "G", gPeers, "LES", lightPeers, "total", cfg.MaxPeers)
 
 	if ctx.IsSet(MaxPendingPeersFlag.Name) {
 		cfg.MaxPendingPeers = ctx.Int(MaxPendingPeersFlag.Name)
@@ -1552,7 +1552,7 @@ func setGPO(ctx *cli.Context, cfg *gasprice.Config, light bool) {
 	// If we are running the light client, apply another group
 	// settings for gas oracle.
 	if light {
-		*cfg = ethconfig.LightClientGPO
+		*cfg = gconfig.LightClientGPO
 	}
 	if ctx.IsSet(GpoBlocksFlag.Name) {
 		cfg.Blocks = ctx.Int(GpoBlocksFlag.Name)
@@ -1611,30 +1611,30 @@ func setTxPool(ctx *cli.Context, cfg *core.TxPoolConfig) {
 	}
 }
 
-func setEthash(ctx *cli.Context, cfg *ethconfig.Config) {
-	if ctx.IsSet(EthashCacheDirFlag.Name) {
-		cfg.Ethash.CacheDir = ctx.String(EthashCacheDirFlag.Name)
+func setGash(ctx *cli.Context, cfg *gconfig.Config) {
+	if ctx.IsSet(GashCacheDirFlag.Name) {
+		cfg.Gash.CacheDir = ctx.String(GashCacheDirFlag.Name)
 	}
-	if ctx.IsSet(EthashDatasetDirFlag.Name) {
-		cfg.Ethash.DatasetDir = ctx.String(EthashDatasetDirFlag.Name)
+	if ctx.IsSet(GashDatasetDirFlag.Name) {
+		cfg.Gash.DatasetDir = ctx.String(GashDatasetDirFlag.Name)
 	}
-	if ctx.IsSet(EthashCachesInMemoryFlag.Name) {
-		cfg.Ethash.CachesInMem = ctx.Int(EthashCachesInMemoryFlag.Name)
+	if ctx.IsSet(GashCachesInMemoryFlag.Name) {
+		cfg.Gash.CachesInMem = ctx.Int(GashCachesInMemoryFlag.Name)
 	}
-	if ctx.IsSet(EthashCachesOnDiskFlag.Name) {
-		cfg.Ethash.CachesOnDisk = ctx.Int(EthashCachesOnDiskFlag.Name)
+	if ctx.IsSet(GashCachesOnDiskFlag.Name) {
+		cfg.Gash.CachesOnDisk = ctx.Int(GashCachesOnDiskFlag.Name)
 	}
-	if ctx.IsSet(EthashCachesLockMmapFlag.Name) {
-		cfg.Ethash.CachesLockMmap = ctx.Bool(EthashCachesLockMmapFlag.Name)
+	if ctx.IsSet(GashCachesLockMmapFlag.Name) {
+		cfg.Gash.CachesLockMmap = ctx.Bool(GashCachesLockMmapFlag.Name)
 	}
-	if ctx.IsSet(EthashDatasetsInMemoryFlag.Name) {
-		cfg.Ethash.DatasetsInMem = ctx.Int(EthashDatasetsInMemoryFlag.Name)
+	if ctx.IsSet(GashDatasetsInMemoryFlag.Name) {
+		cfg.Gash.DatasetsInMem = ctx.Int(GashDatasetsInMemoryFlag.Name)
 	}
-	if ctx.IsSet(EthashDatasetsOnDiskFlag.Name) {
-		cfg.Ethash.DatasetsOnDisk = ctx.Int(EthashDatasetsOnDiskFlag.Name)
+	if ctx.IsSet(GashDatasetsOnDiskFlag.Name) {
+		cfg.Gash.DatasetsOnDisk = ctx.Int(GashDatasetsOnDiskFlag.Name)
 	}
-	if ctx.IsSet(EthashDatasetsLockMmapFlag.Name) {
-		cfg.Ethash.DatasetsLockMmap = ctx.Bool(EthashDatasetsLockMmapFlag.Name)
+	if ctx.IsSet(GashDatasetsLockMmapFlag.Name) {
+		cfg.Gash.DatasetsLockMmap = ctx.Bool(GashDatasetsLockMmapFlag.Name)
 	}
 }
 
@@ -1660,11 +1660,11 @@ func setMiner(ctx *cli.Context, cfg *miner.Config) {
 	}
 }
 
-func setRequiredBlocks(ctx *cli.Context, cfg *ethconfig.Config) {
+func setRequiredBlocks(ctx *cli.Context, cfg *gconfig.Config) {
 	requiredBlocks := ctx.String(EthRequiredBlocksFlag.Name)
 	if requiredBlocks == "" {
 		if ctx.IsSet(LegacyWhitelistFlag.Name) {
-			log.Warn("The flag --whitelist is deprecated and will be removed, please use --eth.requiredblocks")
+			log.Warn("The flag --whitelist is deprecated and will be removed, please use --g.requiredblocks")
 			requiredBlocks = ctx.String(LegacyWhitelistFlag.Name)
 		} else {
 			return
@@ -1729,8 +1729,8 @@ func CheckExclusive(ctx *cli.Context, args ...interface{}) {
 	}
 }
 
-// SetEthConfig applies eth-related command line flags to the config.
-func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
+// SetEthConfig applies g-related command line flags to the config.
+func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *gconfig.Config) {
 	// Avoid conflicting network flags
 	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag)
 	CheckExclusive(ctx, LightServeFlag, SyncModeFlag, "light")
@@ -1746,10 +1746,10 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	if keystores := stack.AccountManager().Backends(keystore.KeyStoreType); len(keystores) > 0 {
 		ks = keystores[0].(*keystore.KeyStore)
 	}
-	setEtherbase(ctx, ks, cfg)
+	setACbase(ctx, ks, cfg)
 	setGPO(ctx, &cfg.GPO, ctx.String(SyncModeFlag.Name) == "light")
 	setTxPool(ctx, &cfg.TxPool)
-	setEthash(ctx, cfg)
+	setGash(ctx, cfg)
 	setMiner(ctx, &cfg.Miner)
 	setRequiredBlocks(ctx, cfg)
 	setLes(ctx, cfg)
@@ -1930,9 +1930,9 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 			// when we're definitely concerned with only one account.
 			passphrase = list[0]
 		}
-		// setEtherbase has been called above, configuring the miner address from command line flags.
-		if cfg.Miner.Etherbase != (common.Address{}) {
-			developer = accounts.Account{Address: cfg.Miner.Etherbase}
+		// setACbase has been called above, configuring the miner address from command line flags.
+		if cfg.Miner.ACbase != (common.Address{}) {
+			developer = accounts.Account{Address: cfg.Miner.ACbase}
 		} else if accs := ks.Accounts(); len(accs) > 0 {
 			developer = ks.Accounts()[0]
 		} else {
@@ -1975,7 +1975,7 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 
 // SetDNSDiscoveryDefaults configures DNS discovery with the given URL if
 // no URLs are set.
-func SetDNSDiscoveryDefaults(cfg *ethconfig.Config, genesis common.Hash) {
+func SetDNSDiscoveryDefaults(cfg *gconfig.Config, genesis common.Hash) {
 	if cfg.EthDiscoveryURLs != nil {
 		return // already set through flags/config
 	}
@@ -1992,7 +1992,7 @@ func SetDNSDiscoveryDefaults(cfg *ethconfig.Config, genesis common.Hash) {
 // RegisterEthService adds an Ethereum client to the stack.
 // The second return value is the full node instance, which may be nil if the
 // node is running as a light client.
-func RegisterEthService(stack *node.Node, cfg *ethconfig.Config) (ethapi.Backend, *eth.Ethereum) {
+func RegisterEthService(stack *node.Node, cfg *gconfig.Config) (gapi.Backend, *g.Ethereum) {
 	if cfg.SyncMode == downloader.LightSync {
 		backend, err := les.New(stack, cfg)
 		if err != nil {
@@ -2004,7 +2004,7 @@ func RegisterEthService(stack *node.Node, cfg *ethconfig.Config) (ethapi.Backend
 		}
 		return backend.ApiBackend, nil
 	}
-	backend, err := eth.New(stack, cfg)
+	backend, err := g.New(stack, cfg)
 	if err != nil {
 		Fatalf("Failed to register the Ethereum service: %v", err)
 	}
@@ -2014,36 +2014,36 @@ func RegisterEthService(stack *node.Node, cfg *ethconfig.Config) (ethapi.Backend
 			Fatalf("Failed to create the LES server: %v", err)
 		}
 	}
-	if err := ethcatalyst.Register(stack, backend); err != nil {
+	if err := gcatalyst.Register(stack, backend); err != nil {
 		Fatalf("Failed to register the Engine API service: %v", err)
 	}
 	stack.RegisterAPIs(tracers.APIs(backend.APIBackend))
 	return backend.APIBackend, backend
 }
 
-// RegisterEthStatsService configures the Ethereum Stats daemon and adds it to the node.
-func RegisterEthStatsService(stack *node.Node, backend ethapi.Backend, url string) {
-	if err := ethstats.New(stack, backend, backend.Engine(), url); err != nil {
+// RegisterGStatsService configures the Ethereum Stats daemon and adds it to the node.
+func RegisterGStatsService(stack *node.Node, backend gapi.Backend, url string) {
+	if err := gstats.New(stack, backend, backend.Engine(), url); err != nil {
 		Fatalf("Failed to register the Ethereum Stats service: %v", err)
 	}
 }
 
 // RegisterGraphQLService adds the GraphQL API to the node.
-func RegisterGraphQLService(stack *node.Node, backend ethapi.Backend, filterSystem *filters.FilterSystem, cfg *node.Config) {
+func RegisterGraphQLService(stack *node.Node, backend gapi.Backend, filterSystem *filters.FilterSystem, cfg *node.Config) {
 	err := graphql.New(stack, backend, filterSystem, cfg.GraphQLCors, cfg.GraphQLVirtualHosts)
 	if err != nil {
 		Fatalf("Failed to register the GraphQL service: %v", err)
 	}
 }
 
-// RegisterFilterAPI adds the eth log filtering RPC API to the node.
-func RegisterFilterAPI(stack *node.Node, backend ethapi.Backend, ethcfg *ethconfig.Config) *filters.FilterSystem {
+// RegisterFilterAPI adds the g log filtering RPC API to the node.
+func RegisterFilterAPI(stack *node.Node, backend gapi.Backend, ethcfg *gconfig.Config) *filters.FilterSystem {
 	isLightClient := ethcfg.SyncMode == downloader.LightSync
 	filterSystem := filters.NewFilterSystem(backend, filters.Config{
 		LogCacheSize: ethcfg.FilterLogCacheSize,
 	})
 	stack.RegisterAPIs([]rpc.API{{
-		Namespace: "eth",
+		Namespace: "g",
 		Service:   filters.NewFilterAPI(filterSystem, isLightClient),
 	}})
 	return filterSystem
@@ -2126,13 +2126,13 @@ func SplitTagsFlag(tagsFlag string) map[string]string {
 }
 
 // MakeChainDatabase open an LevelDB using the flags passed to the client and will hard crash if it fails.
-func MakeChainDatabase(ctx *cli.Context, stack *node.Node, readonly bool) ethdb.Database {
+func MakeChainDatabase(ctx *cli.Context, stack *node.Node, readonly bool) gdb.Database {
 	var (
 		cache   = ctx.Int(CacheFlag.Name) * ctx.Int(CacheDatabaseFlag.Name) / 100
 		handles = MakeDatabaseHandles(ctx.Int(FDLimitFlag.Name))
 
 		err     error
-		chainDb ethdb.Database
+		chainDb gdb.Database
 	)
 	switch {
 	case ctx.IsSet(RemoteDBFlag.Name):
@@ -2209,7 +2209,7 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 }
 
 // MakeChain creates a chain manager from set command line flags.
-func MakeChain(ctx *cli.Context, stack *node.Node) (*core.BlockChain, ethdb.Database) {
+func MakeChain(ctx *cli.Context, stack *node.Node) (*core.BlockChain, gdb.Database) {
 	var (
 		gspec   = MakeGenesis(ctx)
 		chainDb = MakeChainDatabase(ctx, stack, false) // TODO(rjl493456442) support read-only database
@@ -2218,21 +2218,21 @@ func MakeChain(ctx *cli.Context, stack *node.Node) (*core.BlockChain, ethdb.Data
 	if err != nil {
 		Fatalf("%v", err)
 	}
-	ethashConfig := ethconfig.Defaults.Ethash
+	gashConfig := gconfig.Defaults.Gash
 	if ctx.Bool(FakePoWFlag.Name) {
-		ethashConfig.PowMode = ethash.ModeFake
+		gashConfig.PowMode = gash.ModeFake
 	}
-	engine := ethconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, nil, false, chainDb)
+	engine := gconfig.CreateConsensusEngine(stack, &gashConfig, cliqueConfig, nil, false, chainDb)
 	if gcmode := ctx.String(GCModeFlag.Name); gcmode != "full" && gcmode != "archive" {
 		Fatalf("--%s must be either 'full' or 'archive'", GCModeFlag.Name)
 	}
 	cache := &core.CacheConfig{
-		TrieCleanLimit:      ethconfig.Defaults.TrieCleanCache,
+		TrieCleanLimit:      gconfig.Defaults.TrieCleanCache,
 		TrieCleanNoPrefetch: ctx.Bool(CacheNoPrefetchFlag.Name),
-		TrieDirtyLimit:      ethconfig.Defaults.TrieDirtyCache,
+		TrieDirtyLimit:      gconfig.Defaults.TrieDirtyCache,
 		TrieDirtyDisabled:   ctx.String(GCModeFlag.Name) == "archive",
-		TrieTimeLimit:       ethconfig.Defaults.TrieTimeout,
-		SnapshotLimit:       ethconfig.Defaults.SnapshotCache,
+		TrieTimeLimit:       gconfig.Defaults.TrieTimeout,
+		SnapshotLimit:       gconfig.Defaults.SnapshotCache,
 		Preimages:           ctx.Bool(CachePreimagesFlag.Name),
 	}
 	if cache.TrieDirtyDisabled && !cache.Preimages {

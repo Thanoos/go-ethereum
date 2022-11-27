@@ -21,13 +21,13 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/consensus/gash"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/beacon"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
+	"github.com/ethereum/go-ethereum/g/downloader"
+	"github.com/ethereum/go-ethereum/g/gconfig"
 	"github.com/ethereum/go-ethereum/les"
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/ethereum/go-ethereum/params"
@@ -45,7 +45,7 @@ var (
 )
 
 func generatePreMergeChain(n int) (*core.Genesis, []*types.Header, []*types.Block) {
-	config := *params.AllEthashProtocolChanges
+	config := *params.AllGashProtocolChanges
 	genesis := &core.Genesis{
 		Config:    &config,
 		Alloc:     core.GenesisAlloc{testAddr: {Balance: testBalance}},
@@ -53,7 +53,7 @@ func generatePreMergeChain(n int) (*core.Genesis, []*types.Header, []*types.Bloc
 		Timestamp: 9000,
 		BaseFee:   big.NewInt(params.InitialBaseFee),
 	}
-	_, blocks, _ := core.GenerateChainWithGenesis(genesis, ethash.NewFaker(), n, nil)
+	_, blocks, _ := core.GenerateChainWithGenesis(genesis, gash.NewFaker(), n, nil)
 	totalDifficulty := big.NewInt(0)
 
 	var headers []*types.Header
@@ -209,9 +209,9 @@ func startLesService(t *testing.T, genesis *core.Genesis, headers []*types.Heade
 	if err != nil {
 		t.Fatal("can't create node:", err)
 	}
-	ethcfg := &ethconfig.Config{
+	ethcfg := &gconfig.Config{
 		Genesis:        genesis,
-		Ethash:         ethash.Config{PowMode: ethash.ModeFake},
+		Gash:           gash.Config{PowMode: gash.ModeFake},
 		SyncMode:       downloader.LightSync,
 		TrieDirtyCache: 256,
 		TrieCleanCache: 256,
@@ -219,7 +219,7 @@ func startLesService(t *testing.T, genesis *core.Genesis, headers []*types.Heade
 	}
 	lesService, err := les.New(n, ethcfg)
 	if err != nil {
-		t.Fatal("can't create eth service:", err)
+		t.Fatal("can't create g service:", err)
 	}
 	if err := n.Start(); err != nil {
 		t.Fatal("can't start node:", err)

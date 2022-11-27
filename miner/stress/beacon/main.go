@@ -29,15 +29,15 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/fdlimit"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/consensus/gash"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/beacon"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth"
-	ethcatalyst "github.com/ethereum/go-ethereum/eth/catalyst"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
+	"github.com/ethereum/go-ethereum/g"
+	gcatalyst "github.com/ethereum/go-ethereum/g/catalyst"
+	"github.com/ethereum/go-ethereum/g/downloader"
+	"github.com/ethereum/go-ethereum/g/gconfig"
 	"github.com/ethereum/go-ethereum/les"
 	lescatalyst "github.com/ethereum/go-ethereum/les/catalyst"
 	"github.com/ethereum/go-ethereum/log"
@@ -91,8 +91,8 @@ type ethNode struct {
 	typ        nodetype
 	stack      *node.Node
 	enode      *enode.Node
-	api        *ethcatalyst.ConsensusAPI
-	ethBackend *eth.Ethereum
+	api        *gcatalyst.ConsensusAPI
+	gBackend   *g.Ethereum
 	lapi       *lescatalyst.ConsensusAPI
 	lesBackend *les.LightEthereum
 }
@@ -100,17 +100,17 @@ type ethNode struct {
 func newNode(typ nodetype, genesis *core.Genesis, enodes []*enode.Node) *ethNode {
 	var (
 		err        error
-		api        *ethcatalyst.ConsensusAPI
+		api        *gcatalyst.ConsensusAPI
 		lapi       *lescatalyst.ConsensusAPI
 		stack      *node.Node
-		ethBackend *eth.Ethereum
+		gBackend   *g.Ethereum
 		lesBackend *les.LightEthereum
 	)
 	// Start the node and wait until it's up
 	if typ == eth2LightClient {
 		stack, lesBackend, lapi, err = makeLightNode(genesis)
 	} else {
-		stack, ethBackend, api, err = makeFullNode(genesis)
+		stack, gBackend, api, err = makeFullNode(genesis)
 	}
 	if err != nil {
 		panic(err)
@@ -133,7 +133,7 @@ func newNode(typ nodetype, genesis *core.Genesis, enodes []*enode.Node) *ethNode
 	return &ethNode{
 		typ:        typ,
 		api:        api,
-		ethBackend: ethBackend,
+		gBackend:   gBackend,
 		lapi:       lapi,
 		lesBackend: lesBackend,
 		stack:      stack,
@@ -258,7 +258,7 @@ func (mgr *nodeManager) getNodes(typ nodetype) []*ethNode {
 
 func (mgr *nodeManager) startMining() {
 	for _, node := range append(mgr.getNodes(eth2MiningNode), mgr.getNodes(legacyMiningNode)...) {
-		if err := node.ethBackend.StartMining(1); err != nil {
+		if err := node.gBackend.StartMining(1); err != nil {
 			panic(err)
 		}
 	}
@@ -275,7 +275,7 @@ func (mgr *nodeManager) run() {
 	if len(mgr.nodes) == 0 {
 		return
 	}
-	chain := mgr.nodes[0].ethBackend.BlockChain()
+	chain := mgr.nodes[0].gBackend.BlockChain()
 	sink := make(chan core.ChainHeadEvent, 1024)
 	sub := chain.SubscribeChainHeadEvent(sink)
 	defer sub.Unsubscribe()
@@ -390,10 +390,10 @@ func main() {
 	for i := 0; i < len(faucets); i++ {
 		faucets[i], _ = crypto.GenerateKey()
 	}
-	// Pre-generate the ethash mining DAG so we don't race
-	ethash.MakeDataset(1, filepath.Join(os.Getenv("HOME"), ".ethash"))
+	// Pre-generate the gash mining DAG so we don't race
+	gash.MakeDataset(1, filepath.Join(os.Getenv("HOME"), ".gash"))
 
-	// Create an Ethash network based off of the Ropsten config
+	// Create an Gash network based off of the Ropsten config
 	genesis := makeGenesis(faucets)
 	manager := newNodeManager(genesis)
 	defer manager.shutdown()
@@ -426,19 +426,19 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		if err := node.ethBackend.TxPool().AddLocal(tx); err != nil {
+		if err := node.gBackend.TxPool().AddLocal(tx); err != nil {
 			panic(err)
 		}
 		nonces[index]++
 
 		// Wait if we're too saturated
-		if pend, _ := node.ethBackend.TxPool().Stats(); pend > 2048 {
+		if pend, _ := node.gBackend.TxPool().Stats(); pend > 2048 {
 			time.Sleep(100 * time.Millisecond)
 		}
 	}
 }
 
-// makeGenesis creates a custom Ethash genesis block based on some pre-defined
+// makeGenesis creates a custom Gash genesis block based on some pre-defined
 // faucet accounts.
 func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	genesis := core.DefaultRopstenGenesisBlock()
@@ -446,7 +446,7 @@ func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	genesis.GasLimit = 25000000
 
 	genesis.BaseFee = big.NewInt(params.InitialBaseFee)
-	genesis.Config = params.AllEthashProtocolChanges
+	genesis.Config = params.AllGashProtocolChanges
 	genesis.Config.TerminalTotalDifficulty = transitionDifficulty
 
 	genesis.Alloc = core.GenesisAlloc{}
@@ -458,7 +458,7 @@ func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	return genesis
 }
 
-func makeFullNode(genesis *core.Genesis) (*node.Node, *eth.Ethereum, *ethcatalyst.ConsensusAPI, error) {
+func makeFullNode(genesis *core.Genesis) (*node.Node, *g.Ethereum, *gcatalyst.ConsensusAPI, error) {
 	// Define the basic configurations for the Ethereum node
 	datadir, _ := os.MkdirTemp("", "")
 
@@ -478,15 +478,15 @@ func makeFullNode(genesis *core.Genesis) (*node.Node, *eth.Ethereum, *ethcatalys
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	econfig := &ethconfig.Config{
+	econfig := &gconfig.Config{
 		Genesis:         genesis,
 		NetworkId:       genesis.Config.ChainID.Uint64(),
 		SyncMode:        downloader.FullSync,
 		DatabaseCache:   256,
 		DatabaseHandles: 256,
 		TxPool:          core.DefaultTxPoolConfig,
-		GPO:             ethconfig.Defaults.GPO,
-		Ethash:          ethconfig.Defaults.Ethash,
+		GPO:             gconfig.Defaults.GPO,
+		Gash:            gconfig.Defaults.Gash,
 		Miner: miner.Config{
 			GasFloor: genesis.GasLimit * 9 / 10,
 			GasCeil:  genesis.GasLimit * 11 / 10,
@@ -497,16 +497,16 @@ func makeFullNode(genesis *core.Genesis) (*node.Node, *eth.Ethereum, *ethcatalys
 		LightPeers:       10,
 		LightNoSyncServe: true,
 	}
-	ethBackend, err := eth.New(stack, econfig)
+	gBackend, err := g.New(stack, econfig)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	_, err = les.NewLesServer(stack, ethBackend, econfig)
+	_, err = les.NewLesServer(stack, gBackend, econfig)
 	if err != nil {
 		log.Crit("Failed to create the LES server", "err", err)
 	}
 	err = stack.Start()
-	return stack, ethBackend, ethcatalyst.NewConsensusAPI(ethBackend), err
+	return stack, gBackend, gcatalyst.NewConsensusAPI(gBackend), err
 }
 
 func makeLightNode(genesis *core.Genesis) (*node.Node, *les.LightEthereum, *lescatalyst.ConsensusAPI, error) {
@@ -529,15 +529,15 @@ func makeLightNode(genesis *core.Genesis) (*node.Node, *les.LightEthereum, *lesc
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	lesBackend, err := les.New(stack, &ethconfig.Config{
+	lesBackend, err := les.New(stack, &gconfig.Config{
 		Genesis:         genesis,
 		NetworkId:       genesis.Config.ChainID.Uint64(),
 		SyncMode:        downloader.LightSync,
 		DatabaseCache:   256,
 		DatabaseHandles: 256,
 		TxPool:          core.DefaultTxPoolConfig,
-		GPO:             ethconfig.Defaults.GPO,
-		Ethash:          ethconfig.Defaults.Ethash,
+		GPO:             gconfig.Defaults.GPO,
+		Gash:            gconfig.Defaults.Gash,
 		LightPeers:      10,
 	})
 	if err != nil {

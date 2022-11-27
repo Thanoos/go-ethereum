@@ -25,11 +25,11 @@ import (
 	"path/filepath"
 
 	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
-	"github.com/ethereum/go-ethereum/eth/filters"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/ethstats"
+	"github.com/ethereum/go-ethereum/g/downloader"
+	"github.com/ethereum/go-ethereum/g/filters"
+	"github.com/ethereum/go-ethereum/g/gconfig"
+	"github.com/ethereum/go-ethereum/gclient"
+	"github.com/ethereum/go-ethereum/gstats"
 	"github.com/ethereum/go-ethereum/internal/debug"
 	"github.com/ethereum/go-ethereum/les"
 	"github.com/ethereum/go-ethereum/node"
@@ -192,7 +192,7 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 	}
 	// Register the Ethereum protocol if requested
 	if config.EthereumEnabled {
-		ethConf := ethconfig.Defaults
+		ethConf := gconfig.Defaults
 		ethConf.Genesis = genesis
 		ethConf.SyncMode = downloader.LightSync
 		ethConf.NetworkId = uint64(config.EthereumNetworkID)
@@ -207,12 +207,12 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 			LogCacheSize: ethConf.FilterLogCacheSize,
 		})
 		rawStack.RegisterAPIs([]rpc.API{{
-			Namespace: "eth",
+			Namespace: "g",
 			Service:   filters.NewFilterAPI(filterSystem, true),
 		}})
 		// If netstats reporting is requested, do it
 		if config.EthereumNetStats != "" {
-			if err := ethstats.New(rawStack, lesBackend.ApiBackend, lesBackend.Engine(), config.EthereumNetStats); err != nil {
+			if err := gstats.New(rawStack, lesBackend.ApiBackend, lesBackend.Engine(), config.EthereumNetStats); err != nil {
 				rawStack.Close()
 				return nil, fmt.Errorf("netstats init: %v", err)
 			}
@@ -239,7 +239,7 @@ func (n *Node) GetEthereumClient() (client *EthereumClient, _ error) {
 	if err != nil {
 		return nil, err
 	}
-	return &EthereumClient{ethclient.NewClient(rpc)}, nil
+	return &EthereumClient{gclient.NewClient(rpc)}, nil
 }
 
 // GetNodeInfo gathers and returns a collection of metadata known about the host.

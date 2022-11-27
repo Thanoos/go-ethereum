@@ -19,10 +19,10 @@ package flags
 import "github.com/urfave/cli/v2"
 
 const (
-	EthCategory        = "ETHEREUM"
+	GCategory          = "ETHEREUM"
 	LightCategory      = "LIGHT CLIENT"
 	DevCategory        = "DEVELOPER CHAIN"
-	EthashCategory     = "ETHASH"
+	GashCategory       = "GASH"
 	TxPoolCategory     = "TRANSACTION POOL"
 	PerfCategory       = "PERFORMANCE TUNING"
 	AccountCategory    = "ACCOUNT"

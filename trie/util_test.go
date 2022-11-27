@@ -33,7 +33,7 @@ func TestTrieTracer(t *testing.T) {
 	// Insert a batch of entries, all the nodes should be marked as inserted
 	vals := []struct{ k, v string }{
 		{"do", "verb"},
-		{"ether", "wookiedoo"},
+		{"ac", "wookiedoo"},
 		{"horse", "stallion"},
 		{"shaman", "horse"},
 		{"doge", "coin"},
@@ -105,7 +105,7 @@ func TestTrieTracerNoop(t *testing.T) {
 	// Insert a batch of entries, all the nodes should be marked as inserted
 	vals := []struct{ k, v string }{
 		{"do", "verb"},
-		{"ether", "wookiedoo"},
+		{"ac", "wookiedoo"},
 		{"horse", "stallion"},
 		{"shaman", "horse"},
 		{"doge", "coin"},
@@ -138,7 +138,7 @@ func TestTrieTracePrevValue(t *testing.T) {
 	// Insert a batch of entries, all the nodes should be marked as inserted
 	vals := []struct{ k, v string }{
 		{"do", "verb"},
-		{"ether", "wookiedoo"},
+		{"ac", "wookiedoo"},
 		{"horse", "stallion"},
 		{"shaman", "horse"},
 		{"doge", "coin"},

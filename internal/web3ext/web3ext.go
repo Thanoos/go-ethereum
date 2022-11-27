@@ -20,9 +20,9 @@ package web3ext
 var Modules = map[string]string{
 	"admin":    AdminJs,
 	"clique":   CliqueJs,
-	"ethash":   EthashJs,
+	"gash":     GashJs,
 	"debug":    DebugJs,
-	"eth":      EthJs,
+	"g":        EthJs,
 	"miner":    MinerJs,
 	"net":      NetJs,
 	"personal": PersonalJs,
@@ -89,28 +89,28 @@ web3._extend({
 });
 `
 
-const EthashJs = `
+const GashJs = `
 web3._extend({
-	property: 'ethash',
+	property: 'gash',
 	methods: [
 		new web3._extend.Method({
 			name: 'getWork',
-			call: 'ethash_getWork',
+			call: 'gash_getWork',
 			params: 0
 		}),
 		new web3._extend.Method({
 			name: 'getHashrate',
-			call: 'ethash_getHashrate',
+			call: 'gash_getHashrate',
 			params: 0
 		}),
 		new web3._extend.Method({
 			name: 'submitWork',
-			call: 'ethash_submitWork',
+			call: 'gash_submitWork',
 			params: 3,
 		}),
 		new web3._extend.Method({
 			name: 'submitHashrate',
-			call: 'ethash_submitHashrate',
+			call: 'gash_submitHashrate',
 			params: 2,
 		}),
 	]
@@ -497,11 +497,11 @@ web3._extend({
 
 const EthJs = `
 web3._extend({
-	property: 'eth',
+	property: 'g',
 	methods: [
 		new web3._extend.Method({
 			name: 'chainId',
-			call: 'eth_chainId',
+			call: 'g_chainId',
 			params: 0
 		}),
 		new web3._extend.Method({
@@ -604,7 +604,7 @@ web3._extend({
 	properties: [
 		new web3._extend.Property({
 			name: 'pendingTransactions',
-			getter: 'eth_pendingTransactions',
+			getter: 'g_pendingTransactions',
 			outputFormatter: function(txs) {
 				var formatted = [];
 				for (var i = 0; i < txs.length; i++) {
@@ -616,7 +616,7 @@ web3._extend({
 		}),
 		new web3._extend.Property({
 			name: 'maxPriorityFeePerGas',
-			getter: 'eth_maxPriorityFeePerGas',
+			getter: 'g_maxPriorityFeePerGas',
 			outputFormatter: web3._extend.utils.toBigNumber
 		}),
 	]
@@ -638,8 +638,8 @@ web3._extend({
 			call: 'miner_stop'
 		}),
 		new web3._extend.Method({
-			name: 'setEtherbase',
-			call: 'miner_setEtherbase',
+			name: 'setACbase',
+			call: 'miner_setACbase',
 			params: 1,
 			inputFormatter: [web3._extend.formatters.inputAddressFormatter]
 		}),

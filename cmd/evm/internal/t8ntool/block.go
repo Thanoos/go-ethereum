@@ -28,7 +28,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/consensus/clique"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/consensus/gash"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
@@ -72,11 +72,11 @@ type bbInput struct {
 	TxRlp     string       `json:"txs,omitempty"`
 	Clique    *cliqueInput `json:"clique,omitempty"`
 
-	Ethash    bool                 `json:"-"`
-	EthashDir string               `json:"-"`
-	PowMode   ethash.Mode          `json:"-"`
-	Txs       []*types.Transaction `json:"-"`
-	Ommers    []*types.Header      `json:"-"`
+	Gash    bool                 `json:"-"`
+	GashDir string               `json:"-"`
+	PowMode gash.Mode            `json:"-"`
+	Txs     []*types.Transaction `json:"-"`
+	Ommers  []*types.Header      `json:"-"`
 }
 
 type cliqueInput struct {
@@ -159,8 +159,8 @@ func (i *bbInput) ToBlock() *types.Block {
 // SealBlock seals the given block using the configured engine.
 func (i *bbInput) SealBlock(block *types.Block) (*types.Block, error) {
 	switch {
-	case i.Ethash:
-		return i.sealEthash(block)
+	case i.Gash:
+		return i.sealGash(block)
 	case i.Clique != nil:
 		return i.sealClique(block)
 	default:
@@ -168,21 +168,21 @@ func (i *bbInput) SealBlock(block *types.Block) (*types.Block, error) {
 	}
 }
 
-// sealEthash seals the given block using ethash.
-func (i *bbInput) sealEthash(block *types.Block) (*types.Block, error) {
+// sealGash seals the given block using gash.
+func (i *bbInput) sealGash(block *types.Block) (*types.Block, error) {
 	if i.Header.Nonce != nil {
-		return nil, NewError(ErrorConfig, fmt.Errorf("sealing with ethash will overwrite provided nonce"))
+		return nil, NewError(ErrorConfig, fmt.Errorf("sealing with gash will overwrite provided nonce"))
 	}
-	ethashConfig := ethash.Config{
+	gashConfig := gash.Config{
 		PowMode:        i.PowMode,
-		DatasetDir:     i.EthashDir,
-		CacheDir:       i.EthashDir,
+		DatasetDir:     i.GashDir,
+		CacheDir:       i.GashDir,
 		DatasetsInMem:  1,
 		DatasetsOnDisk: 2,
 		CachesInMem:    2,
 		CachesOnDisk:   3,
 	}
-	engine := ethash.New(ethashConfig, nil, true)
+	engine := gash.New(gashConfig, nil, true)
 	defer engine.Close()
 	// Use a buffered chan for results.
 	// If the testmode is used, the sealer will return quickly, and complain
@@ -259,30 +259,30 @@ func BuildBlock(ctx *cli.Context) error {
 
 func readInput(ctx *cli.Context) (*bbInput, error) {
 	var (
-		headerStr  = ctx.String(InputHeaderFlag.Name)
-		ommersStr  = ctx.String(InputOmmersFlag.Name)
-		txsStr     = ctx.String(InputTxsRlpFlag.Name)
-		cliqueStr  = ctx.String(SealCliqueFlag.Name)
-		ethashOn   = ctx.Bool(SealEthashFlag.Name)
-		ethashDir  = ctx.String(SealEthashDirFlag.Name)
-		ethashMode = ctx.String(SealEthashModeFlag.Name)
-		inputData  = &bbInput{}
+		headerStr = ctx.String(InputHeaderFlag.Name)
+		ommersStr = ctx.String(InputOmmersFlag.Name)
+		txsStr    = ctx.String(InputTxsRlpFlag.Name)
+		cliqueStr = ctx.String(SealCliqueFlag.Name)
+		gashOn    = ctx.Bool(SealGashFlag.Name)
+		gashDir   = ctx.String(SealGashDirFlag.Name)
+		gashMode  = ctx.String(SealGashModeFlag.Name)
+		inputData = &bbInput{}
 	)
-	if ethashOn && cliqueStr != "" {
-		return nil, NewError(ErrorConfig, fmt.Errorf("both ethash and clique sealing specified, only one may be chosen"))
+	if gashOn && cliqueStr != "" {
+		return nil, NewError(ErrorConfig, fmt.Errorf("both gash and clique sealing specified, only one may be chosen"))
 	}
-	if ethashOn {
-		inputData.Ethash = ethashOn
-		inputData.EthashDir = ethashDir
-		switch ethashMode {
+	if gashOn {
+		inputData.Gash = gashOn
+		inputData.GashDir = gashDir
+		switch gashMode {
 		case "normal":
-			inputData.PowMode = ethash.ModeNormal
+			inputData.PowMode = gash.ModeNormal
 		case "test":
-			inputData.PowMode = ethash.ModeTest
+			inputData.PowMode = gash.ModeTest
 		case "fake":
-			inputData.PowMode = ethash.ModeFake
+			inputData.PowMode = gash.ModeFake
 		default:
-			return nil, NewError(ErrorConfig, fmt.Errorf("unknown pow mode: %s, supported modes: test, fake, normal", ethashMode))
+			return nil, NewError(ErrorConfig, fmt.Errorf("unknown pow mode: %s, supported modes: test, fake, normal", gashMode))
 		}
 	}
 	if headerStr == stdinSelector || ommersStr == stdinSelector || txsStr == stdinSelector || cliqueStr == stdinSelector {

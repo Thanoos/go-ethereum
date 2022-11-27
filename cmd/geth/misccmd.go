@@ -24,7 +24,7 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/consensus/gash"
 	"github.com/ethereum/go-ethereum/internal/version"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/urfave/cli/v2"
@@ -44,10 +44,10 @@ var (
 	makecacheCommand = &cli.Command{
 		Action:    makecache,
 		Name:      "makecache",
-		Usage:     "Generate ethash verification cache (for testing)",
+		Usage:     "Generate gash verification cache (for testing)",
 		ArgsUsage: "<blockNum> <outputDir>",
 		Description: `
-The makecache command generates an ethash cache in <outputDir>.
+The makecache command generates an gash cache in <outputDir>.
 
 This command exists to support the system testing project.
 Regular users do not need to execute it.
@@ -56,10 +56,10 @@ Regular users do not need to execute it.
 	makedagCommand = &cli.Command{
 		Action:    makedag,
 		Name:      "makedag",
-		Usage:     "Generate ethash mining DAG (for testing)",
+		Usage:     "Generate gash mining DAG (for testing)",
 		ArgsUsage: "<blockNum> <outputDir>",
 		Description: `
-The makedag command generates an ethash DAG in <outputDir>.
+The makedag command generates an gash DAG in <outputDir>.
 
 This command exists to support the system testing project.
 Regular users do not need to execute it.
@@ -96,7 +96,7 @@ and displays information about any security vulnerabilities that affect the curr
 	}
 )
 
-// makecache generates an ethash verification cache into the provided folder.
+// makecache generates an gash verification cache into the provided folder.
 func makecache(ctx *cli.Context) error {
 	args := ctx.Args().Slice()
 	if len(args) != 2 {
@@ -106,12 +106,12 @@ func makecache(ctx *cli.Context) error {
 	if err != nil {
 		utils.Fatalf("Invalid block number: %v", err)
 	}
-	ethash.MakeCache(block, args[1])
+	gash.MakeCache(block, args[1])
 
 	return nil
 }
 
-// makedag generates an ethash mining DAG into the provided folder.
+// makedag generates an gash mining DAG into the provided folder.
 func makedag(ctx *cli.Context) error {
 	args := ctx.Args().Slice()
 	if len(args) != 2 {
@@ -121,7 +121,7 @@ func makedag(ctx *cli.Context) error {
 	if err != nil {
 		utils.Fatalf("Invalid block number: %v", err)
 	}
-	ethash.MakeDataset(block, args[1])
+	gash.MakeDataset(block, args[1])
 
 	return nil
 }

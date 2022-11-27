@@ -46,7 +46,7 @@ var (
 )
 
 // containerInfos is a heavily reduced version of the huge inspection dataset
-// returned from docker inspect, parsed into a form easily usable by puppeth.
+// returned from docker inspect, parsed into a form easily usable by puppg.
 type containerInfos struct {
 	running bool              // Flag whether the container is running currently
 	envvars map[string]string // Collection of environmental variables set on the container
@@ -151,7 +151,7 @@ func checkPort(host string, port int) error {
 	return nil
 }
 
-// getEthName gets the Ethereum Name from ethstats
+// getGName gets the Ethereum Name from gstats
 func getEthName(s string) string {
 	n := strings.Index(s, ":")
 	if n >= 0 {

@@ -56,14 +56,14 @@ func (w *wizard) makeGenesis() {
 	// Figure out which consensus engine to choose
 	fmt.Println()
 	fmt.Println("Which consensus engine to use? (default = clique)")
-	fmt.Println(" 1. Ethash - proof-of-work")
+	fmt.Println(" 1. Gash - proof-of-work")
 	fmt.Println(" 2. Clique - proof-of-authority")
 
 	choice := w.read()
 	switch {
 	case choice == "1":
-		// In case of ethash, we're pretty much done
-		genesis.Config.Ethash = new(params.EthashConfig)
+		// In case of gash, we're pretty much done
+		genesis.Config.Gash = new(params.GashConfig)
 		genesis.ExtraData = make([]byte, 32)
 
 	case choice == "" || choice == "2":
@@ -140,7 +140,7 @@ func (w *wizard) makeGenesis() {
 	w.conf.flush()
 }
 
-// importGenesis imports a Geth genesis spec into puppeth.
+// importGenesis imports a Geth genesis spec into puppg.
 func (w *wizard) importGenesis() {
 	// Request the genesis JSON spec URL from the user
 	fmt.Println()
@@ -260,7 +260,7 @@ func (w *wizard) manageGenesis() {
 		}
 		out, _ := json.MarshalIndent(w.conf.Genesis, "", "  ")
 
-		// Export the native genesis spec used by puppeth and Geth
+		// Export the native genesis spec used by puppg and Geth
 		gethJson := filepath.Join(folder, fmt.Sprintf("%s.json", w.network))
 		if err := os.WriteFile(gethJson, out, 0644); err != nil {
 			log.Error("Failed to save genesis file", "err", err)
