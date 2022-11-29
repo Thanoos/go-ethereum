@@ -192,19 +192,19 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 	}
 	// Register the Ethereum protocol if requested
 	if config.EthereumEnabled {
-		ethConf := gconfig.Defaults
-		ethConf.Genesis = genesis
-		ethConf.SyncMode = downloader.LightSync
-		ethConf.NetworkId = uint64(config.EthereumNetworkID)
-		ethConf.DatabaseCache = config.EthereumDatabaseCache
-		lesBackend, err := les.New(rawStack, &ethConf)
+		gConf := gconfig.Defaults
+		gConf.Genesis = genesis
+		gConf.SyncMode = downloader.LightSync
+		gConf.NetworkId = uint64(config.EthereumNetworkID)
+		gConf.DatabaseCache = config.EthereumDatabaseCache
+		lesBackend, err := les.New(rawStack, &gConf)
 		if err != nil {
 			rawStack.Close()
 			return nil, fmt.Errorf("ethereum init: %v", err)
 		}
 		// Register log filter RPC API.
 		filterSystem := filters.NewFilterSystem(lesBackend.ApiBackend, filters.Config{
-			LogCacheSize: ethConf.FilterLogCacheSize,
+			LogCacheSize: gConf.FilterLogCacheSize,
 		})
 		rawStack.RegisterAPIs([]rpc.API{{
 			Namespace: "g",

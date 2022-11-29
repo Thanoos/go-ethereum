@@ -333,7 +333,7 @@ func createNode(t *testing.T) *node.Node {
 }
 
 func newGQLService(t *testing.T, stack *node.Node, gspec *core.Genesis, genBlocks int, genfunc func(i int, gen *core.BlockGen)) *handler {
-	ethConf := &gconfig.Config{
+	gConf := &gconfig.Config{
 		Genesis: gspec,
 		Gash: gash.Config{
 			PowMode: gash.ModeFake,
@@ -346,7 +346,7 @@ func newGQLService(t *testing.T, stack *node.Node, gspec *core.Genesis, genBlock
 		TrieTimeout:             60 * time.Minute,
 		SnapshotCache:           5,
 	}
-	gBackend, err := g.New(stack, ethConf)
+	gBackend, err := g.New(stack, gConf)
 	if err != nil {
 		t.Fatalf("could not create g backend: %v", err)
 	}

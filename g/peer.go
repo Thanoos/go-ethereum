@@ -25,7 +25,7 @@ import (
 
 // ethPeerInfo represents a short summary of the `g` sub-protocol metadata known
 // about a connected peer.
-type ethPeerInfo struct {
+type gPeerInfo struct {
 	Version    uint     `json:"version"`    // Ethereum protocol version negotiated
 	Difficulty *big.Int `json:"difficulty"` // Total difficulty of the peer's blockchain
 	Head       string   `json:"head"`       // Hex hash of the peer's best owned block
@@ -38,10 +38,10 @@ type ethPeer struct {
 }
 
 // info gathers and returns some `g` protocol metadata known about a peer.
-func (p *ethPeer) info() *ethPeerInfo {
+func (p *ethPeer) info() *gPeerInfo {
 	hash, td := p.Head()
 
-	return &ethPeerInfo{
+	return &gPeerInfo{
 		Version:    p.Version(),
 		Difficulty: td,
 		Head:       hash.Hex(),

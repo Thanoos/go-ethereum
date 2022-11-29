@@ -31,7 +31,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/consensus/gash"
 	"github.com/ethereum/go-ethereum/g"
-	ethdownloader "github.com/ethereum/go-ethereum/g/downloader"
+	gdownloader "github.com/ethereum/go-ethereum/g/downloader"
 	"github.com/ethereum/go-ethereum/g/gconfig"
 	"github.com/ethereum/go-ethereum/les/downloader"
 	"github.com/ethereum/go-ethereum/les/flowcontrol"
@@ -304,7 +304,7 @@ func testCapacityAPI(t *testing.T, clientCount int) {
 
 func getHead(ctx context.Context, t *testing.T, client *rpc.Client) (uint64, common.Hash) {
 	res := make(map[string]interface{})
-	if err := client.CallContext(ctx, &res, "eth_getBlockByNumber", "latest", false); err != nil {
+	if err := client.CallContext(ctx, &res, "g_getBlockByNumber", "latest", false); err != nil {
 		t.Fatalf("Failed to obtain head block: %v", err)
 	}
 	numStr, ok := res["number"].(string)
@@ -329,7 +329,7 @@ func testRequest(ctx context.Context, t *testing.T, client *rpc.Client) bool {
 	rand.Read(addr[:])
 	c, cancel := context.WithTimeout(ctx, time.Second*12)
 	defer cancel()
-	err := client.CallContext(c, &res, "eth_getBalance", addr, "latest")
+	err := client.CallContext(c, &res, "g_getBalance", addr, "latest")
 	if err != nil {
 		t.Log("request error:", err)
 	}
@@ -493,14 +493,14 @@ func testSim(t *testing.T, serverCount, clientCount int, serverDir, clientDir []
 
 func newLesClientService(ctx *adapters.ServiceContext, stack *node.Node) (node.Lifecycle, error) {
 	config := gconfig.Defaults
-	config.SyncMode = (ethdownloader.SyncMode)(downloader.LightSync)
+	config.SyncMode = (gdownloader.SyncMode)(downloader.LightSync)
 	config.Gash.PowMode = gash.ModeFake
 	return New(stack, &config)
 }
 
 func newLesServerService(ctx *adapters.ServiceContext, stack *node.Node) (node.Lifecycle, error) {
 	config := gconfig.Defaults
-	config.SyncMode = (ethdownloader.SyncMode)(downloader.FullSync)
+	config.SyncMode = (gdownloader.SyncMode)(downloader.FullSync)
 	config.LightServ = testServerCapacity
 	config.LightPeers = testMaxClients
 	ethereum, err := g.New(stack, &config)

@@ -100,7 +100,7 @@ func (api *FilterAPI) timeoutLoop(timeout time.Duration) {
 // as transactions enter the pending state.
 //
 // It is part of the filter package because this filter can be used through the
-// `eth_getFilterChanges` polling method that is also used for log filters.
+// `g_getFilterChanges` polling method that is also used for log filters.
 func (api *FilterAPI) NewPendingTransactionFilter() rpc.ID {
 	var (
 		pendingTxs   = make(chan []common.Hash)
@@ -168,7 +168,7 @@ func (api *FilterAPI) NewPendingTransactions(ctx context.Context) (*rpc.Subscrip
 }
 
 // NewBlockFilter creates a filter that fetches blocks that are imported into the chain.
-// It is part of the filter package since polling goes with eth_getFilterChanges.
+// It is part of the filter package since polling goes with g_getFilterChanges.
 func (api *FilterAPI) NewBlockFilter() rpc.ID {
 	var (
 		headers   = make(chan *types.Header)
