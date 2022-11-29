@@ -32,13 +32,13 @@ type lesEntry struct {
 
 func (lesEntry) ENRKey() string { return "les" }
 
-// ethEntry is the "g" ENR entry. This is redeclared here to avoid depending on package g.
-type ethEntry struct {
+// gEntry is the "g" ENR entry. This is redeclared here to avoid depending on package g.
+type gEntry struct {
 	ForkID forkid.ID
 	Tail   []rlp.RawValue `rlp:"tail"`
 }
 
-func (ethEntry) ENRKey() string { return "g" }
+func (gEntry) ENRKey() string { return "g" }
 
 // setupDiscovery creates the node discovery source for the g protocol.
 func (g *LightEthereum) setupDiscovery() (enode.Iterator, error) {
@@ -67,6 +67,6 @@ func (g *LightEthereum) setupDiscovery() (enode.Iterator, error) {
 // nodeIsServer checks whether n is an LES server node.
 func nodeIsServer(forkFilter forkid.Filter, n *enode.Node) bool {
 	var les lesEntry
-	var g ethEntry
+	var g gEntry
 	return n.Load(&les) == nil && n.Load(&g) == nil && forkFilter(g.ForkID) == nil
 }

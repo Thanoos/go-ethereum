@@ -278,11 +278,11 @@ func applyMetricConfig(ctx *cli.Context, cfg *gethConfig) {
 
 func deprecated(field string) bool {
 	switch field {
-	//case "ethconfig.Config.EVMInterpreter":
+	//case "gconfig.Config.EVMInterpreter":
 	case "gconfig.Config.EVMInterpreter":
 
 		return true
-	//case "ethconfig.Config.EWASMInterpreter":
+	//case "gconfig.Config.EWASMInterpreter":
 	case "gconfig.Config.EWASMInterpreter":
 
 		return true

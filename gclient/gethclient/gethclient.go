@@ -132,7 +132,7 @@ func (ec *Client) GetProof(ctx context.Context, account common.Address, keys []s
 func (ec *Client) CallContract(ctx context.Context, msg ethereum.CallMsg, blockNumber *big.Int, overrides *map[common.Address]OverrideAccount) ([]byte, error) {
 	var hex hexutil.Bytes
 	err := ec.c.CallContext(
-		ctx, &hex, "eth_call", toCallArg(msg),
+		ctx, &hex, "g_call", toCallArg(msg),
 		toBlockNumArg(blockNumber), overrides,
 	)
 	return hex, err

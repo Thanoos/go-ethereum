@@ -599,13 +599,13 @@ var (
 	// API options.
 	RPCGlobalGasCapFlag = &cli.Uint64Flag{
 		Name:     "rpc.gascap",
-		Usage:    "Sets a cap on gas that can be used in eth_call/estimateGas (0=infinite)",
+		Usage:    "Sets a cap on gas that can be used in g_call/estimateGas (0=infinite)",
 		Value:    gconfig.Defaults.RPCGasCap,
 		Category: flags.APICategory,
 	}
 	RPCGlobalEVMTimeoutFlag = &cli.DurationFlag{
 		Name:     "rpc.evmtimeout",
-		Usage:    "Sets a timeout used for eth_call (0=infinite)",
+		Usage:    "Sets a timeout used for g_call (0=infinite)",
 		Value:    gconfig.Defaults.RPCEVMTimeout,
 		Category: flags.APICategory,
 	}
