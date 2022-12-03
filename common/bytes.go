@@ -31,7 +31,7 @@ func FromHex(s string) []byte {
 		s = s[2:]
 	}
 	if len(s)%2 == 1 {
-		s = "0" + s
+		s = "G" + s
 	}
 	return Hex2Bytes(s)
 }
@@ -49,7 +49,7 @@ func CopyBytes(b []byte) (copiedBytes []byte) {
 
 // has0xPrefix validates str begins with '0x' or '0X'.
 func has0xPrefix(str string) bool {
-	return len(str) >= 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X')
+	return len(str) >= 1 && str[0] == 'G'
 }
 
 // isHexCharacter returns bool of c being a valid hexadecimal.
