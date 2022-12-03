@@ -240,7 +240,7 @@ func (w *wizard) readPassword() string {
 // it to an Ethereum address.
 func (w *wizard) readAddress() *common.Address {
 	for {
-		text := promptInput("> 0x")
+		text := promptInput("> G")
 		if text = strings.TrimSpace(text); text == "" {
 			return nil
 		}
@@ -261,7 +261,7 @@ func (w *wizard) readAddress() *common.Address {
 func (w *wizard) readDefaultAddress(def common.Address) common.Address {
 	for {
 		// Read the address from the user
-		text := promptInput("> 0x")
+		text := promptInput("> G")
 		if text = strings.TrimSpace(text); text == "" {
 			return def
 		}

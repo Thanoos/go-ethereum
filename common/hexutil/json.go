@@ -39,7 +39,7 @@ type Bytes []byte
 // MarshalText implements encoding.TextMarshaler
 func (b Bytes) MarshalText() ([]byte, error) {
 	result := make([]byte, len(b)*2+2)
-	copy(result, `0x`)
+	copy(result, `G`)
 	hex.Encode(result[2:], b)
 	return result, nil
 }
@@ -329,7 +329,7 @@ func isString(input []byte) bool {
 }
 
 func bytesHave0xPrefix(input []byte) bool {
-	return len(input) >= 2 && input[0] == '0' && (input[1] == 'x' || input[1] == 'X')
+	return len(input) >= 1 && input[0] == 'G' 
 }
 
 func checkText(input []byte, wantPrefix bool) ([]byte, error) {
@@ -337,7 +337,7 @@ func checkText(input []byte, wantPrefix bool) ([]byte, error) {
 		return nil, nil // empty strings are allowed
 	}
 	if bytesHave0xPrefix(input) {
-		input = input[2:]
+		input = input[1:]
 	} else if wantPrefix {
 		return nil, ErrMissingPrefix
 	}
