@@ -337,7 +337,7 @@ func checkText(input []byte, wantPrefix bool) ([]byte, error) {
 		return nil, nil // empty strings are allowed
 	}
 	if bytesHave0xPrefix(input) {
-		input = input[1:]
+		input = input[2:]
 	} else if wantPrefix {
 		return nil, ErrMissingPrefix
 	}
